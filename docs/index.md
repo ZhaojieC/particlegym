@@ -1,0 +1,65 @@
+# ParticleGym
+
+**Fast, physically validated 2D/3D particle-dynamics environments for
+reinforcement learning.**
+
+!!! warning "Pre-alpha"
+    Version 0.1.0.dev0 provides the physics core and its validation tests.
+    The reinforcement-learning interface is the next milestone; see the
+    [roadmap](roadmap.md).
+
+ParticleGym simulates many interacting particles — pedestrians, active
+colloids, cells, swarm robots — and lets reinforcement-learning agents control
+some of them.
+
+- **Physically consistent.** Agents choose a desired direction; the motion
+  follows from forces and a proper integrator. Conservative forces come from
+  energies by automatic differentiation, and each model is checked by tests.
+- **Fast.** Written in JAX: steps compile to XLA for CPU and GPU, and
+  environments batch with `jax.vmap`.
+- **Simple.** Two dependencies, the same code for 2D and 3D, readable models.
+
+## Installation
+
+```bash
+git clone <repository-url>
+cd particlegym
+pip install -e .
+```
+
+## A first simulation
+
+A Lennard-Jones (WCA) fluid in a periodic 3D box, thermostatted with Langevin
+dynamics:
+
+```python
+import jax
+from particlegym import physics as pp
+
+box = pp.Box((0, 0, 0), (10, 10, 10), periodic=True)
+state = pp.create_state(pp.lattice_positions(box.lo, box.hi, 500), radius=0.5)
+field = pp.ForceField(box, pair=[pp.WCA()], neighbors=pp.CellList(cutoff=1.2))
+field.check(state)
+state, _ = pp.init_forces(state, field)
+
+
+def body(state, key):
+    state, info = pp.langevin_baoab(state, field, 0.005, gamma=1.0, kT=1.0, key=key)
+    return state, pp.temperature(state)
+
+
+keys = jax.random.split(jax.random.key(0), 2000)
+state, temperature = jax.jit(lambda s: jax.lax.scan(body, s, keys))(state)
+print(temperature[-500:].mean())  # close to 1.0
+```
+
+The quick start in the project README shows pedestrians leaving a room through
+a door, and the `examples/` directory contains complete scripts.
+
+## Documentation
+
+- [Design](design.md): principles, architecture and design decisions.
+- [Physics models](physics.md): equations, parameters, units and references.
+- [Validation](validation.md): what is tested and the results.
+- [Roadmap](roadmap.md): milestones and the path to a JOSS paper.
+- [AI usage log](ai-usage.md): record of AI assistance.

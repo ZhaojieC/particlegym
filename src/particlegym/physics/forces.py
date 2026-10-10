@@ -123,9 +123,8 @@ class ForceField:
         if potentials:
             idx, _ = self.neighbors.candidates(pos, alive, self.box)
             pairs = self._pair_geometry(pos, None, radius, alive, idx)
-            r = jnp.sqrt(jnp.where(pairs.near, pairs.r2, 1.0))
             for term in potentials:
-                e = term.energy(r, pairs.sigma)
+                e = term.energy(pairs.r, pairs.sigma)
                 energy = energy + 0.5 * jnp.sum(jnp.where(pairs.near, e, 0.0))
         for wall in self.walls:
             energy = energy + wall.energy(pos, radius, alive)
@@ -158,18 +157,21 @@ class ForceField:
             reach = jnp.maximum(reach, term.cutoff(sigma))
         # Self pairs and coincident particles (r = 0, no defined direction) are skipped.
         near = alive[:, None] & alive_j & (r2 < reach * reach) & (r2 > 0)
+        # Pairs that do not interact are evaluated at the cut-off, where every
+        # potential is zero and smooth, so their discarded gradients stay finite.
+        far = jnp.where(reach > 0, reach, 1.0)
+        r = jnp.where(near, jnp.sqrt(jnp.where(near, r2, 1.0)), far)
         dv = None
         if vel is not None:
             vel_j = vel.T[:, None, :] if idx is None else _pad(vel, 0.0).T[:, idx]
             dv = vel_j - vel.T[:, :, None]
-        return _Pairs(dr, r2, sigma, near, dv)
+        return _Pairs(dr, r, sigma, near, dv)
 
     def _pair_forces(self, pos, vel, radius, alive, idx):
         """Pair forces summed per particle over its candidate pairs."""
         dissipative = any(isinstance(term, PairDissipation) for term in self.pair)
         pairs = self._pair_geometry(pos, vel if dissipative else None, radius, alive, idx)
-        near, sigma = pairs.near, pairs.sigma
-        r = jnp.sqrt(jnp.where(near, pairs.r2, 1.0))
+        near, sigma, r = pairs.near, pairs.sigma, pairs.r
         unit = pairs.dr / r
         force = jnp.zeros_like(pos.T)
         energy = jnp.zeros((), dtype=pos.dtype)
@@ -193,7 +195,7 @@ class _Pairs(NamedTuple):
     """Candidate pairs; vectors have shape (d, N, K), scalars (N, K)."""
 
     dr: jax.Array  # displacement from neighbour j to particle i
-    r2: jax.Array  # squared distance
+    r: jax.Array  # distance for interacting pairs, the cut-off otherwise
     sigma: jax.Array  # contact distance r_i + r_j
     near: jax.Array  # pair interacts
     dv: jax.Array | None  # relative velocity v_j - v_i

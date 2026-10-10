@@ -104,6 +104,23 @@ def test_wca_energy_and_force_vanish_at_cutoff():
     assert float(wca.energy(jnp.array(cutoff * 1.01), sigma)) == 0.0
 
 
+def test_large_radii_in_single_precision_give_finite_forces():
+    # In millimetre units a pedestrian has a radius of hundreds of length units,
+    # so (sigma / r)^12 can exceed the float32 range; results must stay finite.
+    pos = np.array([[0.0, 0.0], [2100.0, 0.0], [10_000.0, 0.0]], dtype=np.float32)
+    state = pp.create_state(pos, radius=1000.0)
+    box = pp.Box((-5000.0, -5000.0), (15_000.0, 5000.0))
+    walls = pp.Walls(pp.Plates.from_segments([[(-2000.0, -3000.0), (-2000.0, 3000.0)]]), pp.WCA())
+    field = pp.ForceField(box, pair=[pp.WCA()], walls=[walls])
+    force, info = jax.jit(field.forces)(state.pos, state.vel, state.radius, state.alive)
+    grad = jax.jit(jax.grad(field.potential_energy))(state.pos, state.radius, state.alive)
+    assert force.dtype == jnp.float32
+    assert bool(jnp.all(jnp.isfinite(force))) and bool(jnp.all(jnp.isfinite(grad)))
+    assert bool(jnp.isfinite(info.potential_energy))
+    assert float(force[1, 0]) > 0.0  # particles 0 and 1 overlap and repel
+    assert float(jnp.abs(force[2]).max()) == 0.0
+
+
 def test_pair_forces_obey_newtons_third_law():
     rng = np.random.default_rng(5)
     n = 200

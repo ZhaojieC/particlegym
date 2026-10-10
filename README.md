@@ -17,7 +17,9 @@ some of them. It is built around three goals:
   differentiation, and every physical claim is checked by an automated test.
 - **Fast.** Everything is written in [JAX](https://github.com/jax-ml/jax): one
   simulation step compiles to a single XLA program that runs on CPU or GPU, and
-  thousands of environments can be batched with `jax.vmap`.
+  environments can be batched with `jax.vmap`. On a 4-core CPU a step of a
+  100-pedestrian crowd takes about 0.15 ms (see the
+  [benchmarks](docs/roadmap.md#performance-plan)).
 - **Simple.** Pure Python, two dependencies (`jax`, `numpy`), the same code for
   2D and 3D, and readable models with references.
 

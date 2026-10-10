@@ -306,8 +306,10 @@ class Walls:
         sigma = radius[None, :]
         reach = self.potential.cutoff(sigma)
         near = alive[None, :] & (dist < reach)
-        # Evaluate far pairs at the cut-off so that their (discarded) gradients are finite.
-        energy = self.potential.energy(jnp.where(near, dist, reach), sigma)
+        # Evaluate far pairs at the cut-off, where the potential is zero and
+        # smooth, so that their discarded gradients stay finite.
+        far = jnp.where(reach > 0, reach, 1.0)
+        energy = self.potential.energy(jnp.where(near, dist, far), sigma)
         return jnp.sum(jnp.where(near, energy, 0.0))
 
     def dissipative_force(
