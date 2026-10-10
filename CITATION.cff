@@ -1,10 +1,10 @@
 cff-version: 1.2.0
 message: "If you use ParticleGym, please cite it as below."
 title: "ParticleGym: fast, physically validated particle-dynamics environments for reinforcement learning"
-# TODO(maintainers): confirm the author list and add ORCID iDs before the first release.
 authors:
   - family-names: Chai
     given-names: Zhaojie
+    # TODO: add the ORCID iD before the first release.
 version: 0.1.0.dev0
 license: MIT
 keywords:

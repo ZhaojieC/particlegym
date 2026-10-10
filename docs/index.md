@@ -10,7 +10,8 @@ reinforcement learning.**
 
 ParticleGym simulates many interacting particles — pedestrians, active
 colloids, cells, swarm robots — and lets reinforcement-learning agents control
-some of them.
+some of them. The first application, and the focus of version 1.0, is
+pedestrian evacuation.
 
 - **Physically consistent.** Agents choose a desired direction; the motion
   follows from forces and a proper integrator. Conservative forces come from

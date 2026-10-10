@@ -26,7 +26,9 @@ standard RL interface and automated physical validation.
 
 ParticleGym grows out of the environment of Zhang, Chai & Lykotrafitis,
 *Physica A* 571, 125845 (2021), which coupled a social force model to deep
-Q-learning for room evacuation.
+Q-learning for room evacuation. Pedestrian evacuation is the first
+application domain and the focus of version 1.0 (decision D9); the physics
+core is general and will serve other particle systems later.
 
 ## Goals and non-goals
 
@@ -93,7 +95,7 @@ below it.
 | Physics core (`particlegym.physics`) | state, box, neighbour search, potentials, geometry, integrators, observables | v0.1 |
 | Environment core | functional `reset`/`step`, actions, observations, rewards, exits | planned v0.2 |
 | Wrappers | Gymnasium, Gymnasium vector, PettingZoo parallel | planned v0.2 |
-| Scenarios | evacuation (incl. Physica A 2021), bottleneck, 3D active navigation, swarm, cell migration | planned v0.3–0.4 |
+| Scenarios | room evacuation (incl. Physica A 2021), bottleneck, multi-agent evacuation, rooms with obstacles, multi-storey buildings | planned v0.2–0.4 |
 
 Data flow in one physics step: the integrator updates velocities and
 positions, asks the `ForceField` for forces, and the force field combines
@@ -206,6 +208,22 @@ contacts need milliseconds), while decisions of pedestrians or swimmers happen
 on a much slower time scale. Coupling them would either make physics unstable
 or RL needlessly expensive.
 
+### D9 — Pedestrian evacuation first
+
+*Choice.* Version 1.0 concentrates on pedestrian evacuation: rooms with real
+doors and obstacles, bottlenecks, single- and multi-agent evacuation, and
+multi-storey buildings. Active colloids and cell migration follow after 1.0,
+on the same physics core.
+
+*Reasons.* It builds directly on the authors' published work (Physica A 2021),
+which gives a first reproduction target. Pedestrian dynamics has established
+experimental benchmarks (speed-density relations, bottleneck flows) for
+validation. And a focused scope gets a complete, well-documented release to
+users sooner.
+
+*Alternative.* Covering crowds, active matter and cells at once would spread
+the validation and documentation work thinly before any domain is complete.
+
 ## Planned environment interface (v0.2 sketch)
 
 ```python
@@ -226,12 +244,11 @@ composed from terms (time penalty, exit reward, collision penalty).
 
 ## Open questions
 
-- **open** — Project name and repository location (organisation or personal
-  account).
-- **open** — Priority of scenarios for v1.0: crowd evacuation first, or active
-  matter and cell migration first.
-- **open** — Default discrete action sets in 3D (6, 14 or 26 directions).
+- **open** — How to represent multi-storey buildings: floors as separate 2D
+  domains linked by stairs, or one 3D domain with gravity and stair geometry.
+- **open** — Observation defaults for evacuation: own state only (as in the
+  Physica A 2021 setup), or also local density and nearest neighbours.
 - **open** — Default floating-point precision for environments (float32 for
   speed; float64 is used in the validation tests).
 - **open** — Whether to add dissipative particle dynamics (DPD) with
-  hydrodynamic interactions in v1.0 or later.
+  hydrodynamic interactions after 1.0.

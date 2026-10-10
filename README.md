@@ -9,7 +9,8 @@
 
 ParticleGym simulates many interacting particles — pedestrians, active
 colloids, cells, swarm robots — and lets reinforcement-learning agents control
-some of them. It is built around three goals:
+some of them. The first application, and the focus of version 1.0, is
+pedestrian evacuation. It is built around three goals:
 
 - **Physically consistent.** Agents choose what they *want* (a desired
   direction of motion); the motion itself always follows from forces and a

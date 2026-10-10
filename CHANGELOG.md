@@ -24,3 +24,8 @@ All notable changes to this project are documented here. The format follows
 - Design document, physics reference, roadmap and AI usage log.
 - Examples: 3D Langevin WCA fluid, 2D room evacuation through a real door.
 - Benchmark script.
+
+### Changed
+
+- Version 1.0 focuses on pedestrian evacuation (design decision D9); the
+  roadmap is reordered accordingly.

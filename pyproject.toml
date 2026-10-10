@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
-authors = [{ name = "The ParticleGym developers" }]
+authors = [{ name = "Zhaojie Chai" }]
 keywords = [
   "reinforcement learning",
   "particle dynamics",

@@ -6,17 +6,20 @@ milestone is a tagged release with a Zenodo DOI.
 
 ## Milestones
 
+Version 1.0 focuses on pedestrian evacuation ([design decision D9](design.md#d9-pedestrian-evacuation-first)).
+
 | Version | Content | Target |
 |---|---|---|
 | **0.1** | Physics core, validation tests, packaging, CI, documentation site | month 1–2 |
-| **0.2** | Environment layer: functional `reset`/`step`, actions as desired directions, observation and reward modules, exits; Gymnasium, Gymnasium vector and PettingZoo wrappers; Verlet neighbour lists with skin | month 2–3 |
-| **0.3** | Scenarios: `Evacuation2D` (reproducing Zhang, Chai & Lykotrafitis 2021), `Bottleneck` with real doors; RL baselines (Stable-Baselines3 PPO/DQN, pure-JAX PPO); benchmarks | month 3–4 |
-| **0.4** | 3D scenarios: `ActiveNavigation3D` (self-propelled particles with orientation and noise), `Swarm3D` (multi-agent), `CellMigration3D` (chemotaxis); multi-agent baselines | month 4–5 |
+| **0.2** | Environment layer: functional `reset`/`step`, actions as desired directions, observation and reward modules, exits; Gymnasium and PettingZoo wrappers; `Evacuation2D` reproducing Zhang, Chai & Lykotrafitis (2021) (four exits; three exits and two obstacles); Verlet neighbour lists with skin | month 2–3 |
+| **0.3** | Crowd validation against experiments (speed-density relation, bottleneck flow) and the faster-is-slower effect; calibrated parameter sets; `Bottleneck` scenario; RL baselines (pure-JAX DQN and PPO, Stable-Baselines3 example) | month 3–4 |
+| **0.4** | Multi-agent evacuation (shared and independent policies), rooms with complex obstacles, multi-storey buildings in 3D; GPU benchmarks | month 4–5 |
 | **0.5** | Tutorials (notebooks), API reference, performance guide, external users | month 5–6 |
 | **1.0** | Stable API, JOSS submission | month 6–7 |
 
-Later (1.x): dissipative particle dynamics with hydrodynamic interactions,
-multi-floor buildings, calibrated pedestrian parameters.
+After 1.0: active colloids and microswimmers in 3D (orientations, rotational
+diffusion), collective cell migration, and dissipative particle dynamics with
+hydrodynamic interactions, all on the same physics core.
 
 ## Performance plan
 
@@ -73,9 +76,11 @@ Research impact statement and AI usage disclosure.
 
 | Software | Scope | Difference |
 |---|---|---|
-| VMAS | vectorised 2D physics for multi-agent RL (PyTorch) | 2D only; rigid-body contacts; no thermostat or soft-matter and pedestrian force models |
+| JuPedSim | pedestrian dynamics simulator | not an RL environment |
+| Vadere | crowd simulation framework (Java) | not an RL environment |
+| CrowdNav | RL for a robot navigating among simulated pedestrians | the pedestrians are not the learning agents; 2D |
+| VMAS | vectorised 2D physics for multi-agent RL (PyTorch) | 2D only; rigid-body contacts; no pedestrian or soft-matter force models, no thermostat |
 | PettingZoo MPE | classic 2D particle environments | 2D, CPU, simplified physics |
 | SwarmRL | RL for active colloids | focused on colloids and microswimmers |
-| JuPedSim | pedestrian dynamics simulator | not an RL environment |
 | Brax, MuJoCo MJX, Genesis, Isaac Lab | 3D rigid-body robotics | articulated robots, not many-body particle systems |
 | JAX-MD | differentiable molecular dynamics | no agents, observations, rewards or RL interface |
