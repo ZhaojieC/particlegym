@@ -1,0 +1,26 @@
+site_name: ParticleGym
+site_description: Fast, physically validated 2D/3D particle-dynamics environments for reinforcement learning
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+nav:
+  - Home: index.md
+  - Design: design.md
+  - Physics models: physics.md
+  - Validation: validation.md
+  - Roadmap: roadmap.md
+  - AI usage log: ai-usage.md
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js

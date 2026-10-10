@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use ParticleGym, please cite it as below."
+title: "ParticleGym: fast, physically validated particle-dynamics environments for reinforcement learning"
+# TODO(maintainers): confirm the author list and add ORCID iDs before the first release.
+authors:
+  - family-names: Chai
+    given-names: Zhaojie
+version: 0.1.0.dev0
+license: MIT
+keywords:
+  - reinforcement learning
+  - particle dynamics
+  - social force model
+  - active matter
+references:
+  - type: article
+    title: "Deep reinforcement learning with a particle dynamics environment applied to emergency evacuation of a room with obstacles"
+    authors:
+      - family-names: Zhang
+        given-names: Yihao
+      - family-names: Chai
+        given-names: Zhaojie
+      - family-names: Lykotrafitis
+        given-names: George
+    journal: "Physica A: Statistical Mechanics and its Applications"
+    volume: 571
+    start: 125845
+    year: 2021
+    doi: 10.1016/j.physa.2021.125845

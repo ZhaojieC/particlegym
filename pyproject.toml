@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "particlegym"
+dynamic = ["version"]
+description = "Fast, physically validated 2D/3D particle-dynamics environments for reinforcement learning"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+authors = [{ name = "The ParticleGym developers" }]
+keywords = [
+  "reinforcement learning",
+  "particle dynamics",
+  "social force model",
+  "active matter",
+  "crowd simulation",
+  "jax",
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = ["jax>=0.4.30", "numpy>=1.26"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+docs = ["mkdocs-material>=9.5"]
+dev = ["particlegym[test,docs]", "ruff>=0.6", "pre-commit>=3"]
+
+[tool.hatch.version]
+path = "src/particlegym/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/particlegym"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["slow: long-running statistical validation tests"]
+
+[tool.ruff]
+line-length = 99
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "NPY", "SIM", "RUF"]
