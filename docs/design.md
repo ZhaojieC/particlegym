@@ -93,7 +93,7 @@ below it.
 | Layer | Contents | Status |
 |---|---|---|
 | Physics core (`particlegym.physics`) | state, box, neighbour search, potentials, geometry, integrators, observables | v0.1 |
-| Environment core | functional `reset`/`step`, actions, observations, rewards, exits | planned v0.2 |
+| Environment core (`particlegym.envs`) | functional `reset`/`step`, actions, observations, rewards, exits | in progress (v0.2) |
 | Wrappers | Gymnasium, Gymnasium vector, PettingZoo parallel | planned v0.2 |
 | Scenarios | room evacuation (incl. Physica A 2021), bottleneck, multi-agent evacuation, rooms with obstacles, multi-storey buildings | planned v0.2–0.4 |
 
@@ -199,9 +199,10 @@ faster and the cell-list kernels 1.3 to 1.8 times faster.
 *Rejected.* Packing all per-particle data into one array to gather it at once
 was 10 times slower on CPU: the compiler repeated the gather for every use.
 
-### D8 — Separate control and physics time steps (planned for the environment layer)
+### D8 — Separate control and physics time steps
 
-*Choice.* One RL step will advance the physics by several integrator steps.
+*Choice.* One RL step advances the physics by several integrator steps
+(`substeps`; by default 20 steps of 5 ms, a control interval of 0.1 s).
 
 *Reasons.* The physics time step is set by numerical stability (stiff
 contacts need milliseconds), while decisions of pedestrians or swimmers happen
@@ -224,23 +225,38 @@ users sooner.
 *Alternative.* Covering crowds, active matter and cells at once would spread
 the validation and documentation work thinly before any domain is complete.
 
-## Planned environment interface (v0.2 sketch)
+### D10 — Functional environments with static structure and dynamic parameters
+
+*Choice.* An environment object holds the static structure (geometry, numbers
+of pedestrians, time steps, action type); `reset(key, params)` and
+`step(key, state, action, params)` are pure functions of pytrees. `params`
+holds values that may vary between episodes (desired speed, rewards, episode
+length).
+
+*Reasons.* Array shapes and loop lengths must be static for compilation,
+while parameters that are pytrees can be traced: one compiled function then
+runs batches of environments with different parameters, for example a sweep
+over desired speeds with `jax.vmap`. The design follows the functional style
+of JAX reinforcement-learning libraries such as gymnax, which end-to-end
+compiled training loops rely on.
+
+*Alternative.* A stateful, Gymnasium-only environment would be familiar but
+could not be compiled or batched; Gymnasium and PettingZoo wrappers are built
+on top of the functional core instead.
+
+## Environment interface
 
 ```python
-env = particlegym.make("Evacuation2D-v0")  # Gymnasium-compatible
-obs, info = env.reset(seed=0)
-obs, reward, terminated, truncated, info = env.step(action)
-
-# Functional interface for compiled training loops
-params = particlegym.envs.Evacuation2D.default_params()
-obs, state = reset(key, params)
-obs, state, reward, done, info = step(key, state, action, params)
+env = particlegym.envs.Evacuation(exits=[Opening("y+", (4.5, 5.5))])
+params = env.default_params
+obs, state = env.reset(key, params)
+obs, state, reward, terminated, truncated, info = env.step(key, state, action, params)
 ```
 
-Actions map to desired directions (discrete direction sets or continuous
-vectors). Observations are composed from modules (own state, target
-direction, local density on a grid, nearest neighbours, ray casts). Rewards are
-composed from terms (time penalty, exit reward, collision penalty).
+See [Environments](environments.md) for the details. Planned next:
+observations composed from modules (own state, target direction, local
+density on a grid, nearest neighbours), rewards composed from terms (time
+penalty, exit reward, contact penalty), and Gymnasium and PettingZoo wrappers.
 
 ## Open questions
 

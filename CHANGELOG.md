@@ -8,6 +8,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Functional room-evacuation environment `particlegym.envs.Evacuation`:
+  `reset`/`step` as pure functions that compile with `jax.jit` and batch with
+  `jax.vmap`, including over episode parameters; discrete or continuous
+  desired directions; several physics substeps per control step; exits
+  through real doors with the alive mask and recorded exit times; crowd
+  policies for pedestrians that are not agents
+  ([#3](https://github.com/ZhaojieC/particlegym/issues/3)).
+- Example: room evacuation with agents that walk to the nearest door.
+
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):
   - simulation box with per-axis periodicity;

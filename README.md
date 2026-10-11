@@ -3,9 +3,9 @@
 **Fast, physically validated 2D/3D particle-dynamics environments for reinforcement learning.**
 
 > **Status: pre-alpha (v0.1.0.dev0).** The physics core and its validation
-> tests are in place; the reinforcement-learning interface (Gymnasium,
-> PettingZoo) is the next milestone. APIs may change. See the
-> [roadmap](docs/roadmap.md).
+> tests are in place, and a functional room-evacuation environment is
+> available as a preview; Gymnasium and PettingZoo wrappers come next. APIs
+> may change. See the [roadmap](docs/roadmap.md).
 
 ParticleGym simulates many interacting particles — pedestrians, active
 colloids, cells, swarm robots — and lets reinforcement-learning agents control
@@ -24,10 +24,11 @@ pedestrian evacuation. It is built around three goals:
 - **Simple.** Pure Python, two dependencies (`jax`, `numpy`), the same code for
   2D and 3D, and readable models with references.
 
-## Features (physics core)
+## Features
 
 | Component | Available |
 |---|---|
+| Environments (preview) | functional `Evacuation` room environment: `reset`/`step` with `jit` and `vmap`, discrete or continuous desired directions, crowd policies ([docs](docs/environments.md)) |
 | Domain | 2D or 3D box, periodic or open along each axis |
 | Neighbour search | brute force; cell list with overflow detection |
 | Pair interactions | harmonic, WCA, social force (Helbing et al. 2000), tangential friction |

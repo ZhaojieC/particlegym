@@ -1,7 +1,7 @@
 """ParticleGym: fast, physically validated particle-dynamics environments for RL."""
 
-from particlegym import physics
+from particlegym import envs, physics
 
 __version__ = "0.1.0.dev0"
 
-__all__ = ["__version__", "physics"]
+__all__ = ["__version__", "envs", "physics"]
