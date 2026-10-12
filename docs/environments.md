@@ -10,7 +10,10 @@
 `particlegym.envs.Evacuation` simulates pedestrians in a rectangular room with
 doors, following the social force model. Some pedestrians are agents: an
 action sets an agent's desired direction of motion, and the motion follows
-from the physics ([design principle P1](design.md#design-principles)).
+from the physics ([design principle P1](design.md#design-principles)). The
+room is two- or three-dimensional, depending on the number of entries of
+`room`; the 2D room comes first, and the [3D room](#three-dimensional-rooms)
+is described below.
 
 ```python
 import jax
@@ -50,11 +53,12 @@ obs, states, reward, terminated, truncated, info = step(keys, states, actions)
 
 ### Room, doors and obstacles
 
-The room spans \([0, \text{width}] \times [0, \text{height}]\). Doors are
-`Opening` instances on the faces `"x-"`, `"x+"`, `"y-"` and `"y+"`; the walls
-are closed everywhere else, and the door edges act as door jambs. Obstacles
-are shape sets, for example `pp.Spheres([[3.0, 3.0]], [1.0])` for a pillar of
-radius 1 m.
+The room spans \([0, L_a]\) along every axis, with the edge lengths \(L_a\)
+given by `room`; `env.dim` is the number of dimensions d and `env.size` holds
+the edge lengths. In 2D, doors are `Opening` instances on the faces `"x-"`,
+`"x+"`, `"y-"` and `"y+"`; the walls are closed everywhere else, and the door
+edges act as door jambs. Obstacles are shape sets, for example
+`pp.Spheres([[3.0, 3.0]], [1.0])` for a pillar of radius 1 m.
 
 A pedestrian has left the room once its centre is outside the room by more
 than its radius. It is then switched off with the alive mask, and its exit
@@ -77,24 +81,79 @@ All pedestrians walk with the desired speed `params.desired_speed`.
 
 | `action` | Action per agent | Desired velocity |
 |---|---|---|
-| `"discrete"` | an integer in `[0, n_directions)` | \(v_0\) times direction k, at \(90° + 360° k / n\) |
-| `"continuous"` | a 2D vector \(\mathbf a\) | \(v_0\, \mathbf a / \max(1, \lVert\mathbf a\rVert)\) |
+| `"discrete"` | an integer in `[0, n_directions)` | \(v_0\) times direction k of `env.directions` |
+| `"continuous"` | a d-dimensional vector \(\mathbf a\) | \(v_0\, \mathbf a / \max(1, \lVert\mathbf a\rVert)\) |
 
-With the default eight directions, the order is up, up-left, left, down-left,
-down, down-right, right and up-right, as in Zhang, Chai & Lykotrafitis (2021);
-`env.directions` lists them.
+In 2D, direction k points at \(90° + 360° k / n\). With the default eight
+directions, the order is up, up-left, left, down-left, down, down-right, right
+and up-right, as in Zhang, Chai & Lykotrafitis (2021). The directions of a 3D
+room are listed [below](#three-dimensional-rooms).
 
 ### Observations and rewards
 
 Each agent observes its position, scaled to \([-0.5, 0.5]\) inside the room,
-and its velocity: `obs` has shape `(n_agents, 4)`, the state used by Zhang,
-Chai & Lykotrafitis (2021).
+and its velocity: `obs` has shape `(n_agents, 2 d)`. In 2D these are the four
+numbers of the state used by Zhang, Chai & Lykotrafitis (2021).
 
 An agent receives `params.step_penalty` (default -0.1) for every control step
 in the room, `params.exit_reward` (default 0) for the step in which it leaves,
 and nothing afterwards. `terminated` is true once an agent has left;
 `truncated` is true when the episode reaches `params.max_steps` with the agent
 still inside.
+
+### Three-dimensional rooms
+
+A `room` with three edge lengths gives a 3D room. Everything above carries
+over, with one more coordinate: positions, velocities and continuous actions
+have three components, and `obs` has shape `(n_agents, 6)`.
+
+```python
+env = envs.Evacuation(
+    room=(10.0, 10.0, 4.0),
+    exits=[
+        pp.Opening("y+", ((4.5, 5.5), (0.0, 2.0))),  # a door 1 m wide and 2 m high
+        pp.Opening("z+", ((4.0, 6.0), (4.0, 6.0))),  # a 2 m x 2 m hatch in the ceiling
+    ],
+    n_agents=40,
+)
+```
+
+!!! note "No gravity"
+    In 3D the pedestrians are spheres that move freely in all three
+    directions. This describes swimmers and other self-propelled particles
+    that leave a chamber. It does not describe people walking on a
+    floor: for those, use the 2D room. Buildings with several storeys are on
+    the [roadmap](roadmap.md).
+
+**Doors.** The faces `"z-"` (floor) and `"z+"` (ceiling) are available in
+addition to the four side walls. The span of an `Opening` is one
+`(start, end)` pair for each of the two other axes, in increasing axis order:
+`(x, y)` for a z face, `(x, z)` for a y face and `(y, z)` for an x face. A
+face can have one door.
+
+**Discrete actions.** The directions point from the centre of a cube to its
+faces, edges and corners:
+
+| `n_directions` | Directions |
+|---|---|
+| 6 | the 6 faces: ±x, ±y, ±z |
+| 18 | the faces and the 12 edges |
+| 26 (default) | the faces, the edges and the 8 corners |
+
+`env.directions` lists them in this order: first the directions in the xy
+plane, in the order of the 2D room (eight of them, or four for
+`n_directions=6`); then +z, followed by the directions tilted towards +z; then
+-z, followed by the directions tilted towards -z. An agent that uses only the
+first eight actions of the default set therefore moves as in the 2D room.
+
+**Crowd.** With `"random"`, the directions are uniformly distributed on the
+sphere. With `"nearest_exit"`, pedestrians head for a point 1 m beyond the
+centre of the nearest door or hatch.
+
+**Consistency with 2D.** Pedestrians in the mid-plane of a 3D room whose doors
+span the full height, with the floor and the ceiling beyond the range of the
+wall force, follow the same trajectories as in the 2D room
+([Validation](validation.md#crowd-dynamics)).
 
 ### Time steps
 

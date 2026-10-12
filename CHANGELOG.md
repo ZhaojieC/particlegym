@@ -16,6 +16,11 @@ All notable changes to this project are documented here. The format follows
   policies for pedestrians that are not agents
   ([#3](https://github.com/ZhaojieC/particlegym/issues/3)).
 - Example: room evacuation with agents that walk to the nearest door.
+- Three-dimensional rooms in `Evacuation`: a `room` with three edge lengths
+  gives a 3D chamber in which pedestrians move freely in all directions
+  (no gravity), with rectangular doors in the walls, the floor and the
+  ceiling, and 6, 18 or 26 discrete directions. The 2D room is unchanged.
+- Example: evacuation of a 3D chamber through a door and a ceiling hatch.
 
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):
@@ -36,5 +41,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- `Evacuation` has the attributes `dim` and `size` instead of `width` and
+  `height`, and `n_directions` defaults to 8 in 2D and 26 in 3D.
+- The distance to 3D plates is computed edge by edge, which makes forces from
+  3D walls about 10 times faster in single precision on CPU (JAX 0.11);
+  distances are unchanged and forces agree to round-off.
 - Version 1.0 focuses on pedestrian evacuation (design decision D9); the
   roadmap is reordered accordingly.

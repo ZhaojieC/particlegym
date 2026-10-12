@@ -28,7 +28,7 @@ pedestrian evacuation. It is built around three goals:
 
 | Component | Available |
 |---|---|
-| Environments (preview) | functional `Evacuation` room environment: `reset`/`step` with `jit` and `vmap`, discrete or continuous desired directions, crowd policies ([docs](docs/environments.md)) |
+| Environments (preview) | functional `Evacuation` room environment in 2D and 3D: `reset`/`step` with `jit` and `vmap`, discrete or continuous desired directions, crowd policies ([docs](docs/environments.md)) |
 | Domain | 2D or 3D box, periodic or open along each axis |
 | Neighbour search | brute force; cell list with overflow detection |
 | Pair interactions | harmonic, WCA, social force (Helbing et al. 2000), tangential friction |

@@ -9,6 +9,7 @@ request that used AI tools.
 |---|---|---|---|
 | 2026-10-10 | Claude Code (Anthropic) | Initial project scaffold, physics core, test suite, documentation drafts, examples and benchmark script | Pending: the maintainers review every module before v0.1.0. The physics is checked by the automated validation tests in [Validation](validation.md). |
 | 2026-10-11 | Claude Code (Anthropic) | Evacuation environment (`particlegym.envs`), its tests, the Environments page and an example ([#3](https://github.com/ZhaojieC/particlegym/issues/3)) | Pending review of the pull request by the maintainer. |
+| 2026-10-12 | Claude Code (Anthropic) | 3D rooms in the evacuation environment, their tests, documentation and an example; faster distance to 3D plates | Pending review by the maintainer. Checked by tests that compare the 3D room with the 2D room and the new plate distance with the previous one. |
 
 ## How to write an entry
 
