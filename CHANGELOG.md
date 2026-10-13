@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-13
+
+The first release. It contains what the roadmap planned for the versions
+0.1 and 0.2; a version 0.1 was not released.
+
 ### Added
 
 - Functional room-evacuation environment `particlegym.envs.Evacuation`:

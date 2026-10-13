@@ -4,7 +4,7 @@
 reinforcement learning.**
 
 !!! warning "Pre-alpha"
-    Version 0.1.0.dev0 provides the physics core with its validation tests,
+    Version 0.2.0 provides the physics core with its validation tests,
     a room-evacuation environment, six experimental environments, Gymnasium
     and PettingZoo wrappers and two learning baselines. Interfaces may
     change; see the [roadmap](roadmap.md).

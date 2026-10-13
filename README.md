@@ -66,7 +66,7 @@ trained with the PPO baseline of the library, five seeds at once in 27 to
 cells follow simple scripted rules. [Learning](docs/learning.md) has the
 numbers, also for the tasks that PPO does not solve.
 
-> **Status: pre-alpha (v0.1.0.dev0).** The physics core, its validation
+> **Status: pre-alpha (v0.2.0).** The physics core, its validation
 > tests, a room-evacuation environment, six
 > [experimental environments](docs/experimental.md), Gymnasium and PettingZoo
 > wrappers and two [learning baselines](docs/learning.md) are in place. APIs
