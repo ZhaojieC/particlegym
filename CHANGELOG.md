@@ -28,6 +28,24 @@ All notable changes to this project are documented here. The format follows
 - Gallery: scripts in `examples/gallery` that make the animations shown in
   the README and on the new gallery page of the documentation.
 - Workflow that publishes the documentation with GitHub Pages.
+- Physics capabilities for more kinds of environments, each with validation
+  tests (see `docs/validation.md`):
+  - external forces (`Gravity`, `KineticFriction`) and prescribed flow fields
+    (`UniformFlow`, `ShearFlow`, `TaylorGreen`);
+  - shapes that move or are switched off during a simulation
+    (`Walls(active=..., velocity=...)`, shape sets built inside compiled code);
+  - contacts with a coefficient of restitution (`NormalDamping`,
+    `Walls(damping=...)`, `damping_for_restitution`);
+  - active particles in 2D (`particlegym.physics.active`): rotational
+    diffusion, steering, alignment, polar order;
+  - bonded terms (`Bonds`, `Angles`, `AreaConstraint`);
+  - dissipative particle dynamics (`PairThermostat`) with momentum-conserving
+    pair noise, and the virial `pressure`;
+  - scalar fields on a grid (`Grid`): deposit, sampling, gradient, diffusion;
+  - species-dependent interactions (`Mixture`) and the contact force of the
+    cell-migration model (`ContactExponential`).
+- Benchmark `benchmarks/dpd_fluid.py`: temperature and pressure of the DPD
+  fluid, with its reference output.
 
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):

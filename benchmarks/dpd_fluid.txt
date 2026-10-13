@@ -1,0 +1,16 @@
+# Kinetic temperature, density 3, side 4 (192 particles), 16 runs,
+# 500 steps discarded, then 40 time units
+# dt  mean  standard_error  lowest  highest
+0.01  1.0011  0.0025  0.9811  1.0222
+0.02  1.0097  0.0029  0.9918  1.0280
+0.04  1.0259  0.0026  1.0085  1.0483
+
+# Pressure, dt = 0.01, 1000 steps discarded; the error of alpha is the
+# standard error of 20 block means
+# density  side  particles  steps  temperature  pressure  alpha  error_of_alpha
+3  4  192  8000  1.0184  23.706  0.0918  4.3e-05
+3  6  648  4000  1.0042  23.650  0.0917  2.9e-05
+4  4  256  8000  1.0001  42.315  0.0958  3.1e-05
+5  4  320  8000  1.0046  66.283  0.0980  1.6e-05
+6  4  384  8000  1.0052  95.508  0.0994  1.3e-05
+8  4  512  6000  1.0009  169.669  0.1010  9.4e-06

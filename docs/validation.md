@@ -5,7 +5,8 @@ run in double precision on every pull request (`pytest`); statistical tests
 are marked `slow` and use fixed random seeds. This page lists what is tested,
 the acceptance criterion, and the result of the reference run.
 
-Reference results: version 0.1.0.dev0, CPU, float64.
+Reference results: version 0.1.0.dev0 (the section "More physics": the
+development version of 0.2), CPU, float64.
 
 ## Physics core
 
@@ -57,6 +58,54 @@ centre. With 100 pedestrians in a 10 m room and \(v_0 = 1.5\) m/s
 (`examples/room_evacuation_2d.py`), the mean flow is 1.68 persons/(m s),
 inside the experimental range. These are sanity checks, not a calibration.
 
+## More physics (version 0.2)
+
+| Property | Test | Criterion | Reference result |
+|---|---|---|---|
+| Free fall | `test_external_flow.py::test_free_fall_follows_the_parabola` | \(\mathbf x(t) = \mathbf x_0 + \mathbf v_0 t + \tfrac12\mathbf g t^2\) for two masses; energy conserved | equal to 1e-12 |
+| Bouncing ball | `test_bouncing_ball_conserves_energy` (gravity, harmonic floor, 8 s) | energy within 1e-4; the ball returns to its starting height | passes |
+| Terminal velocity in a flow | `test_terminal_velocity_in_a_flow` | \(\mathbf v = \mathbf u + \mathbf g/\gamma\) | within 1e-5 |
+| Kinetic friction | `test_kinetic_friction_stops_a_sliding_body` | constant deceleration \(a\); stopping distance \(v^2/2a\) | distance within 0.5 % |
+| Flow fields | `test_flow_fields_are_consistent` | Taylor-Green flow is divergence-free; vorticity and stream function agree with derivatives of the velocity | equal to 1e-12 |
+| Tracer in the vortex flow | `test_tracer_follows_the_streamlines_of_the_vortex_flow` | the stream function stays constant along the path for 40 time units | within 5e-3 (values up to 0.5) |
+| Coefficient of restitution | `test_contacts.py::test_two_body_collision_has_the_set_restitution` (masses 1 and 3; \(e\) = 0.9, 0.6, 0.3) | measured \(e\) and energy loss \(\tfrac12 m^* v^2 (1 - e^2)\) within 0.3 %; momentum conserved | passes; the error is of first order in the time step |
+| Damped wall | `test_bounce_off_a_damped_wall` | normal velocity times \(-e\), tangential velocity unchanged | within 1e-3 |
+| Moving wall and moving disc | `test_bounce_off_a_moving_wall`, `test_bounce_off_a_moving_disc` | \(v' = 2V - v\) along the normal | within 1e-3 |
+| Shapes built inside compiled code | `test_shapes_built_from_traced_arrays_match_fixed_shapes` | forces equal those of fixed geometry | equal to 1e-12 |
+| Removable shapes, relative wall velocity | `test_inactive_shapes_do_not_act`, `test_wall_friction_uses_the_velocity_relative_to_the_shape` | no force from inactive shapes; no dissipative force on a particle that moves with the wall | exact |
+| Active Brownian particle | `test_active.py::test_active_brownian_particle_has_the_analytic_mean_square_displacement` (4000 particles) | mean-square displacement \(2v_0^2D_r^{-2}(D_rt - 1 + e^{-D_rt})\) within 6 % at \(D_r t\) = 0.1, 1, 10; heading correlation \(e^{-D_r t}\) | passes |
+| Steering | `test_steering_relaxes_the_heading_to_the_target` | solution of \(\dot\theta = \beta\sin(\theta^* - \theta)\) | within 0.2 % |
+| Alignment | `test_alignment_orders_the_headings_at_low_noise_only` (400 particles, density 4) | polar order above 0.9 at weak noise, below 0.15 at full noise | passes |
+| Bonded forces | `test_bonded.py::test_forces_are_the_gradient_of_the_energy_and_sum_to_zero` (ring across periodic boundaries) | forces equal minus the gradient; total force zero | equal to 1e-10 |
+| Ring with area constraint | `test_ring_conserves_energy_and_relaxes_to_its_rest_shape` | energy conserved within 1e-3; with friction the ring relaxes to the regular polygon with the rest area, the rest bond length and the bending energy \(n k (1 - \cos(2\pi/n))\) | area within 1e-5, bonds within 1e-4, energy within 1e-6 |
+| Ideal chain | `test_ideal_chain_has_the_gaussian_end_to_end_distance` (400 chains of 20 beads) | \(\langle R^2\rangle = (n-1)\,d\,k_BT/k\) within 5 %; temperature within 1 % | passes |
+| DPD pair noise | `test_dpd.py::test_pair_noise_is_symmetric_with_unit_variance` | symmetric, zero mean, unit variance, no correlation between pairs or steps, same for dense and listed evaluation | passes |
+| DPD with a cell list | `test_thermostat_needs_a_key_and_gives_the_same_forces_with_a_cell_list` | forces including the random forces equal brute force; total force zero | equal to 1e-9 |
+| DPD momentum and temperature | `test_dpd_fluid_keeps_momentum_and_temperature` (\(\rho = 3\), \(a = 25\), \(\gamma = 4.5\), \(\Delta t = 0.01\), 8 runs) | momentum stays zero; kinetic temperature within 2 % of \(k_BT\) | passes. With 16 runs of 40 time units (`benchmarks/dpd_fluid.txt`) the temperature is 1.001 ± 0.003 at \(\Delta t\) = 0.01, 1.010 ± 0.003 at 0.02 and 1.026 ± 0.003 at 0.04: the explicit thermostat heats the fluid as the time step grows |
+| DPD equation of state | `test_excess_pressure_is_nearly_quadratic_in_the_density` (slow) | \((p - \rho k_BT)/(a\rho^2)\) between 0.090 and 0.094 at \(\rho = 3\), between 0.096 and 0.100 at \(\rho = 5\), below the value \(\pi/30\) for uncorrelated particles | see the table below |
+| Species | `test_mixture_scales_the_interaction_of_unlike_particles` | unlike pairs scaled by the matrix entry; forces equal minus the gradient; cell list equals brute force | exact |
+| Field interpolation and deposit | `test_fields.py::test_linear_field_is_sampled_exactly`, `test_deposit_conserves_the_amount_and_is_the_adjoint_of_sampling` | linear fields and their gradients are exact; deposit conserves the amount | equal to 1e-12 |
+| Diffusion | `test_point_source_spreads_with_the_diffusion_law` | amount and centre conserved; variance grows by \(2Dt\) per axis; Gaussian profile | variance within 1e-6; profile within 2 % of its maximum |
+| Field boundaries, decay, self-interaction | `test_closed_and_periodic_boundaries_and_decay`, `test_particle_feels_no_gradient_from_its_own_deposit` | closed and periodic boundaries; steady state source/decay; zero gradient from the own deposit | 1e-6; 1e-12 |
+
+Pressure of the DPD fluid (\(a = 25\), \(\gamma = 4.5\), \(k_BT = 1\), cut-off 1,
+\(\Delta t = 0.01\), periodic cube of side 4, 4000 to 8000 steps after 1000
+discarded; from `benchmarks/dpd_fluid.txt`, the output of
+`benchmarks/dpd_fluid.py`):
+
+| \(\rho\) | particles | pressure | \((p - \rho k_BT)/(a\rho^2)\) |
+|---|---|---|---|
+| 3 | 192 | 23.71 | 0.0918 |
+| 3 (side 6) | 648 | 23.65 | 0.0917 |
+| 4 | 256 | 42.32 | 0.0958 |
+| 5 | 320 | 66.28 | 0.0980 |
+| 6 | 384 | 95.51 | 0.0994 |
+| 8 | 512 | 169.67 | 0.1010 |
+
+The statistical error of the coefficient is below 1e-4. It rises with the
+density towards the value \(\pi/30 = 0.1047\) of uncorrelated particles. A comparison with the coefficient reported by Groot
+& Warren (1997) is open: the paper was not available when this was written.
+
 ## Pictures
 
 | Property | Test | Criterion | Reference result |
@@ -71,13 +120,13 @@ inside the experimental range. These are sanity checks, not a calibration.
   experimental data, with calibrated parameters.
 - The "faster-is-slower" effect of Helbing et al. (2000).
 - Reproduction of the evacuation results of Zhang, Chai & Lykotrafitis (2021).
-- Rotational diffusion of active Brownian particles, once orientations are
-  added.
+- Velocity profile and viscosity of the DPD fluid in a channel flow.
+- The DPD equation of state against the published coefficient.
 
 ## Running the tests
 
 ```bash
 pip install -e ".[test]"
-pytest              # all tests, about 1.5 minutes on a laptop CPU
+pytest              # all tests, about 5 minutes on 12 CPU cores
 pytest -m "not slow"  # skip the long statistical tests
 ```

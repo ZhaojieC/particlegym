@@ -1,10 +1,15 @@
-"""Static geometry described by distance functions.
+"""Geometry described by distance functions.
 
 A shape set holds M shapes of one kind and returns the distances from
 particle centres to the shape surfaces. :class:`Walls` turns these distances
 into forces with any :class:`~particlegym.physics.potentials.PairPotential`,
 evaluated with ``sigma`` equal to the particle radius, so wall forces are again
 obtained by automatic differentiation.
+
+Shapes can move. A shape set that is built inside a compiled function from
+traced arrays (a paddle at the position stored in the environment state, for
+example) is used as it is, without the checks that are made for fixed
+geometry; build a new :class:`Walls` and force field from it at every step.
 
 Internally, points are stored coordinate-first, shape (d, N), and distances as
 (M, N), so that the compiler vectorises over particles.
@@ -25,6 +30,11 @@ import numpy as np
 from particlegym.physics.potentials import PairPotential
 
 _AXES = "xyz"
+
+
+def _traced(*arrays) -> bool:
+    """True if a value is known only when the compiled function runs."""
+    return any(isinstance(a, jax.core.Tracer) for a in arrays)
 
 
 def _norm(x: jax.Array) -> jax.Array:
@@ -69,6 +79,8 @@ class Plates(ShapeSet):
     edges: np.ndarray
 
     def __post_init__(self) -> None:
+        if _traced(self.origins, self.edges):
+            return
         origins = np.asarray(self.origins, dtype=float)
         edges = np.asarray(self.edges, dtype=float)
         if origins.ndim != 2 or origins.shape[1] not in (2, 3):
@@ -107,7 +119,7 @@ class Plates(ShapeSet):
         return self.origins.shape[1]
 
     def distance_t(self, points):
-        origins = jnp.asarray(self.origins.T[:, :, None], dtype=points.dtype)  # (d, M, 1)
+        origins = jnp.asarray(self.origins, dtype=points.dtype).T[:, :, None]  # (d, M, 1)
         rel = points[:, None, :] - origins  # (d, M, N)
         # The edges are orthogonal, so the closest point of the plate has the
         # coordinate s along each edge, clipped to the plate. The edges are
@@ -116,7 +128,7 @@ class Plates(ShapeSet):
         # precision on CPU (JAX 0.11).
         offset = jnp.zeros_like(rel)
         for k in range(self.dim - 1):
-            edge = jnp.asarray(self.edges[:, k].T[:, :, None], dtype=points.dtype)  # (d, M, 1)
+            edge = jnp.asarray(self.edges[:, k], dtype=points.dtype).T[:, :, None]  # (d, M, 1)
             s = jnp.sum(rel * edge, axis=0) / jnp.sum(edge * edge, axis=0)  # (M, N)
             offset = offset + jnp.clip(s, 0.0, 1.0) * edge
         return _norm(rel - offset)
@@ -135,6 +147,10 @@ class Spheres(ShapeSet):
     radii: np.ndarray
 
     def __post_init__(self) -> None:
+        if _traced(self.centers, self.radii):
+            radii = jnp.broadcast_to(jnp.asarray(self.radii), self.centers.shape[:1])
+            object.__setattr__(self, "radii", radii)
+            return
         centers = np.asarray(self.centers, dtype=float)
         radii = np.broadcast_to(np.asarray(self.radii, dtype=float), centers.shape[:1])
         if centers.ndim != 2 or centers.shape[1] not in (2, 3):
@@ -149,8 +165,8 @@ class Spheres(ShapeSet):
         return self.centers.shape[1]
 
     def distance_t(self, points):
-        centers = jnp.asarray(self.centers.T[:, :, None], dtype=points.dtype)  # (d, M, 1)
-        radii = jnp.asarray(self.radii[:, None], dtype=points.dtype)
+        centers = jnp.asarray(self.centers, dtype=points.dtype).T[:, :, None]  # (d, M, 1)
+        radii = jnp.asarray(self.radii, dtype=points.dtype)[:, None]
         return _norm(points[:, None, :] - centers) - radii
 
 
@@ -167,6 +183,8 @@ class Boxes(ShapeSet):
     hi: np.ndarray
 
     def __post_init__(self) -> None:
+        if _traced(self.lo, self.hi):
+            return
         lo = np.asarray(self.lo, dtype=float)
         hi = np.asarray(self.hi, dtype=float)
         if lo.ndim != 2 or lo.shape[1] not in (2, 3) or hi.shape != lo.shape:
@@ -181,8 +199,10 @@ class Boxes(ShapeSet):
         return self.lo.shape[1]
 
     def distance_t(self, points):
-        center = jnp.asarray(((self.lo + self.hi) / 2).T[:, :, None], dtype=points.dtype)
-        half = jnp.asarray(((self.hi - self.lo) / 2).T[:, :, None], dtype=points.dtype)
+        lo = jnp.asarray(self.lo, dtype=points.dtype)
+        hi = jnp.asarray(self.hi, dtype=points.dtype)
+        center = ((lo + hi) / 2).T[:, :, None]
+        half = ((hi - lo) / 2).T[:, :, None]
         q = jnp.abs(points[:, None, :] - center) - half  # (d, M, N)
         outside = _norm(jnp.maximum(q, 0.0))
         inside = jnp.minimum(jnp.max(q, axis=0), 0.0)
@@ -300,11 +320,25 @@ class Walls:
         potential: Contact potential between particles and the shapes.
         friction: Tangential wall friction coefficient kappa of Helbing, Farkas
             & Vicsek (2000), ``f = -kappa g(r_i - d) v_t``; 0 disables it.
+        active: (M,) booleans; shapes with a false entry do not act on the
+            particles (a brick that has been removed, a door that is open).
+            All shapes act if omitted.
+        velocity: (M, d) velocities of the shapes. The friction and damping
+            forces use the particle velocity relative to the shape. Shapes
+            are at rest if omitted.
+        damping: Damping coefficient of the velocity normal to the surface,
+            ``f = -damping (v . n) n`` during contact; with a
+            :class:`~particlegym.physics.potentials.Harmonic` potential it
+            sets the coefficient of restitution of a bounce
+            (:func:`~particlegym.physics.potentials.restitution_coefficient`).
     """
 
     shapes: ShapeSet
     potential: PairPotential
     friction: float = 0.0
+    active: jax.Array | None = None
+    velocity: jax.Array | None = None
+    damping: float = 0.0
 
     def energy(self, pos: jax.Array, radius: jax.Array, alive: jax.Array) -> jax.Array:
         """Total wall energy of the alive particles."""
@@ -312,6 +346,8 @@ class Walls:
         sigma = radius[None, :]
         reach = self.potential.cutoff(sigma)
         near = alive[None, :] & (dist < reach)
+        if self.active is not None:
+            near = near & jnp.asarray(self.active)[:, None]
         # Evaluate far pairs at the cut-off, where the potential is zero and
         # smooth, so that their discarded gradients stay finite.
         far = jnp.where(reach > 0, reach, 1.0)
@@ -321,7 +357,7 @@ class Walls:
     def dissipative_force(
         self, pos: jax.Array, vel: jax.Array, radius: jax.Array, alive: jax.Array
     ) -> jax.Array:
-        """Tangential friction force on particles touching the shapes."""
+        """Friction and damping forces on particles touching the shapes."""
         points = pos.T
         d = points.shape[0]
         # The surface normal is the gradient of the distance. Each distance
@@ -330,7 +366,15 @@ class Walls:
         dist, distance_jvp = jax.linearize(self.shapes.distance_t, points)
         directions = jnp.eye(d, dtype=points.dtype)[:, :, None] * jnp.ones_like(points)
         normal = jax.vmap(distance_jvp)(directions)  # (d, M, N)
-        overlap = jnp.where(alive[None, :], jnp.maximum(radius[None, :] - dist, 0.0), 0.0)
+        touching = alive[None, :]
+        if self.active is not None:
+            touching = touching & jnp.asarray(self.active)[:, None]
+        overlap = jnp.where(touching, jnp.maximum(radius[None, :] - dist, 0.0), 0.0)
         v = vel.T[:, None, :]
-        v_tangential = v - jnp.sum(v * normal, axis=0) * normal
-        return -self.friction * jnp.sum(overlap * v_tangential, axis=1).T
+        if self.velocity is not None:
+            v = v - jnp.asarray(self.velocity, dtype=vel.dtype).T[:, :, None]
+        v_normal = jnp.sum(v * normal, axis=0) * normal
+        force = -self.friction * jnp.sum(overlap * (v - v_normal), axis=1)
+        if self.damping:
+            force = force - self.damping * jnp.sum(jnp.where(overlap > 0, v_normal, 0.0), axis=1)
+        return force.T

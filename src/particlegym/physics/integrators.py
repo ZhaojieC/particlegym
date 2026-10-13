@@ -15,30 +15,45 @@ from particlegym.physics.forces import ForceField, ForceInfo
 from particlegym.physics.state import ParticleState
 
 
-def init_forces(state: ParticleState, force_field: ForceField) -> tuple[ParticleState, ForceInfo]:
+def _forces(state: ParticleState, force_field: ForceField, pos, vel, key):
+    """Forces of ``force_field`` at ``pos`` and ``vel`` for the particles of ``state``."""
+    return force_field.forces(
+        pos, vel, state.radius, state.alive, mass=state.mass, kind=state.kind, key=key
+    )
+
+
+def init_forces(
+    state: ParticleState, force_field: ForceField, key: jax.Array | None = None
+) -> tuple[ParticleState, ForceInfo]:
     """Evaluate and store the forces at the current positions.
 
     Call this once before the first step, and again whenever positions are
-    changed outside an integrator.
+    changed outside an integrator. The ``key`` is needed only if the force
+    field has random forces.
     """
-    force, info = force_field.forces(state.pos, state.vel, state.radius, state.alive)
+    force, info = _forces(state, force_field, state.pos, state.vel, key)
     return state._replace(force=force), info
 
 
 def velocity_verlet(
-    state: ParticleState, force_field: ForceField, dt: float
+    state: ParticleState, force_field: ForceField, dt: float, *, key: jax.Array | None = None
 ) -> tuple[ParticleState, ForceInfo]:
     """One velocity Verlet step.
 
     With conservative forces only, this is a symplectic, time-reversible
     integrator of Newton's equations: the total energy is conserved up to
     bounded fluctuations of order ``dt^2``.
+
+    Velocity-dependent forces are evaluated with the velocity at the half
+    step. With a :class:`~particlegym.physics.PairThermostat` this is the
+    usual integrator of dissipative particle dynamics; pass a new ``key`` at
+    every step for its random forces.
     """
     alive = state.alive[:, None]
     inv_mass = 1.0 / state.mass[:, None]
     vel = state.vel + 0.5 * dt * state.force * inv_mass
     pos = jnp.where(alive, force_field.box.wrap(state.pos + dt * vel), state.pos)
-    force, info = force_field.forces(pos, vel, state.radius, state.alive)
+    force, info = _forces(state, force_field, pos, vel, key)
     vel = jnp.where(alive, vel + 0.5 * dt * force * inv_mass, 0.0)
     return state._replace(pos=pos, vel=vel, force=force), info
 
@@ -98,6 +113,9 @@ def langevin_baoab(
         vel = vel + c2 * jnp.sqrt(kT / mass) * noise
     pos = pos + 0.5 * dt * vel  # A
     pos = jnp.where(alive, force_field.box.wrap(pos), state.pos)
-    force, info = force_field.forces(pos, vel, state.radius, state.alive)
+    force_key = None
+    if key is not None and force_field.stochastic:
+        force_key = jax.random.fold_in(key, 1)
+    force, info = _forces(state, force_field, pos, vel, force_key)
     vel = jnp.where(alive, vel + 0.5 * dt * force / mass, 0.0)  # B
     return state._replace(pos=pos, vel=vel, force=force), info

@@ -11,6 +11,7 @@ request that used AI tools.
 | 2026-10-11 | Claude Code (Anthropic) | Evacuation environment (`particlegym.envs`), its tests, the Environments page and an example ([#3](https://github.com/ZhaojieC/particlegym/issues/3)) | Pending review of the pull request by the maintainer. |
 | 2026-10-12 | Claude Code (Anthropic) | 3D rooms in the evacuation environment, their tests, documentation and an example; faster distance to 3D plates | Pending review by the maintainer. Checked by tests that compare the 3D room with the 2D room and the new plate distance with the previous one. |
 | 2026-10-12 | Claude Code (Anthropic) | Drawing module `particlegym.viz`, gallery scripts and animations, README front page, gallery page, documentation workflow | Pending review by the maintainer. Tests check that discs, shapes and pedestrians are drawn at their positions and with their areas; every animation is made by a script from a simulation with a fixed seed. |
+| 2026-10-12 | Claude Code (Anthropic) | Physics capabilities: external forces, flow fields, moving and removable shapes, contact damping, active particles, bonded terms, the DPD thermostat, scalar fields and species; their tests, documentation and a DPD benchmark | Pending review by the maintainer. Every capability is tested against an analytical result (see [Validation](validation.md)). The DPD equation of state has not yet been compared with the published coefficient. |
 
 ## How to write an entry
 

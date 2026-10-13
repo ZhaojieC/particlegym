@@ -106,6 +106,129 @@ with \(\mathbf n = \nabla d\) the surface normal. `box_walls` builds the walls
 of a room from plates and leaves real openings (doors), whose edges act as
 door jambs.
 
+## More pair terms
+
+**Contact exponential** (`ContactExponential(B, E)`): the force
+\(B\,e^{(\sigma - r)/E}\) acts only for \(r < \sigma\). Zhang, Chai, Sun &
+Lykotrafitis (2020) use it for the contact inhibition of locomotion between
+cells.
+
+**Species** (`Mixture(potential, strength)`): the energy of a pair of species
+\(a\) and \(b\) (the `kind` labels of the particles) is
+\(s_{ab}\,\phi(r, \sigma)\) with a symmetric matrix \(s\).
+
+**Normal damping** (`NormalDamping(gamma)`) acts on the approach velocity of
+touching particles,
+\(\mathbf F^{\mathrm d}_{i \leftarrow j} = \gamma\,(\Delta\mathbf v\cdot\hat{\mathbf r}_{ij})\,\hat{\mathbf r}_{ij}\)
+for \(r < \sigma\). With the harmonic potential of stiffness \(k\) this is the
+linear spring-dashpot contact, which has a constant coefficient of restitution
+
+\[
+e = \exp\!\left(-\frac{\pi\zeta}{\sqrt{1 - \zeta^2}}\right), \qquad
+\zeta = \frac{\gamma}{2\sqrt{k\,m^*}}, \qquad m^* = \frac{m_i m_j}{m_i + m_j}.
+\]
+
+`damping_for_restitution(e, k, m*)` returns the \(\gamma\) for a wanted \(e\).
+The same damping is available for walls (`Walls(damping=...)`, with \(m^*\) the
+particle mass).
+
+## Moving and removable bodies
+
+Shapes may be built from the arrays of the environment state inside the
+compiled step, for example a paddle (`Spheres`) at its current position or a
+piston (`Plates`). Build the `Walls` and the `ForceField` again at every step;
+this costs nothing at run time. `Walls(active=mask)` switches single shapes
+off (bricks that have been removed, doors that have closed), and
+`Walls(velocity=...)` makes the friction and damping forces use the velocity
+relative to the moving shape. A particle that is hit by a wall moving with
+velocity \(V\) leaves with \(v' = 2V - v\) along the normal.
+
+## External forces and flow fields
+
+`ForceField(external=[...])` adds forces on single particles: `Gravity(g)`
+with \(\mathbf F = m\mathbf g\), and `KineticFriction(a, v0)`, a friction of
+constant strength against the motion, \(\mathbf F = -m a\,\mathbf v /
+\sqrt{v^2 + v_0^2}\), for bodies that slide or roll on a table.
+
+A surrounding fluid with a prescribed velocity field \(\mathbf u(\mathbf x)\)
+enters through the drift velocity of the BAOAB integrator: the friction term
+\(-m\gamma(\mathbf v - \mathbf u)\) is the Stokes drag. Available fields:
+`UniformFlow`, `ShearFlow` and `TaylorGreen`, the array of counter-rotating
+vortices \(\mathbf u = \tfrac{u_0}{2}(-\cos kx \sin ky,\ \sin kx \cos ky)\).
+The particles do not act back on the flow.
+
+## Active particles
+
+In 2D a self-propelled particle has a heading angle \(\theta\), kept by the
+environment next to the particle state. `particlegym.physics.active` provides
+
+\[
+d\theta = \omega\,dt + \sqrt{2 D_r}\,dW
+\]
+
+(`rotate`), the steering rate \(\omega = \beta\sin(\theta^* - \theta)\) towards
+a target direction (`steering_rate`), the mean heading of the neighbours
+within a radius, which is the alignment rule of Vicsek et al. (1995)
+(`mean_heading`), and the polar order parameter (`polar_order`). The
+self-propulsion velocity \(v_0(\cos\theta, \sin\theta)\) is passed to the
+integrator as the drift velocity. Without interactions the mean-square
+displacement is \(2 v_0^2 D_r^{-2}(D_r t - 1 + e^{-D_r t})\).
+
+## Bonded terms
+
+`ForceField(bonded=[...])` adds energies of listed particles:
+
+| Term | Energy |
+|---|---|
+| `Bonds(pairs, k, r0)` | \(\tfrac{k}{2}(r - r_0)^2\) |
+| `Angles(triplets, k, theta0)` | \(k\,[1 - \cos(\theta - \theta_0)]\), about \(\tfrac{k}{2}(\theta - \theta_0)^2\) near the rest angle |
+| `AreaConstraint(rings, k, area0)` (2D) | \(\tfrac{k}{2}(A - A_0)^2\) for the polygon through the particles of a ring |
+
+In 2D the angle is signed. A ring of bonds with an area constraint is a simple
+vesicle or cell.
+
+## Dissipative particle dynamics
+
+`PairThermostat(gamma, kT, dt)` is the pairwise thermostat of dissipative
+particle dynamics (DPD). Every pair closer than \(\sigma\) feels
+
+\[
+\mathbf F^{\mathrm D}_{i \leftarrow j} = \gamma\,w^2\,(\Delta\mathbf v\cdot\hat{\mathbf r}_{ij})\,\hat{\mathbf r}_{ij},
+\qquad
+\mathbf F^{\mathrm R}_{i \leftarrow j} = \sqrt{\frac{2\gamma k_B T}{\Delta t}}\; w\,\theta_{ij}\,\hat{\mathbf r}_{ij},
+\qquad w = 1 - \frac{r}{\sigma},
+\]
+
+with \(\theta_{ij} = \theta_{ji}\) of zero mean and unit variance. Both forces
+act along the line of centres and are antisymmetric, so momentum is conserved
+locally and the fluid has hydrodynamic behaviour. With the conservative force
+`Harmonic(k=a)` between particles of radius 0.5, \(F = a(1 - r)\), this is the
+standard DPD fluid (Groot & Warren, 1997). The symmetric random numbers are
+computed from a hash of the two particle indices and the random key of the
+step; they are uniformly distributed and identical for the dense and the
+cell-list evaluation. Use `velocity_verlet(..., key=key)`, which evaluates
+the dissipative force with the half-step velocity.
+
+`pressure(state, force_field)` returns \((2K + W)/(dV)\) with the virial \(W\)
+of the conservative pair forces.
+
+## Scalar fields
+
+`Grid(lo, hi, shape)` holds a field with one value per cell, for example the
+concentration of a chemical. Particles add to it (`deposit`) and read it and
+its gradient at their positions (`sample`, `sample_gradient`); `diffuse`
+advances
+
+\[
+\partial_t C = D\nabla^2 C - \lambda C + S
+\]
+
+by one explicit step (forward in time, central in space), which is stable for
+\(\Delta t \le \left[2D\sum_k \Delta x_k^{-2}\right]^{-1}\). Boundaries are
+closed (no flux) or periodic. Deposit and sampling use the same linear
+weights, so a particle away from the boundaries feels no gradient from its own
+deposit.
+
 ## Integrators
 
 **Velocity Verlet** (`velocity_verlet`) integrates Newton's equations. With
@@ -124,7 +247,8 @@ another half drift and half kick (Leimkuhler & Matthews, 2013). The O step is
 with standard normal \(\boldsymbol\eta\). Because it is exact, the step is
 stable for any \(\gamma\Delta t\); for \(\gamma = 0\) BAOAB reduces to velocity
 Verlet. Velocity-dependent forces are evaluated with the velocities after the
-O step.
+O step; in velocity Verlet they are evaluated with the velocities at the half
+step.
 
 ## Units
 
@@ -151,9 +275,13 @@ With these stiffnesses, contacts need time steps of a few milliseconds
 
 ## Known limitations (v0.1)
 
-- No rotational degrees of freedom: orientations of active particles and
-  rotational diffusion are planned.
-- No hydrodynamic interactions (DPD is under consideration).
+- Orientations exist in 2D only, as a heading angle kept by the environment;
+  there are no torques between particles.
+- Hydrodynamic interactions exist only in the DPD fluid; prescribed flow
+  fields are not changed by the particles.
+- Explicit dissipative forces limit the time step: the sliding friction of
+  the social force model (see the environments page), contact damping and the
+  DPD thermostat.
 - Coincident particles (\(r = 0\)) exert no force on each other, because the
   direction is undefined.
 - Geometry is not periodic.
@@ -175,3 +303,15 @@ With these stiffnesses, contacts need time steps of a few milliseconds
 - Y. Zhang, Z. Chai and G. Lykotrafitis, Deep reinforcement learning with a
   particle dynamics environment applied to emergency evacuation of a room with
   obstacles, *Physica A* 571, 125845 (2021).
+- Y. Zhang, Z. Chai, Y. Sun and G. Lykotrafitis, A deep reinforcement learning
+  model based on deterministic policy gradient for collective neural crest
+  cell migration, arXiv:2007.03190 (2020).
+- T. Vicsek, A. Czirók, E. Ben-Jacob, I. Cohen and O. Shochet, Novel type of
+  phase transition in a system of self-driven particles, *Phys. Rev. Lett.*
+  75, 1226 (1995).
+- R. D. Groot and P. B. Warren, Dissipative particle dynamics: Bridging the
+  gap between atomistic and mesoscopic simulation, *J. Chem. Phys.* 107, 4423
+  (1997).
+- S. Colabrese, K. Gustavsson, A. Celani and L. Biferale, Flow navigation by
+  smart microswimmers via reinforcement learning, *Phys. Rev. Lett.* 118,
+  158004 (2017).
