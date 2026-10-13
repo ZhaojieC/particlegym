@@ -44,6 +44,10 @@ image = env.render(state)  # RGB picture, needs Pillow
 - An action sets what an agent *wants*; the motion follows from forces and an
   integrator ([design principle P1](design.md#design-principles)).
 
+Wrappers for the Gymnasium and PettingZoo interfaces, and learners that train
+on the functional interface, are described on the page
+[Learning](learning.md).
+
 ## Room evacuation
 
 `particlegym.envs.Evacuation` simulates pedestrians in a rectangular room with

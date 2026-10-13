@@ -61,6 +61,21 @@ All notable changes to this project are documented here. The format follows
 - Benchmark `benchmarks/baselines.py`: scripted and random policies in the
   experimental environments, with its reference output.
 
+- Wrappers `particlegym.wrappers`: `GymnasiumEnv` and `GymnasiumVectorEnv`
+  (batched with `jax.vmap`) for single-agent environments, with the registered
+  ids `particlegym/Evacuation2D-v0`, `BrickWall-v0`, `Billiards-v0`,
+  `Herding-v0` and `Microswimmer-v0`, and `PettingZooEnv` for the parallel
+  multi-agent interface. Optional dependencies: `pip install
+  "particlegym[gymnasium,pettingzoo]"`
+  ([#5](https://github.com/ZhaojieC/particlegym/issues/5)).
+- Baselines `particlegym.baselines`: PPO with a policy shared by all agents
+  (`ppo`) and tabular Q-learning (`q_learning`), in pure JAX; several seeds
+  train in one compiled program.
+- Examples `examples/learning`: Q-learning of the microswimmer task after
+  Colabrese et al. (2017), PPO on four tasks with scripted and random
+  baselines, learning curves, and animations of a policy before and after
+  training.
+- Documentation page "Learning".
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):
   - simulation box with per-axis periodicity;

@@ -66,6 +66,8 @@ a door, and the `examples/` directory contains complete scripts.
 - [Environments](environments.md): the interface and the evacuation
   environment; [experimental environments](experimental.md): games, herding,
   microswimmers and cell migration.
+- [Learning](learning.md): Gymnasium and PettingZoo wrappers, the PPO and
+  Q-learning baselines, and first results.
 - [Design](design.md): principles, architecture and design decisions.
 - [Physics models](physics.md): equations, parameters, units and references.
 - [Validation](validation.md): what is tested and the results.

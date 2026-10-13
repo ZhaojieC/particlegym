@@ -12,6 +12,7 @@ nav:
   - Gallery: gallery.md
   - Environments: environments.md
   - Experimental environments: experimental.md
+  - Learning: learning.md
   - Design: design.md
   - Physics models: physics.md
   - Validation: validation.md

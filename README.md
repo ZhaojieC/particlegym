@@ -130,6 +130,8 @@ other [examples](examples).
 |---|---|
 | Environments (preview) | functional `Evacuation` room environment in 2D and 3D: `reset`/`step` with `jit` and `vmap`, discrete or continuous desired directions, crowd policies ([docs](docs/environments.md)) |
 | Environments (experimental) | `CounterFlow`, `BrickWall` (state or pixel observations), `Billiards`, `Herding`, `Microswimmer`, `CellMigration`: tested mechanics and scripted policies, not yet compared with measurements ([docs](docs/experimental.md)) |
+| Wrappers | Gymnasium (single and vector environments, registered ids) and PettingZoo (parallel interface) ([docs](docs/learning.md)) |
+| Baselines | PPO with a shared policy and tabular Q-learning in pure JAX, several seeds in one compiled program ([docs](docs/learning.md)) |
 | Domain | 2D or 3D box, periodic or open along each axis |
 | Neighbour search | brute force; cell list with overflow detection |
 | Pair interactions | harmonic, WCA, social force (Helbing et al. 2000), tangential friction |

@@ -34,7 +34,9 @@ dependencies = ["jax>=0.4.30", "numpy>=1.26"]
 
 [project.optional-dependencies]
 viz = ["pillow>=10"]
-test = ["particlegym[viz]", "pytest>=8"]
+gymnasium = ["gymnasium>=1.0"]
+pettingzoo = ["pettingzoo>=1.24", "gymnasium>=1.0"]
+test = ["particlegym[viz,gymnasium,pettingzoo]", "pytest>=8"]
 docs = ["mkdocs-material>=9.5"]
 dev = ["particlegym[test,docs]", "ruff>=0.6", "pre-commit>=3"]
 

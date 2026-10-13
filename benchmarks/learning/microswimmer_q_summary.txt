@@ -1,0 +1,7 @@
+32 learners, 1000 episodes of 100 time units, swim speed 0.3, alignment time 1.0, flow speed 1.0; settings QConfig(n_episodes=1000, n_steps=1000, learning_rate=0.1, gamma=0.99, initial_value=100.0, epsilon=0.0); 119 s
+climbing speed in units of the swim speed, mean over the learners (smallest, largest):
+  first 100 episodes of learning  0.514 (0.289, 0.946)
+  last 100 episodes of learning   1.107 (0.667, 1.217)
+16 evaluation episodes with new starts, mean over episodes and swimmers:
+  learned tables, best action     1.099
+  naive (always up)               0.114

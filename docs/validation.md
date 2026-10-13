@@ -136,6 +136,11 @@ policy solves each task. They do not compare with measurements.
 | Contact between cells | `test_contact_inhibition_and_walls_keep_cells_apart` | cells driven against each other or into a corner stay a diameter apart and inside the region | passes |
 | Migrating group of cells | `test_gradient_following_leaders_reach_the_source_and_co_attraction_keeps_them_together` (6 games, 9 leaders) | all leaders arrive; with co-attraction the group is more compact and slower | spread 0.69 against 1.01 at step 100 |
 
+## Learning
+
+The checks of the wrappers and of the learning baselines are listed on the
+page [Learning](learning.md#checks).
+
 ## Pictures
 
 | Property | Test | Criterion | Reference result |
