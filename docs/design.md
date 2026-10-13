@@ -27,8 +27,9 @@ standard RL interface and automated physical validation.
 ParticleGym grows out of the environment of Zhang, Chai & Lykotrafitis,
 *Physica A* 571, 125845 (2021), which coupled a social force model to deep
 Q-learning for room evacuation. Pedestrian evacuation is the first
-application domain and the focus of version 1.0 (decision D9); the physics
-core is general and will serve other particle systems later.
+application domain and the one that version 1.0 validates; other particle
+systems on the same physics core are included as experimental environments
+(decision D9).
 
 ## Goals and non-goals
 
@@ -37,7 +38,7 @@ Goals:
 - Interacting particles in 2D and 3D, with pair forces, walls and obstacles,
   and thermal noise.
 - Agents control the *intent* of selected particles (a desired velocity).
-- Standard RL interfaces (Gymnasium and PettingZoo, planned for v0.2) and a
+- Standard RL interfaces (Gymnasium and PettingZoo wrappers) and a
   functional JAX interface for end-to-end compiled training loops.
 - Every physical claim backed by an automated test.
 - Throughput high enough for RL: thousands of batched environments on a GPU.
@@ -209,21 +210,31 @@ contacts need milliseconds), while decisions of pedestrians or swimmers happen
 on a much slower time scale. Coupling them would either make physics unstable
 or RL needlessly expensive.
 
-### D9 — Pedestrian evacuation first
+### D9 — Evacuation is the validated flagship, other families are experimental
 
-*Choice.* Version 1.0 concentrates on pedestrian evacuation: rooms with real
-doors and obstacles, bottlenecks, single- and multi-agent evacuation, and
-multi-storey buildings. Active colloids and cell migration follow after 1.0,
-on the same physics core.
+*Choice.* Pedestrian evacuation remains the reference application: rooms with
+real doors and obstacles, bottlenecks, single- and multi-agent evacuation, and
+multi-storey buildings. It is the family whose results are compared with
+published work and, as planned, with experiments, and version 1.0 requires
+that validation. Other families built on the same physics core (counter-flow,
+games, herding, microswimmers, cell migration, DPD fluids) are part of the
+library from version 0.2 as *experimental* environments. The mechanics of an
+experimental environment are tested against the equations of its model; its
+interface may change, and the documentation marks it as experimental until
+its results have been compared with published ones.
 
-*Reasons.* It builds directly on the authors' published work (Physica A 2021),
-which gives a first reproduction target. Pedestrian dynamics has established
-experimental benchmarks (speed-density relations, bottleneck flows) for
-validation. And a focused scope gets a complete, well-documented release to
-users sooner.
+*Reasons.* Evacuation builds directly on the authors' published work (Physica
+A 2021), which gives a first reproduction target, and pedestrian dynamics has
+established experimental benchmarks (speed-density relations, bottleneck
+flows). The physics core turned out to cover the other families with little
+additional code. Including them early tests the generality of the core and of
+the environment interface, and shows what the library is for. The label keeps
+the claims apart: "validated" is said only where a comparison exists.
 
-*Alternative.* Covering crowds, active matter and cells at once would spread
-the validation and documentation work thinly before any domain is complete.
+*Alternative.* Keeping everything except evacuation out until 1.0 (the first
+form of this decision, "Pedestrian evacuation first") would have delayed the
+feedback from other kinds of systems on the interface. Presenting all families
+as equally supported would claim a validation that does not exist.
 
 ### D10 — Functional environments with static structure and dynamic parameters
 

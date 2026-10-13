@@ -80,6 +80,10 @@ All notable changes to this project are documented here. The format follows
   slower than a simple rule in the evacuation task and fails at herding.
 - `Microswimmer.render` can show several periods of the flow and the
   altitude that the swimmers have reached (`periods`, `start_row`).
+- Notebook `examples/quickstart.ipynb`: a room evacuation, batched rooms, a
+  game through the Gymnasium interface and a short PPO run.
+- Benchmark `benchmarks/bench_envs.py`: control steps per second of the
+  environments for batches of several sizes.
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):
   - simulation box with per-axis periodicity;
@@ -104,5 +108,8 @@ All notable changes to this project are documented here. The format follows
 - The distance to 3D plates is computed edge by edge, which makes forces from
   3D walls about 10 times faster in single precision on CPU (JAX 0.11);
   distances are unchanged and forces agree to round-off.
-- Version 1.0 focuses on pedestrian evacuation (design decision D9); the
-  roadmap is reordered accordingly.
+- Design decision D9: pedestrian evacuation is the validated flagship of
+  version 1.0, and other families of environments on the same physics core
+  are included as experimental environments. Before, they were to follow
+  after 1.0. The roadmap is updated: the reproduction of the published
+  evacuation results and the Verlet neighbour lists moved from 0.2 to 0.3.

@@ -4,14 +4,16 @@
 reinforcement learning.**
 
 !!! warning "Pre-alpha"
-    Version 0.1.0.dev0 provides the physics core and its validation tests.
-    The reinforcement-learning interface is the next milestone; see the
-    [roadmap](roadmap.md).
+    Version 0.1.0.dev0 provides the physics core with its validation tests,
+    a room-evacuation environment, six experimental environments, Gymnasium
+    and PettingZoo wrappers and two learning baselines. Interfaces may
+    change; see the [roadmap](roadmap.md).
 
 ParticleGym simulates many interacting particles — pedestrians, active
 colloids, cells, swarm robots — and lets reinforcement-learning agents control
-some of them. The first application, and the focus of version 1.0, is
-pedestrian evacuation.
+some of them. Pedestrian evacuation is the first application and the one
+that is validated against published work; games, herding, microswimmers and
+cell migration are included as experimental environments.
 
 - **Physically consistent.** Agents choose a desired direction; the motion
   follows from forces and a proper integrator. Conservative forces come from
@@ -59,7 +61,10 @@ print(temperature[-500:].mean())  # close to 1.0
 ```
 
 The quick start in the project README shows pedestrians leaving a room through
-a door, and the `examples/` directory contains complete scripts.
+a door. The notebook
+[`examples/quickstart.ipynb`](https://github.com/ZhaojieC/particlegym/blob/main/examples/quickstart.ipynb)
+goes from a room evacuation to a game and a trained policy in four steps, and
+the `examples/` directory contains complete scripts.
 
 ## Documentation
 

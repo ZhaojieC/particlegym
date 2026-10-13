@@ -6,20 +6,29 @@ milestone is a tagged release with a Zenodo DOI.
 
 ## Milestones
 
-Version 1.0 focuses on pedestrian evacuation ([design decision D9](design.md#d9-pedestrian-evacuation-first)).
+Pedestrian evacuation is the validated flagship of version 1.0; other
+families of environments are included as experimental
+([design decision D9](design.md#d9-evacuation-is-the-validated-flagship-other-families-are-experimental)).
 
 | Version | Content | Target |
 |---|---|---|
 | **0.1** | Physics core, validation tests, packaging, CI, documentation site | month 1–2 |
-| **0.2** | Environment layer: functional `reset`/`step`, actions as desired directions, observation and reward modules, exits; Gymnasium and PettingZoo wrappers; `Evacuation2D` reproducing Zhang, Chai & Lykotrafitis (2021) (four exits; three exits and two obstacles); Verlet neighbour lists with skin | month 2–3 |
-| **0.3** | Crowd validation against experiments (speed-density relation, bottleneck flow) and the faster-is-slower effect; calibrated parameter sets; `Bottleneck` scenario; RL baselines (pure-JAX DQN and PPO, Stable-Baselines3 example) | month 3–4 |
+| **0.2** | Environment layer: functional `reset`/`step`, actions as desired directions, exits, 2D and 3D rooms; Gymnasium and PettingZoo wrappers; pictures and animations; more physics (external forces, flows, moving shapes, contact damping, active particles, bonds, DPD, scalar fields); six experimental environments; PPO and Q-learning baselines | month 2–3 |
+| **0.3** | `Evacuation2D` reproducing Zhang, Chai & Lykotrafitis (2021) (four exits; three exits and two obstacles); Verlet neighbour lists with skin; crowd validation against experiments (speed-density relation, bottleneck flow) and the faster-is-slower effect; calibrated parameter sets; `Bottleneck` scenario; a DQN baseline and a Stable-Baselines3 example | month 3–4 |
 | **0.4** | Multi-agent evacuation (shared and independent policies), rooms with complex obstacles, multi-storey buildings in 3D; GPU benchmarks | month 4–5 |
 | **0.5** | Tutorials (notebooks), API reference, performance guide, external users | month 5–6 |
 | **1.0** | Stable API, JOSS submission | month 6–7 |
 
-After 1.0: active colloids and microswimmers in 3D (orientations, rotational
-diffusion), collective cell migration, and dissipative particle dynamics with
-hydrodynamic interactions, all on the same physics core.
+Two items planned for 0.2 moved to 0.3: the reproduction of the evacuation
+results of Zhang, Chai & Lykotrafitis (2021) and the Verlet neighbour lists.
+The experimental environments and the learning baselines came earlier than
+planned.
+
+Experimental environments leave that status one by one, when their results
+have been compared with published ones (see
+[Planned validation](validation.md#planned-validation)). After 1.0:
+microswimmers and active colloids in 3D (orientations, rotational diffusion)
+and DPD with walls and flows.
 
 ## Performance plan
 
@@ -49,8 +58,9 @@ Planned improvements:
 
 - Verlet neighbour lists with a skin, rebuilt only when needed, to remove most
   empty candidate slots and amortise the cell-list construction.
-- GPU benchmarks of batched environments, compared with VMAS and PettingZoo
-  MPE on comparable 2D tasks.
+- A comparison of batched environments on a GPU with VMAS and the JAX
+  version of MPE on a comparable 2D task and the same hardware. This has not
+  been done yet.
 
 ## JOSS readiness checklist
 

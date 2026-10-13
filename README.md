@@ -132,8 +132,10 @@ An action sets the direction in which an agent wants to walk. The driving
 term of the social force model, `m (v0 e - v) / tau`, is exactly the friction
 term of Langevin dynamics with `gamma = 1 / tau` and drift velocity
 `u = v0 e`, so one integrator serves pedestrians, colloids and active
-particles; see [Physics models](docs/physics.md). The physics core can also be
-used directly, without an environment: see
+particles; see [Physics models](docs/physics.md). The notebook
+[`examples/quickstart.ipynb`](examples/quickstart.ipynb) continues with a game
+through the Gymnasium interface and a policy trained in a few seconds. The
+physics core can also be used directly, without an environment: see
 [`examples/room_evacuation_2d.py`](examples/room_evacuation_2d.py) and the
 other [examples](examples).
 
