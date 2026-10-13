@@ -5,8 +5,8 @@ run in double precision on every pull request (`pytest`); statistical tests
 are marked `slow` and use fixed random seeds. This page lists what is tested,
 the acceptance criterion, and the result of the reference run.
 
-Reference results: version 0.1.0.dev0 (the sections "More physics" and
-"Experimental environments": the development version of 0.2), CPU, float64.
+Reference results: development versions of 0.2.0, CPU, float64. The tests
+pass in the released version.
 
 ## Physics core
 
@@ -81,7 +81,7 @@ inside the experimental range. These are sanity checks, not a calibration.
 | Ideal chain | `test_ideal_chain_has_the_gaussian_end_to_end_distance` (400 chains of 20 beads) | \(\langle R^2\rangle = (n-1)\,d\,k_BT/k\) within 5 %; temperature within 1 % | passes |
 | DPD pair noise | `test_dpd.py::test_pair_noise_is_symmetric_with_unit_variance` | symmetric, zero mean, unit variance, no correlation between pairs or steps, same for dense and listed evaluation | passes |
 | DPD with a cell list | `test_thermostat_needs_a_key_and_gives_the_same_forces_with_a_cell_list` | forces including the random forces equal brute force; total force zero | equal to 1e-9 |
-| DPD momentum and temperature | `test_dpd_fluid_keeps_momentum_and_temperature` (\(\rho = 3\), \(a = 25\), \(\gamma = 4.5\), \(\Delta t = 0.01\), 8 runs) | momentum stays zero; kinetic temperature within 2 % of \(k_BT\) | passes. With 16 runs of 40 time units (`benchmarks/dpd_fluid.txt`) the temperature is 1.001 ± 0.003 at \(\Delta t\) = 0.01, 1.010 ± 0.003 at 0.02 and 1.026 ± 0.003 at 0.04: the explicit thermostat heats the fluid as the time step grows |
+| DPD momentum and temperature | `test_dpd_fluid_keeps_momentum_and_temperature` (\(\rho = 3\), \(a = 25\), \(\gamma = 4.5\), \(\Delta t = 0.01\), 8 runs) | momentum stays zero; kinetic temperature within 2 % of \(k_BT\) | passes. With 16 runs of 40 time units (`benchmarks/dpd_fluid.txt`) the temperature is 1.001 ± 0.003 at \(\Delta t\) = 0.01, 1.010 ± 0.003 at 0.02 and 1.026 ± 0.003 at 0.04: the explicit thermostat heats the fluid as the time step grows. At \(\rho = 4\), the density of Fig. 1 of Groot & Warren (1997), the temperature is 1.027 ± 0.002 at \(\Delta t\) = 0.04 and 1.037 ± 0.002 at 0.05 (256 particles); the paper reports increases of 2 % and 3 % with the same algorithm and 4000 particles |
 | DPD equation of state | `test_excess_pressure_is_nearly_quadratic_in_the_density` (slow) | \((p - \rho k_BT)/(a\rho^2)\) between 0.090 and 0.094 at \(\rho = 3\), between 0.096 and 0.100 at \(\rho = 5\), below the value \(\pi/30\) for uncorrelated particles | see the table below |
 | Species | `test_mixture_scales_the_interaction_of_unlike_particles` | unlike pairs scaled by the matrix entry; forces equal minus the gradient; cell list equals brute force | exact |
 | Field interpolation and deposit | `test_fields.py::test_linear_field_is_sampled_exactly`, `test_deposit_conserves_the_amount_and_is_the_adjoint_of_sampling` | linear fields and their gradients are exact; deposit conserves the amount | equal to 1e-12 |
@@ -103,8 +103,15 @@ discarded; from `benchmarks/dpd_fluid.txt`, the output of
 | 8 | 512 | 169.67 | 0.1010 |
 
 The statistical error of the coefficient is below 1e-4. It rises with the
-density towards the value \(\pi/30 = 0.1047\) of uncorrelated particles. A comparison with the coefficient reported by Groot
-& Warren (1997) is open: the paper was not available when this was written.
+density towards the value \(\pi/30 = 0.1047\) of uncorrelated particles.
+
+Groot & Warren (1997) give \(p = \rho k_BT + \alpha a\rho^2\) with
+\(\alpha = 0.101 \pm 0.001\) for densities above 2 (their Eq. 16), the value
+found here at \(\rho = 8\), and their Fig. 4 shows the same rise of the
+coefficient with the density. The points of that figure, read from the
+scanned page with an accuracy of about 0.002, are 0.092, 0.096, 0.099, 0.100
+and 0.102 at the densities 3, 4, 5, 6 and 8. The values of the table are 0.4
+to 0.7 % lower, which is within the accuracy of the reading.
 
 ## Experimental environments
 
@@ -159,7 +166,6 @@ page [Learning](learning.md#checks).
 - Velocity profile and viscosity of the DPD fluid in a channel flow.
 - The learning gain of smart microswimmers of Colabrese et al. (2017).
 - Collective migration with follower cells as in Zhang et al. (2020).
-- The DPD equation of state against the published coefficient.
 
 ## Running the tests
 

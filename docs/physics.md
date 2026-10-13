@@ -207,7 +207,8 @@ standard DPD fluid (Groot & Warren, 1997). The symmetric random numbers are
 computed from a hash of the two particle indices and the random key of the
 step; they are uniformly distributed and identical for the dense and the
 cell-list evaluation. Use `velocity_verlet(..., key=key)`, which evaluates
-the dissipative force with the half-step velocity.
+the dissipative force with the half-step velocity; this is the algorithm of
+Groot & Warren (their Eq. 9 with \(\lambda = 1/2\)).
 
 `pressure(state, force_field)` returns \((2K + W)/(dV)\) with the virial \(W\)
 of the conservative pair forces.

@@ -4,9 +4,10 @@ The fluid has the conservative force a (1 - r) with a = 25, the pair
 thermostat with gamma = 4.5 and kT = 1, and the cut-off 1, in a periodic cube.
 The script prints
 
-1. the kinetic temperature at density 3 for several time steps (the
-   thermostat is integrated explicitly, so the temperature rises with the
-   time step), and
+1. the kinetic temperature for several time steps (the thermostat is
+   integrated explicitly, so the temperature rises with the time step), at
+   density 3 and at density 4, the density of Fig. 1 of Groot and Warren,
+   J. Chem. Phys. 107, 4423 (1997), and
 2. the pressure for several densities, with the coefficient
    alpha = (p - rho kT) / (a rho^2) of the excess pressure.
 
@@ -54,12 +55,17 @@ def run(state, field, key, steps, dt):
     return jax.lax.scan(body, state, jax.random.split(key, steps))
 
 
-def temperature_against_time_step(runs=16, discard=500, time=40.0):
-    print(f"# Kinetic temperature, density 3, side 4 (192 particles), {runs} runs,")
+def temperature_against_time_step(
+    density=3.0, time_steps=(0.01, 0.02, 0.04), runs=16, discard=500, time=40.0
+):
+    particles = fluid(density, 4.0, time_steps[0])[0].n
+    print(
+        f"# Kinetic temperature, density {density:g}, side 4 ({particles} particles), {runs} runs,"
+    )
     print(f"# {discard} steps discarded, then {time:g} time units")
     print("# dt  mean  standard_error  lowest  highest")
-    for dt in (0.01, 0.02, 0.04):
-        state, field = fluid(3.0, 4.0, dt)
+    for dt in time_steps:
+        state, field = fluid(density, 4.0, dt)
         steps = round(time / dt)
 
         def one(key, state=state, field=field, steps=steps, dt=dt):
@@ -100,4 +106,6 @@ def pressure_against_density(dt=0.01, discard=1000):
 
 if __name__ == "__main__":
     temperature_against_time_step()
+    print()
+    temperature_against_time_step(density=4.0, time_steps=(0.04, 0.05))
     pressure_against_density()
