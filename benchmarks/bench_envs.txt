@@ -3,6 +3,8 @@
 # CPU of the same node, one process per case. The numbers are control steps
 # per second of all environments of a batch together. The case with pixel
 # observations was stopped on the GPU after 600 s, during the compilation.
+# The drawing code was changed afterwards, and the brick wall was measured
+# again at commit bae386f: see the end of this file.
 NVIDIA L40S, 46068 MiB
 Model name:                              AMD EPYC 9554 64-Core Processor
 == GPU ==
@@ -85,3 +87,39 @@ JAX 0.11.2 on cpu:0, float32
 | Environment | Substeps | Batch 1 | Batch 64 |
 |---|---|---|---|
 | Billiards, 15 balls (one shot per step) |  | 22 | 5 |
+
+# Brick wall again at commit bae386f, with the new drawing code, on a node
+# with the same GPU and CPU. First the drawing functions alone, for a batch
+# of 1024 states with 84 x 84 pixels and 40 bricks, each stopped after 300 s
+# (a script that is not in the repository): `new_disc` is
+# `viz.disc_coverage` for the ball, `new_box` is `viz.box_coverage` for all
+# bricks, `new_image` is the image of the game, which takes the bricks from
+# the table, and `new_image_sum` its sum; the `old_` lines are the same with
+# the functions of version 0.2.0. Then benchmarks/bench_envs.py with
+# --only "Brick wall" on the GPU and on four CPU cores, and the image for one
+# state on the CPU.
+NVIDIA L40S, 46068 MiB
+Model name:                              AMD EPYC 9554 64-Core Processor
+== GPU, pieces, batch 1024 ==
+new_disc       batch   1024 on cuda:0: first call    0.06 s, then     42,833,543 images per second
+new_box: failed or stopped after 300 s
+new_image      batch   1024 on cuda:0: first call    0.10 s, then     21,245,652 images per second
+new_image_sum  batch   1024 on cuda:0: first call    0.20 s, then     25,812,794 images per second
+old_disc       batch   1024 on cuda:0: first call    0.24 s, then     29,499,248 images per second
+old_box: failed or stopped after 300 s
+old_image: failed or stopped after 300 s
+old_image_sum: failed or stopped after 300 s
+== GPU, environment benchmark with the new code ==
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Brick wall, state observations | 20 | 3,458,718 | 27,612,746 |
+| Brick wall, 84 x 84 pixels | 20 | 3,148,490 | 8,309,098 |
+== CPU, 4 cores ==
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Brick wall, state observations | 20 | 48,833 | 36,590 |
+| Brick wall, 84 x 84 pixels | 20 | 15,324 | 25,567 |
+new_image      batch      1 on cpu:0: first call    0.05 s, then         21,923 images per second
+old_image      batch      1 on cpu:0: first call    0.07 s, then          1,003 images per second

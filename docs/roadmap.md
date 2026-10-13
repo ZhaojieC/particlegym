@@ -72,7 +72,7 @@ computation of the observations.
 | Evacuation, 40 pedestrians, 4 doors | 20 | 1,000,000 | 550,000 | 3,600 | 2,300 |
 | Counter-flow, 80 pedestrians | 20 | 360,000 | 100,000 | 1,100 | 2,000 |
 | Brick wall, state observations | 20 | 3,500,000 | 28,000,000 | 47,000 | 37,000 |
-| Brick wall, 84 × 84 pixels | 20 | not compiled in 600 s | not compiled in 600 s | 1,900 | 4,800 |
+| Brick wall, 84 × 84 pixels | 20 | 3,100,000 | 8,300,000 | 15,000 | 26,000 |
 | Herding, 40 sheep | 20 | 1,800,000 | 3,000,000 | 7,300 | 5,400 |
 | Microswimmer | 10 | 11,000,000 | 120,000,000 | 63,000 | 550,000 |
 | Cell migration, 9 cells | 50 | 10,000 | 9,900 | 330 | 1,300 |
@@ -84,10 +84,14 @@ computation of the observations.
   migration, the throughput does not rise from 1024 to 16384 environments.
 - A step of the billiards game is a whole shot, and in a batch it lasts until
   the balls of the slowest table have stopped.
-- Pixel observations are slow: every pixel is tested against every brick, so
-  on the CPU the game is 25 times slower than with state observations for one
-  environment and 8 times for 64. On the GPU the drawing code was still being
-  compiled after 600 s, so pixel observations cannot be used on a GPU yet.
+- Pixel observations cost about three times as much as state observations
+  for one environment on the CPU and for 16384 environments on the GPU (1.4
+  times for 64 on the CPU, 1.1 times for 1024 on the GPU). The row of the
+  pixels comes from a later run than the other rows, after the drawing code
+  was changed; the row of the state observations agreed within 4 % between
+  the two runs. In version 0.2.0 every pixel was tested against every
+  brick: 1,900 control steps per second for one environment on the CPU, and
+  on the GPU the code was still being compiled after 600 s.
 - The numbers hold within about a factor of two. A run of an earlier version
   of the script, which did less work in a step, gave values up to two times
   lower on another node with the same GPU and CPU; the cause was not
@@ -97,8 +101,10 @@ Planned improvements:
 
 - Verlet neighbour lists with a skin, rebuilt only when needed, to remove most
   empty candidate slots and amortise the cell-list construction.
-- Pixel observations that compile on a GPU and cost less on a CPU, for
-  example with a table of the bricks that can cover each pixel.
+- Images of many boxes that move: `viz.box_coverage` tests every pixel
+  against every box, and with 84 × 84 pixels and 40 boxes its first call on
+  a GPU did not finish within 300 s. The brick wall avoids it with a table,
+  which needs boxes that stay in place.
 - A comparison of batched environments on a GPU with VMAS and the JAX
   version of MPE on a comparable 2D task and the same hardware. This has not
   been done yet.

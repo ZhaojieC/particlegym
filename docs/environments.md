@@ -239,7 +239,9 @@ viz.save_gif("room.gif", frames, fps=20)  # or viz.save_mp4, which needs ffmpeg
 `particlegym.viz.Canvas` draws discs, rectangles, lines and the shape sets of
 the physics core for any 2D system. For image observations inside compiled
 code, `viz.pixel_centres`, `viz.disc_coverage` and `viz.box_coverage` compute
-small pixel images in JAX. 3D systems are written with
+small pixel images in JAX; for many boxes that do not move,
+`viz.box_coverage_table` and `viz.table_coverage` give the same image from a
+table. 3D systems are written with
 `particlegym.io.write_extxyz` and rendered with OVITO; the scripts of the
 [gallery](gallery.md) show how.
 

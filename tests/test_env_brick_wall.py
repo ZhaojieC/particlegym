@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from particlegym import physics as pp
+from particlegym import viz
 from particlegym.envs import BrickWall
 
 
@@ -139,6 +140,19 @@ def test_pixel_observation_shows_the_ball_the_bricks_and_the_last_frame():
     area = band.sum() / 0.7 * env.pixel**2
     assert 0.92 * 16.0 < area < 16.0
     assert np.all(image[(height > 3.3) & (height < 4.4)] == 0.0)
+
+
+def test_pixel_image_of_the_bricks_equals_the_test_of_every_pixel_against_every_brick():
+    env = BrickWall(observation="pixels")
+    _, state = env.reset(jax.random.key(0))
+    present = jax.random.bernoulli(jax.random.key(1), 0.5, (env.n_bricks,))
+    image = jax.jit(env._image)(state._replace(bricks=present))
+    points = viz.pixel_centres((0.0, 0.0), env.size, env.pixels)
+    lo, hi = jnp.asarray(env.brick_lo), jnp.asarray(env.brick_hi)
+    bricks = viz.box_coverage(points, lo, hi, env.pixel, mask=present)
+    above = np.asarray(points[..., 1] > 4.0)  # the ball and the paddle are below
+    assert float(bricks.max()) == 1.0
+    np.testing.assert_allclose(image[above], 0.7 * bricks[above], atol=2e-5)
 
 
 def test_scripted_player_clears_the_wall():

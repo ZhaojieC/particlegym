@@ -148,6 +148,14 @@ class BrickWall:
         self.brick_hi = self.brick_lo + np.array([brick_width, brick_height])
         self.bricks = pp.Boxes(self.brick_lo, self.brick_hi)
         self.brick_row = row.reshape(-1)
+        # The bricks do not move: which of them cover a pixel, and by how
+        # much, is computed once.
+        self._brick_table = None
+        if observation == "pixels":
+            points = np.asarray(viz.pixel_centres((0.0, 0.0), self.size, self.pixels))
+            self._brick_table = viz.box_coverage_table(
+                points, self.brick_lo, self.brick_hi, self.pixel
+            )
 
         self.contact = pp.Harmonic(k=float(stiffness))
         # The side walls continue below the bottom line, so a ball that is
@@ -355,13 +363,8 @@ class BrickWall:
         ball = viz.disc_coverage(points, state.ball.pos, self.ball_radius, self.pixel)
         centre = jnp.stack([state.paddle, jnp.full_like(state.paddle, self.paddle_y)])[None, :]
         paddle = viz.disc_coverage(points, centre, _PADDLE_RADIUS, self.pixel)
-        bricks = viz.box_coverage(
-            points,
-            jnp.asarray(self.brick_lo, dtype),
-            jnp.asarray(self.brick_hi, dtype),
-            self.pixel,
-            state.bricks,
-        )
+        index, cover = self._brick_table
+        bricks = viz.table_coverage(index, jnp.asarray(cover, dtype), state.bricks)
         return jnp.maximum(ball, jnp.maximum(0.7 * bricks, 0.4 * paddle))
 
     def _observe(self, state: BrickWallState, image, previous, params) -> jax.Array:
