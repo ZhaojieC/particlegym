@@ -54,10 +54,10 @@ swimmers and the cells follow simple scripted rules here; trained policies
 come next.
 
 > **Status: pre-alpha (v0.1.0.dev0).** The physics core, its validation
-> tests, a room-evacuation environment and six
-> [experimental environments](docs/experimental.md) are in place; Gymnasium
-> and PettingZoo wrappers come next. APIs may change. See the
-> [roadmap](docs/roadmap.md).
+> tests, a room-evacuation environment, six
+> [experimental environments](docs/experimental.md), Gymnasium and PettingZoo
+> wrappers and two [learning baselines](docs/learning.md) are in place. APIs
+> may change. See the [roadmap](docs/roadmap.md).
 
 ParticleGym simulates many interacting particles (pedestrians, active
 colloids, cells, swarm robots) and lets reinforcement-learning agents control
