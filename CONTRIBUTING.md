@@ -51,6 +51,20 @@ how you checked the result. Maintainers record this in
 [`docs/ai-usage.md`](docs/ai-usage.md) so that it can be reported in
 publications about the software.
 
+## Releasing
+
+Maintainers release from `main`:
+
+1. Set the version in `src/particlegym/__init__.py` and `CITATION.cff`, and
+   move the entries under "Unreleased" in `CHANGELOG.md` to a section with
+   the version and the date.
+2. Check the package: `python -m build` and `twine check dist/*`.
+3. Tag the commit (for example `git tag v0.2.0`), push the tag and create a
+   GitHub release from it. Zenodo archives the release and assigns a DOI
+   once the repository is enabled there; add the DOI to `CITATION.cff` and
+   the README.
+4. Upload the files in `dist/` to PyPI: `twine upload dist/*`.
+
 ## Code of conduct
 
 This project follows the [Code of Conduct](CODE_OF_CONDUCT.md).

@@ -1,12 +1,11 @@
 [build-system]
-requires = ["hatchling>=1.27"]
+requires = ["hatchling>=1.27", "hatch-fancy-pypi-readme>=24.1"]
 build-backend = "hatchling.build"
 
 [project]
 name = "particlegym"
-dynamic = ["version"]
+dynamic = ["version", "readme"]
 description = "Fast, physically validated 2D/3D particle-dynamics environments for reinforcement learning"
-readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
@@ -45,6 +44,25 @@ path = "src/particlegym/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/particlegym"]
+
+# The animations stay in the repository; the source distribution does not carry them.
+[tool.hatch.build.targets.sdist]
+exclude = ["/docs/assets", "/.github"]
+
+# The README of the package index needs absolute addresses for pictures and links.
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = 'src="docs/'
+replacement = 'src="https://raw.githubusercontent.com/ZhaojieC/particlegym/main/docs/'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\(((?:docs|examples)(?:/[^)]*)?|[A-Z_]+(?:\.md)?)\)'
+replacement = '](https://github.com/ZhaojieC/particlegym/blob/main/\1)'
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

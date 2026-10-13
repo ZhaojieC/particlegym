@@ -84,6 +84,9 @@ All notable changes to this project are documented here. The format follows
   game through the Gymnasium interface and a short PPO run.
 - Benchmark `benchmarks/bench_envs.py`: control steps per second of the
   environments for batches of several sizes.
+- Packaging: the README shown by the package index uses absolute addresses
+  for pictures and links, the source distribution leaves out the animations,
+  and CI builds and checks the package.
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):
   - simulation box with per-axis periodicity;
