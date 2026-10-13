@@ -133,3 +133,26 @@ def test_naive_swimmers_are_trapped_or_rise_depending_on_the_parameters():
     # Fast swimmers with a fast alignment rise at about their swimming speed
     # (reference: 0.989 of it).
     np.testing.assert_allclose(climb_speed(3.0, 0.1), 3.0, rtol=0.03)
+
+
+def test_the_altitude_view_draws_a_swimmer_at_the_height_it_has_reached():
+    """With several rows, the picture shows the altitude gained since the reset."""
+    pytest.importorskip("PIL")
+    env = Microswimmer()
+    _, state = env.reset(jax.random.key(0))
+    size = env.period
+    state = _place(state, [0.5 * size, 0.5 * size], 0.0)
+
+    def picture(climbed):
+        moved = state._replace(displacement=jnp.array([[0.0, climbed * size]]))
+        return env.render(moved, 100, periods=(1, 4), start_row=1).astype(int)
+
+    empty = picture(10.0)  # far above the picture: not drawn
+    assert empty.shape[:2] == (400, 100)
+    # The wrapped position is the centre of a period in each case.
+    for climbed, height in ((0.0, 1.5), (2.0, 3.5), (-1.0, 0.5)):
+        rows = np.nonzero(np.abs(picture(climbed) - empty).sum(axis=(1, 2)))[0]
+        assert rows.size > 0
+        assert abs(rows.mean() - 400 * (1.0 - height / 4.0)) < 2.0
+    assert np.array_equal(picture(-3.0), empty)  # below the picture
+    assert env.render(state, 100).shape[:2] == (100, 100)

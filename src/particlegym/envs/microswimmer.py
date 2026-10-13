@@ -261,19 +261,44 @@ class Microswimmer:
         width: int = 360,
         params: MicroswimmerParams | None = None,
         color=viz.BLUE,
+        periods: tuple[int, int] = (1, 1),
+        start_row: int = 0,
     ) -> np.ndarray:
         """Draw the swimmers over the vorticity (grey scale, dark where it is negative).
 
-        The picture shows one period of the flow; swimmers that leave on one
-        side come back on the other.
+        By default the picture shows one period of the flow; swimmers that
+        leave on one side come back on the other. With several rows the
+        picture shows the altitude instead: a swimmer is drawn at the height
+        it has reached since the reset, and it is not drawn while it is
+        above or below the picture.
+
+        Args:
+            state: Environment state.
+            width: Width of the picture in pixels.
+            params: Episode parameters.
+            color: Colour of the swimmers.
+            periods: Numbers of periods of the flow shown along x and along
+                the altitude, ``(columns, rows)``.
+            start_row: Row, counted from the bottom, in which the swimmers
+                are at the reset. Used with more than one row.
         """
         params = self.default_params if params is None else params
+        columns, rows = periods
         size = self.period
-        canvas = viz.Canvas((0.0, 0.0), (size, size), width)
-        grid = pp.Grid((0.0, 0.0), (size, size), (64, 64))
+        hi = (columns * size, rows * size)
+        canvas = viz.Canvas((0.0, 0.0), hi, width)
+        grid = pp.Grid((0.0, 0.0), hi, (64 * columns, 64 * rows))
         vorticity = self.flow(params).vorticity(grid.centres().reshape(-1, 2)).reshape(grid.shape)
         canvas.field(vorticity, colors=((95, 95, 95), viz.WHITE))
-        canvas.discs(np.mod(np.asarray(state.particles.pos), size), 0.012 * size, color)
+        pos = np.asarray(state.particles.pos)
+        # The swimmers are spread over the columns; the flow is the same in each.
+        x = np.mod(pos[:, 0] + size * (np.arange(self.n_agents) % columns), hi[0])
+        y = np.mod(pos[:, 1], size)
+        if rows > 1:
+            gained = np.asarray(state.displacement)[:, 1]
+            y = np.mod(pos[:, 1] - gained, size) + gained + start_row * size
+        inside = (y >= 0.0) & (y <= hi[1])
+        canvas.discs(np.stack([x, y], axis=1)[inside], 0.012 * hi[0], color)
         return canvas.frame()
 
     def _observe(self, state: MicroswimmerState, params: MicroswimmerParams) -> jax.Array:

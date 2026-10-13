@@ -75,7 +75,11 @@ All notable changes to this project are documented here. The format follows
   Colabrese et al. (2017), PPO on four tasks with scripted and random
   baselines, learning curves, and animations of a policy before and after
   training.
-- Documentation page "Learning".
+- Documentation page "Learning", with the results of PPO on the four tasks
+  (five seeds each): it learns the microswimmer task and the brick wall, is
+  slower than a simple rule in the evacuation task and fails at herding.
+- `Microswimmer.render` can show several periods of the flow and the
+  altitude that the swimmers have reached (`periods`, `start_row`).
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):
   - simulation box with per-axis periodicity;

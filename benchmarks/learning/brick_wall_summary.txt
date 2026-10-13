@@ -1,0 +1,9 @@
+task brick_wall, 5 seeds, device cuda:0
+settings PPOConfig(n_envs=1024, n_steps=128, n_iterations=400, n_epochs=4, n_minibatches=16, gamma=0.995, gae_lambda=0.95, clip=0.2, entropy=0.01, value=0.5, learning_rate=0.0003, max_grad_norm=0.5, hidden=(64, 64), anneal=True, log_std=-0.5, normalize=True, reward_scale=1.0)
+131072 agent steps per update
+400 of 400 updates in 43 s (6139946 agent steps per second, compilation included)
+evaluation: 64 episodes of at most 3000 steps, the same starts for every policy; return per agent, mean over the episodes
+PPO                             33.581  (seeds: [34.375, 34.969, 32.188, 32.609, 33.766]; episodes finished 1.00; length 2939)
+PPO with exploration noise      35.478  (seeds: [35.656, 35.641, 34.75, 35.297, 36.047]; episodes finished 1.00; length 2976)
+scripted player                 31.328  (std over episodes 5.455; episodes finished 1.00; length 2989)
+random                           6.172  (std over episodes 4.230; episodes finished 1.00; length 701)

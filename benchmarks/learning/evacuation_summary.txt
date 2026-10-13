@@ -1,0 +1,9 @@
+task evacuation, 5 seeds, device cuda:0
+settings PPOConfig(n_envs=128, n_steps=64, n_iterations=300, n_epochs=4, n_minibatches=16, gamma=0.99, gae_lambda=0.95, clip=0.2, entropy=0.01, value=0.5, learning_rate=0.0003, max_grad_norm=0.5, hidden=(64, 64), anneal=True, log_std=-0.5, normalize=True, reward_scale=1.0)
+327680 agent steps per update
+300 of 300 updates in 45 s (11036385 agent steps per second, compilation included)
+evaluation: 64 episodes of at most 300 steps, the same starts for every policy; return per agent, mean over the episodes
+PPO                             -8.930  (seeds: [-6.385, -7.552, -7.556, -10.352, -12.803]; episodes finished 1.00; length 200)
+PPO with exploration noise      -9.242  (seeds: [-6.541, -7.817, -7.694, -10.758, -13.399]; episodes finished 1.00; length 206)
+walk to the nearest door        -5.788  (std over episodes 0.495; episodes finished 1.00; length 147)
+random                         -29.583  (std over episodes 0.435; episodes finished 1.00; length 300)

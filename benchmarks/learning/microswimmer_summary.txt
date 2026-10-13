@@ -1,0 +1,9 @@
+task microswimmer, 5 seeds, device cuda:0
+settings PPOConfig(n_envs=256, n_steps=64, n_iterations=300, n_epochs=4, n_minibatches=16, gamma=0.99, gae_lambda=0.95, clip=0.2, entropy=0.01, value=0.5, learning_rate=0.0003, max_grad_norm=0.5, hidden=(64, 64), anneal=True, log_std=-0.5, normalize=True, reward_scale=10.0)
+262144 agent steps per update
+300 of 300 updates in 27 s (14745747 agent steps per second, compilation included)
+evaluation: 64 episodes of at most 1000 steps, the same starts for every policy; return per agent, mean over the episodes
+PPO                             39.835  (seeds: [40.423, 42.076, 35.35, 39.335, 41.992]; episodes finished 1.00; length 1000)
+PPO with exploration noise      30.951  (seeds: [30.532, 31.951, 30.005, 30.06, 32.206]; episodes finished 1.00; length 1000)
+naive (always up)                3.432  (std over episodes 0.976; episodes finished 1.00; length 1000)
+random                          -0.119  (std over episodes 1.837; episodes finished 1.00; length 1000)

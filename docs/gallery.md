@@ -65,6 +65,27 @@ group together. Model after Zhang, Chai, Sun and Lykotrafitis (2020).
 1200 particles of two species with dissipative particle dynamics: unlike
 particles repel more strongly than like ones, and the mixture separates.
 
+## Before and after training
+
+Policies trained with the PPO baseline of the library
+([Learning](learning.md)). Each animation shows the policy before training
+on the left and after training on the right, from the same start, for the
+seed with the median return of five.
+
+![Swimmers before and after training](assets/gallery/learned_microswimmer.gif)
+
+400 swimmers in the field of vortices; the picture shows 4 × 4 periods of the
+flow and the altitude that the swimmers have reached. The trained swimmers
+sense the vorticity and climb.
+
+![The brick wall before and after training](assets/gallery/learned_brick_wall.gif)
+
+![The room with four doors before and after training](assets/gallery/learned_evacuation.gif)
+
+40 pedestrians in a room with four doors. The trained pedestrians leave, but
+more slowly than pedestrians that walk to the nearest door: this policy uses
+two of the four doors.
+
 ## Three dimensions
 
 ![Agents leave a 3D chamber](assets/gallery/evacuation_chamber_3d.gif)

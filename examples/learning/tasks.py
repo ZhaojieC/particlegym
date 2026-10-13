@@ -22,6 +22,7 @@ class Task(NamedTuple):
         label: Axis label of the return in the figures.
         display: Environment for the animations, if it differs from ``env``
             (the policy is shared, so it also steers a larger group).
+        view: Further arguments of ``render`` for the animations.
     """
 
     env: object
@@ -30,6 +31,7 @@ class Task(NamedTuple):
     baselines: dict[str, Callable]
     label: str
     display: object = None
+    view: dict | None = None
 
 
 def random_policy(env):
@@ -48,7 +50,9 @@ def microswimmer() -> Task:
         "random": random_policy(env),
     }
     label = "altitude gained in 100 time units"
-    return Task(env, env.default_params, config, baselines, label, envs.Microswimmer(400))
+    # The animation shows 4 x 4 periods of the flow and the altitude of the swimmers.
+    view = {"periods": (4, 4), "start_row": 1}
+    return Task(env, env.default_params, config, baselines, label, envs.Microswimmer(400), view)
 
 
 def evacuation() -> Task:

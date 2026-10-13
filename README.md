@@ -46,12 +46,25 @@
     <td align="center">8 drones encircle a moving target (<a href="https://github.com/ZhaojieC/drone-encircle">drone-encircle</a>, built on ParticleGym)</td>
     <td align="center"></td>
   </tr>
+  <tr>
+    <td width="33%"><img src="docs/assets/gallery/learned_microswimmer.gif" width="100%" alt="Swimmers before and after training"></td>
+    <td width="33%"><img src="docs/assets/gallery/learned_brick_wall.gif" width="100%" alt="The brick wall before and after training"></td>
+    <td width="33%"><img src="docs/assets/gallery/learned_evacuation.gif" width="100%" alt="A room with four doors before and after training"></td>
+  </tr>
+  <tr>
+    <td align="center">Learning: swimmers before (left) and after training (right) climb through the vortices</td>
+    <td align="center">Learning: the arcade game before and after training</td>
+    <td align="center">Learning: 40 pedestrians before and after training</td>
+  </tr>
 </table>
 
 Every animation is a simulation with ParticleGym, made by a script in
-[`examples/gallery`](examples/gallery). The players, the shepherd, the
-swimmers and the cells follow simple scripted rules here; trained policies
-come next.
+[`examples/gallery`](examples/gallery) or
+[`examples/learning`](examples/learning). In the last row the policies were
+trained with the PPO baseline of the library, five seeds at once in 27 to
+45 s on one GPU; elsewhere the players, the shepherd, the swimmers and the
+cells follow simple scripted rules. [Learning](docs/learning.md) has the
+numbers, also for the tasks that PPO does not solve.
 
 > **Status: pre-alpha (v0.1.0.dev0).** The physics core, its validation
 > tests, a room-evacuation environment, six

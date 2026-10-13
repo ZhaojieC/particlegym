@@ -186,7 +186,92 @@ python examples/learning/animate.py --task brick_wall --input results
 `train.py` writes the learning curves, the policies before and after
 training and the returns of the evaluation episodes; `plot.py` draws the
 curves with the baselines; `animate.py` shows the policy before and after
-training side by side, for the seed with the median return.
+training side by side, for the seed with the median return; `doors.py`
+counts the doors that the pedestrians of the evacuation task use.
+
+## Results of PPO
+
+One run of `train.py` per task with five seeds, on one NVIDIA L40S GPU
+(JAX 0.11.2, single precision). The settings were fixed before the run and
+were not tuned afterwards. The numbers are mean returns over 64 evaluation
+episodes with the same starts for every policy; for PPO, the mean over the
+five seeds and the range of the seeds. The outputs are in
+`benchmarks/learning`.
+
+| Task | PPO, best action | PPO with exploration noise | Scripted rule | Random actions |
+|---|---|---|---|---|
+| `microswimmer`: altitude gained in 100 time units | 39.8 (35.4 to 42.1) | 31.0 | 3.4 | −0.1 |
+| `brick_wall`: bricks removed, of 40 | 33.6 (32.2 to 35.0) | 35.5 | 31.3 | 6.2 |
+| `evacuation`: return per pedestrian | −8.9 (−12.8 to −6.4) | −9.2 | −5.8 | −29.6 |
+| `herding`: return | −0.2 (−0.2 to −0.2) | −0.2 | 159.5 | −0.4 |
+
+PPO learns two of the four tasks, is worse than a simple rule in the third
+and fails in the fourth.
+
+| Microswimmer | Brick wall | Evacuation |
+|---|---|---|
+| ![Learning curve of the microswimmer task](assets/learning/learning_microswimmer.png) | ![Learning curve of the brick wall](assets/learning/learning_brick_wall.png) | ![Learning curve of the evacuation task](assets/learning/learning_evacuation.png) |
+
+*Return during training, with exploration noise, against the number of agent
+steps of one seed: mean of the five seeds (line) and their range (band).
+Dashed: the baselines.*
+
+**Microswimmer.** With the continuous observation, all five seeds learn to
+climb: 39.8 length units in 100 time units, 1.3 times the distance of 30
+that a swimmer covers by its own swimming, against 3.4 for naive swimmers.
+The return during training reaches 35 after 13 million agent steps and then
+falls slowly to about 32; the best action of the final policy does better
+than the policy with its exploration noise.
+
+![Swimmers before and after training](assets/gallery/learned_microswimmer.gif)
+
+*400 swimmers steered by the policy before training (left) and after
+training (right), from the same starts. The picture shows 4 × 4 periods of
+the flow and the altitude that the swimmers have reached.*
+
+**Brick wall.** All five seeds remove more bricks than the scripted player
+in 3000 steps (60 s of play): 33.6 of 40 against 31.3. The return of the
+scripted player varies between episodes with a standard deviation of 5.5,
+and most episodes of both players last until the step limit. The trained
+policies do a little better with their exploration noise (35.5) than with
+the best action.
+
+![The brick wall before and after training](assets/gallery/learned_brick_wall.gif)
+
+**Evacuation.** The return is −0.1 for every step of 0.1 s in the room, so
+−8.9 means that a pedestrian needs 8.9 s on average to leave. The trained
+policies empty the room before the limit of 30 s in all but one of their 320
+evaluation episodes, but none is as fast as walking to the nearest door
+(5.8 s), and the seeds differ. The policies do
+not use all four doors (`benchmarks/learning/evacuation_doors.txt`): the
+best seed uses three doors, two seeds use two, and the two worst seeds send
+nearly everyone to one door. A pedestrian observes its own position and
+velocity only, not the other pedestrians.
+
+![The room with four doors before and after training](assets/gallery/learned_evacuation.gif)
+
+**Herding.** PPO does not learn this task. In all five seeds the trained
+shepherd walks away from the flock, which stays where it is: the return is
+−0.2, against 159.5 for the scripted shepherd of Strömbom et al. (2014),
+which brings the flock to the target in 506 steps on average. The reward is
+the distance by which the centre of the flock approaches the target, and the
+shepherd starts on the side of the flock that faces the target, so its first
+encounters probably push the flock the wrong way. Other rewards, a
+curriculum or more exploration have not been tried.
+
+![The shepherd before and after training](assets/learning/learned_herding.gif)
+
+*The trained shepherd (right) leaves the field.*
+
+Training took 27 s (microswimmer), 43 s (brick wall), 45 s (evacuation) and
+136 s (herding) for the five seeds together, compilation included. With the
+78.6, 52.4, 98.3 and 39.3 million agent steps of each seed, this is 14.7,
+6.1, 11.0 and 1.4 million agent steps per second, updates of the networks
+included.
+
+Limits of these results: one run per task; the policies see no pictures and
+no other agents; the critic is not central; and the evacuation and herding
+tasks are not solved.
 
 ## References
 

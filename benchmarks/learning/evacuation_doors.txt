@@ -1,0 +1,8 @@
+task evacuation: pedestrians of 40 that leave through each door, mean of 64 episodes of at most 300 steps
+door centres: (5, 10)  (5, 0)  (0, 5)  (10, 5)
+PPO, seed 0 (return  -6.385)     5.9    0.0   15.3   18.8
+PPO, seed 1 (return  -7.552)     0.0   21.1    0.0   18.9
+PPO, seed 2 (return  -7.556)    21.1    0.0    0.0   18.9
+PPO, seed 3 (return -10.352)    32.8    7.2    0.0    0.0
+PPO, seed 4 (return -12.803)     0.0   40.0    0.0    0.0
+walk to the nearest door            9.9   10.0   10.3    9.8

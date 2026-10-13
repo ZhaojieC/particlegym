@@ -1,0 +1,9 @@
+task herding, 5 seeds, device cuda:0
+settings PPOConfig(n_envs=512, n_steps=128, n_iterations=600, n_epochs=4, n_minibatches=16, gamma=0.995, gae_lambda=0.95, clip=0.2, entropy=0.01, value=0.5, learning_rate=0.0003, max_grad_norm=0.5, hidden=(64, 64), anneal=True, log_std=-0.5, normalize=True, reward_scale=0.1)
+65536 agent steps per update
+600 of 600 updates in 136 s (1448173 agent steps per second, compilation included)
+evaluation: 64 episodes of at most 1000 steps, the same starts for every policy; return per agent, mean over the episodes
+PPO                             -0.204  (seeds: [-0.203, -0.203, -0.209, -0.203, -0.203]; episodes finished 1.00; length 1000)
+PPO with exploration noise      -0.204  (seeds: [-0.203, -0.203, -0.211, -0.203, -0.203]; episodes finished 1.00; length 1000)
+scripted shepherd              159.498  (std over episodes 3.930; episodes finished 1.00; length 506)
+random                          -0.435  (std over episodes 0.939; episodes finished 1.00; length 1000)

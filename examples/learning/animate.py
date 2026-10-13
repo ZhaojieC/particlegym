@@ -74,12 +74,14 @@ def main() -> None:
         return state, states
 
     key = jax.random.key(args.seed)
+    view = task.view or {}
     halves = []
     for policy, noisy in ((untrained, True), (trained, False)):
         first, states = rollout(policy, noisy, key)
-        frames = [env.render(first, args.width)]
+        frames = [env.render(first, args.width, **view)]
         for i in range(args.stride - 1, args.steps, args.stride):
-            frames.append(env.render(jax.tree.map(lambda leaf, i=i: leaf[i], states), args.width))
+            state = jax.tree.map(lambda leaf, i=i: leaf[i], states)
+            frames.append(env.render(state, args.width, **view))
         halves.append(frames)
 
     gap = np.full((halves[0][0].shape[0], 8, 3), 255, np.uint8)
