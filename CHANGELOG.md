@@ -83,7 +83,11 @@ All notable changes to this project are documented here. The format follows
 - Notebook `examples/quickstart.ipynb`: a room evacuation, batched rooms, a
   game through the Gymnasium interface and a short PPO run.
 - Benchmark `benchmarks/bench_envs.py`: control steps per second of the
-  environments for batches of several sizes.
+  environments for batches of several sizes, with a table for one GPU and
+  four CPU cores in the roadmap. Pixel observations of the brick wall do
+  not compile on a GPU within 600 s yet.
+- Validation: the equation of state and the temperature of the DPD fluid
+  are compared with Groot & Warren (1997).
 - Packaging: the README shown by the package index uses absolute addresses
   for pictures and links, the source distribution leaves out the animations,
   and CI builds and checks the package.

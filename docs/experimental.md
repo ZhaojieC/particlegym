@@ -71,6 +71,10 @@ obs, state, reward, terminated, truncated, info = env.step(key, state, jnp.array
 - **Observation**: `"state"` (ball position and velocity, paddle position,
   one entry per brick) or `"pixels"` (the current image and the one of the
   previous step, computed in JAX, so the game still compiles and batches).
+  Pixel observations are slow for now: about 1,900 control steps per second
+  for one game on a CPU, against 47,000 with state observations, and on a
+  GPU the drawing code did not compile within 600 s (see the
+  [roadmap](roadmap.md#performance-plan)).
 - **Action**: stay, left or right; or the paddle velocity (`action="continuous"`).
 - **Reward**: the number of bricks removed in the step. The game ends when
   the wall is cleared or the last of three balls is lost.

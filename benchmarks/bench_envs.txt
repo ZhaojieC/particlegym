@@ -1,0 +1,87 @@
+# Output of benchmarks/bench_envs.py at commit 95bc14b: batches of 1024 and
+# 16384 on one NVIDIA L40S GPU, then batches of 1 and 64 on four cores of the
+# CPU of the same node, one process per case. The numbers are control steps
+# per second of all environments of a batch together. The case with pixel
+# observations was stopped on the GPU after 600 s, during the compilation.
+NVIDIA L40S, 46068 MiB
+Model name:                              AMD EPYC 9554 64-Core Processor
+== GPU ==
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Evacuation, 1 pedestrian | 20 | 7,176,905 | 67,652,119 |
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Evacuation, 40 pedestrians, 4 doors | 20 | 998,517 | 546,200 |
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Counter-flow, 80 pedestrians | 20 | 363,726 | 101,987 |
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Brick wall, state observations | 20 | 3,466,009 | 28,088,500 |
+E1013 09:22:47.468247 1847372 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion.4 for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+pixels: failed or stopped after 600 s
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Herding, 40 sheep | 20 | 1,776,278 | 2,983,357 |
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Microswimmer | 10 | 11,314,700 | 117,732,274 |
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Cell migration, 9 cells | 50 | 10,332 | 9,920 |
+JAX 0.11.2 on cuda:0, float32
+| Environment | Substeps | Batch 1024 | Batch 16384 |
+|---|---|---|---|
+| Billiards, 15 balls (one shot per step) |  | 2,132 | 1,236 |
+E1013 09:37:42.407765 1852604 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion.4 for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+pixels, batch 4096: failed or stopped after 600 s
+== CPU, 4 cores ==
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Evacuation, 1 pedestrian | 20 | 38,792 | 312,481 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Evacuation, 40 pedestrians, 4 doors | 20 | 3,617 | 2,265 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Counter-flow, 80 pedestrians | 20 | 1,092 | 2,015 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Brick wall, state observations | 20 | 47,000 | 37,231 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Brick wall, 84 x 84 pixels | 20 | 1,864 | 4,838 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Herding, 40 sheep | 20 | 7,339 | 5,391 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Microswimmer | 10 | 63,363 | 546,658 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Cell migration, 9 cells | 50 | 334 | 1,326 |
+JAX 0.11.2 on cpu:0, float32
+| Environment | Substeps | Batch 1 | Batch 64 |
+|---|---|---|---|
+| Billiards, 15 balls (one shot per step) |  | 22 | 5 |

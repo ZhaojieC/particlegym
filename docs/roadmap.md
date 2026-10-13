@@ -59,12 +59,46 @@ On one NVIDIA L40S GPU, the PPO baseline trained five seeds at once at 14.7
 1.4 (herding) million agent steps per second, with the physics substeps, the
 updates of the networks and the compilation included (see
 [Learning](learning.md#results-of-ppo)). `benchmarks/bench_envs.py` measures
-the environments alone, for batches of several sizes.
+the environments alone, with random actions: control steps per second of all
+environments of a batch together, on one NVIDIA L40S GPU and on four cores of
+an AMD EPYC 9554 CPU (JAX 0.11.2, float32; the output is in
+`benchmarks/bench_envs.txt`, rounded here to two digits). A control step
+contains the number of physics steps of the column "Substeps" and the
+computation of the observations.
+
+| Environment | Substeps | GPU, batch 1024 | GPU, batch 16384 | CPU, batch 1 | CPU, batch 64 |
+|---|---|---|---|---|---|
+| Evacuation, 1 pedestrian | 20 | 7,200,000 | 68,000,000 | 39,000 | 310,000 |
+| Evacuation, 40 pedestrians, 4 doors | 20 | 1,000,000 | 550,000 | 3,600 | 2,300 |
+| Counter-flow, 80 pedestrians | 20 | 360,000 | 100,000 | 1,100 | 2,000 |
+| Brick wall, state observations | 20 | 3,500,000 | 28,000,000 | 47,000 | 37,000 |
+| Brick wall, 84 × 84 pixels | 20 | not compiled in 600 s | not compiled in 600 s | 1,900 | 4,800 |
+| Herding, 40 sheep | 20 | 1,800,000 | 3,000,000 | 7,300 | 5,400 |
+| Microswimmer | 10 | 11,000,000 | 120,000,000 | 63,000 | 550,000 |
+| Cell migration, 9 cells | 50 | 10,000 | 9,900 | 330 | 1,300 |
+| Billiards, 15 balls | one shot | 2,100 | 1,200 | 22 | 5 |
+
+- With several agents in an environment, the number of agent steps is larger
+  by the number of agents: 40 times for the room with four doors.
+- A larger batch does not always help: for the crowds and the cell
+  migration, the throughput does not rise from 1024 to 16384 environments.
+- A step of the billiards game is a whole shot, and in a batch it lasts until
+  the balls of the slowest table have stopped.
+- Pixel observations are slow: every pixel is tested against every brick, so
+  on the CPU the game is 25 times slower than with state observations for one
+  environment and 8 times for 64. On the GPU the drawing code was still being
+  compiled after 600 s, so pixel observations cannot be used on a GPU yet.
+- The numbers hold within about a factor of two. A run of an earlier version
+  of the script, which did less work in a step, gave values up to two times
+  lower on another node with the same GPU and CPU; the cause was not
+  investigated.
 
 Planned improvements:
 
 - Verlet neighbour lists with a skin, rebuilt only when needed, to remove most
   empty candidate slots and amortise the cell-list construction.
+- Pixel observations that compile on a GPU and cost less on a CPU, for
+  example with a table of the bricks that can cover each pixel.
 - A comparison of batched environments on a GPU with VMAS and the JAX
   version of MPE on a comparable 2D task and the same hardware. This has not
   been done yet.
