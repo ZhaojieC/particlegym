@@ -3,6 +3,9 @@
 Each case steps a batch of environments (``jax.vmap``) for a number of control
 steps inside one compiled ``jax.lax.scan``, after a warm-up run that compiles
 it, and reports the best of three timings. Episodes that end are not reset.
+The rewards and the observations are summed and returned: a result that is
+not used would be removed by the compiler together with the work of computing
+it, and the timing of pixel observations would leave out the drawing.
 A control step consists of several physics steps (the column "Substeps"); a
 step of the billiards game is a whole shot, and in a batch it lasts until the
 balls of the slowest table have stopped. A case that fails, for example for
@@ -55,10 +58,11 @@ def measure(env, batch: int, steps: int) -> float:
             action_key, step_key = jax.random.split(key)
             action = env.action_space.sample(action_key, (batch, env.n_agents))
             out = step(jax.random.split(step_key, batch), state, action, params)
-            return out[1], out[2].sum()
+            observed = sum(leaf.sum() for leaf in jax.tree.leaves(out[0]))
+            return out[1], out[2].sum() + observed
 
-        _, rewards = jax.lax.scan(body, state, jax.random.split(run_key, steps))
-        return rewards.sum()
+        _, used = jax.lax.scan(body, state, jax.random.split(run_key, steps))
+        return used.sum()
 
     run(jax.random.key(0)).block_until_ready()
     best = float("inf")
