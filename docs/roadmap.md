@@ -54,6 +54,13 @@ machine, so a step is 30 to 90 times faster. Two caveats:
   larger steps.
 - Batching with `jax.vmap` does not help on a CPU; it is meant for GPUs.
 
+On one NVIDIA L40S GPU, the PPO baseline trained five seeds at once at 14.7
+(microswimmer), 11.0 (evacuation with 40 pedestrians), 6.1 (brick wall) and
+1.4 (herding) million agent steps per second, with the physics substeps, the
+updates of the networks and the compilation included (see
+[Learning](learning.md#results-of-ppo)). `benchmarks/bench_envs.py` measures
+the environments alone, for batches of several sizes.
+
 Planned improvements:
 
 - Verlet neighbour lists with a skin, rebuilt only when needed, to remove most

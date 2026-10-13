@@ -84,7 +84,10 @@ some of them. It is built around three goals:
   simulation step compiles to a single XLA program that runs on CPU or GPU, and
   environments can be batched with `jax.vmap`. On a 4-core CPU a step of a
   100-pedestrian crowd takes about 0.15 ms (see the
-  [benchmarks](docs/roadmap.md#performance-plan)).
+  [benchmarks](docs/roadmap.md#performance-plan)). On one NVIDIA L40S GPU,
+  PPO trains five seeds at once at 1.4 to 14.7 million agent steps per
+  second, physics and network updates included
+  ([Learning](docs/learning.md)).
 - **Simple.** Pure Python, two dependencies (`jax`, `numpy`), the same code for
   2D and 3D, and readable models with references.
 
