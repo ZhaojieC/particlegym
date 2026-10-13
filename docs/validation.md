@@ -47,6 +47,7 @@ Reference results: version 0.1.0.dev0, CPU, float64.
 | Evacuation through a door only | `test_social_force.py::test_pedestrians_leave_only_through_the_door` (30 pedestrians, 8 m room, 1.2 m door, \(v_0 = 1.2\) m/s, Helbing parameters) | everybody leaves within 60 s; every pedestrian crosses the wall plane inside the door; nobody passes a wall | evacuation time 33 s; crossings between y = 3.79 and 4.19 m (door 3.4–4.6 m) |
 | A 3D room reduces to the 2D room | `test_evacuation_env_3d.py::test_mid_plane_of_a_3d_room_reproduces_the_2d_room` (14 pedestrians in the mid-plane of a 10 m × 10 m × 3 m room, two doors over the full height, 8 s) | positions equal those in the 2D room within 1e-8 m; the height stays constant within 1e-12 m; same exit times and rewards | equal to round-off (difference 0 in double precision) |
 | Exits in 3D | `test_evacuation_env_3d.py::test_crowd_leaves_only_through_the_exits` (40 pedestrians, 10 m × 10 m × 4 m room, a door in a side wall and a hatch in the ceiling) | everybody leaves within 60 s, each through the door or the hatch | all 40 leave in 7.4 s: 10 through the door, 30 through the hatch |
+| Stability limit of the explicit sliding friction | `test_social_force.py::test_explicit_wall_friction_has_a_stability_limit` (a pedestrian sliding along a wall at a fixed overlap) | every step multiplies the sliding velocity by \(1 - \kappa\,\delta\,\Delta t/m\) | exact (1e-9); with the defaults the factor is below −1 for overlaps above 0.133 m |
 
 The mean flow in this test, 0.76 persons per metre per second, is lower than
 the specific flow of 1.3 to 1.9 persons/(m s) measured in bottleneck
@@ -55,6 +56,14 @@ part of the evacuation, and every pedestrian heads straight at the door
 centre. With 100 pedestrians in a 10 m room and \(v_0 = 1.5\) m/s
 (`examples/room_evacuation_2d.py`), the mean flow is 1.68 persons/(m s),
 inside the experimental range. These are sanity checks, not a calibration.
+
+## Pictures
+
+| Property | Test | Criterion | Reference result |
+|---|---|---|---|
+| Discs are drawn where the particles are | `test_viz.py::test_disc_is_drawn_at_its_position_with_its_area` | centroid and area of the drawn disc | centroid within 0.17 pixels (0.5 without oversampling), area within 1 % |
+| A rendered room shows the state | `test_viz.py::test_evacuation_render_matches_the_state` | the pixel at the centre of every pedestrian has its colour; pedestrians that have left are not drawn | exact |
+| Pixel images in JAX | `test_viz.py::test_pixel_coverage_matches_areas_and_positions` | summed coverage equals the area of discs and boxes; centroid equals the position | area within 1 %, centroid within 0.001 length units |
 
 ## Planned validation
 

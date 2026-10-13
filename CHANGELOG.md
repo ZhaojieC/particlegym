@@ -21,6 +21,13 @@ All notable changes to this project are documented here. The format follows
   (no gravity), with rectangular doors in the walls, the floor and the
   ceiling, and 6, 18 or 26 discrete directions. The 2D room is unchanged.
 - Example: evacuation of a 3D chamber through a door and a ceiling hatch.
+- Module `particlegym.viz`: pictures of 2D systems (`Canvas`), GIF and MP4
+  writers, `Evacuation.render`, and pixel images computed in JAX for image
+  observations. Pillow is an optional dependency (`pip install
+  "particlegym[viz]"`).
+- Gallery: scripts in `examples/gallery` that make the animations shown in
+  the README and on the new gallery page of the documentation.
+- Workflow that publishes the documentation with GitHub Pages.
 
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):

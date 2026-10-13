@@ -36,6 +36,7 @@ import jax.numpy as jnp
 import numpy as np
 
 from particlegym import physics as pp
+from particlegym import viz
 
 CROWD_POLICIES = ("nearest_exit", "random", "stand")
 
@@ -388,6 +389,35 @@ class Evacuation:
             length = jnp.linalg.norm(offset, axis=1, keepdims=True)
             direction = offset / jnp.maximum(length, 1e-9)
         return params.desired_speed * direction
+
+    def render(self, state: EvacuationState, width: int = 480, colors=None) -> np.ndarray:
+        """Draw the room and the pedestrians of a 2D environment.
+
+        Drawing runs on the host, outside compiled code, and needs Pillow
+        (``pip install "particlegym[viz]"``). Walls are black, obstacles grey,
+        agents red and the crowd blue. For 3D rooms, write the trajectory
+        with :func:`particlegym.io.write_extxyz` and open it in OVITO.
+
+        Args:
+            state: An unbatched state.
+            width: Image width in pixels.
+            colors: (N, 3) colours of the pedestrians, replacing the defaults.
+
+        Returns:
+            The picture, a (height, width, 3) array of type ``uint8``.
+        """
+        if self.dim != 2:
+            raise NotImplementedError("render draws 2D rooms only; use write_extxyz in 3D")
+        margin = 1.0
+        canvas = viz.Canvas((-margin, -margin), tuple(x + margin for x in self.size), width)
+        for shapes in self.obstacles:
+            canvas.shapes(shapes, viz.GREY)
+        canvas.shapes(self.force_field.walls[0].shapes, viz.BLACK, thickness=0.12)
+        p = state.particles
+        if colors is None:
+            colors = np.where(np.asarray(p.kind)[:, None] == 0, viz.RED, viz.BLUE)
+        canvas.discs(p.pos, p.radius, colors, p.alive)
+        return canvas.frame()
 
     def _observe(self, state: EvacuationState) -> jax.Array:
         """Agent observations: position scaled to [-0.5, 0.5] in the room, and velocity."""

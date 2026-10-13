@@ -3,6 +3,7 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
+import pytest
 
 from particlegym import physics as pp
 
@@ -62,3 +63,27 @@ def test_pedestrians_leave_only_through_the_door():
     evacuation_time = (np.argmax(remaining == 0) + 1) * dt
     # 30 people through a 1.2 m door: tens of seconds, not seconds and not minutes.
     assert 10.0 < evacuation_time < 60.0, evacuation_time
+
+
+@pytest.mark.parametrize("overlap, stable", [(0.10, True), (0.15, False)])
+def test_explicit_wall_friction_has_a_stability_limit(overlap, stable):
+    # A pedestrian slides along a wall that it overlaps by a fixed amount (the
+    # wall has no normal force here). Every step multiplies the sliding
+    # velocity by 1 - kappa * overlap * dt / m, which is below -1 for overlaps
+    # above 2 m / (kappa dt) = 0.133 m with the default parameters.
+    kappa, mass, radius, dt = 2.4e5, 80.0, 0.25, 0.005
+    wall = pp.Plates.from_segments([[(-50.0, 0.0), (50.0, 0.0)]])
+    force_field = pp.ForceField(
+        pp.Box((-50.0, -1.0), (50.0, 1.0)),
+        walls=[pp.Walls(wall, pp.Harmonic(k=0.0), friction=kappa)],
+    )
+    state = pp.create_state([[0.0, radius - overlap]], vel=[[1.0, 0.0]], mass=mass, radius=radius)
+    state, _ = pp.init_forces(state, force_field)
+    speeds = []
+    for _ in range(4):
+        state, _ = pp.velocity_verlet(state, force_field, dt)
+        speeds.append(float(state.vel[0, 0]))
+
+    factor = 1.0 - kappa * overlap * dt / mass
+    np.testing.assert_allclose(speeds[3] / speeds[2], factor, rtol=1e-9)
+    assert (abs(factor) < 1.0) == stable

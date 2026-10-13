@@ -1,4 +1,6 @@
 site_name: ParticleGym
+site_url: https://zhaojiec.github.io/particlegym/
+repo_url: https://github.com/ZhaojieC/particlegym
 site_description: Fast, physically validated 2D/3D particle-dynamics environments for reinforcement learning
 theme:
   name: material
@@ -7,6 +9,7 @@ theme:
     - navigation.sections
 nav:
   - Home: index.md
+  - Gallery: gallery.md
   - Environments: environments.md
   - Design: design.md
   - Physics models: physics.md

@@ -20,12 +20,16 @@ pedestrian evacuation.
   environments batch with `jax.vmap`.
 - **Simple.** Two dependencies, the same code for 2D and 3D, readable models.
 
+![10,000 pedestrians leave a hall](assets/gallery/crowd_10000.gif)
+
+More animations are in the [gallery](gallery.md).
+
 ## Installation
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ZhaojieC/particlegym
 cd particlegym
-pip install -e .
+pip install -e ".[viz]"
 ```
 
 ## A first simulation

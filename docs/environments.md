@@ -162,6 +162,44 @@ One control step advances the physics by `substeps` BAOAB steps of length
 contacts of the social force model; the control interval is the time between
 decisions ([design decision D8](design.md#decisions)).
 
+**Dense crowds.** The sliding friction is integrated explicitly. For a
+pedestrian that overlaps a wall by \(\delta\), every physics step multiplies
+its sliding velocity by \(1 - \kappa\,\delta\,\Delta t/m\), so the step is
+unstable when \(\kappa\,\delta\,\Delta t/m > 2\). With the defaults
+(\(\kappa = 2.4\times10^5\) kg m⁻¹ s⁻¹, \(m = 80\) kg, \(\Delta t = 5\) ms)
+this is an overlap of 0.13 m with a wall, and 0.067 m between two pedestrians
+of equal mass. Such overlaps can occur where a large crowd presses against a
+door post: a run with 10,000 pedestrians and a desired speed of 2 m/s became
+unstable after 9.6 s at a door post, while the same run at 1.3 m/s stayed
+stable (`examples/gallery/crowd_10000.py`). For crowds of thousands, use a
+smaller `dt` with more `substeps` or a lower desired speed, and check the
+largest speed of the pedestrians.
+
+### Pictures and animations
+
+`env.render(state)` draws a 2D room and returns the picture as a NumPy array
+of shape (height, width, 3). It runs on the host, outside compiled code, and
+needs Pillow (`pip install "particlegym[viz]"`). Walls are black, obstacles
+grey, agents red and the crowd blue; pass `colors` to choose the colour of
+every pedestrian.
+
+```python
+from particlegym import viz
+
+frames = [env.render(state)]
+for key in jax.random.split(key, 100):
+    obs, state, *_ = step(key, state, action)
+    frames.append(env.render(state))
+viz.save_gif("room.gif", frames, fps=20)  # or viz.save_mp4, which needs ffmpeg
+```
+
+`particlegym.viz.Canvas` draws discs, rectangles, lines and the shape sets of
+the physics core for any 2D system. For image observations inside compiled
+code, `viz.pixel_centres`, `viz.disc_coverage` and `viz.box_coverage` compute
+small pixel images in JAX. 3D systems are written with
+`particlegym.io.write_extxyz` and rendered with OVITO; the scripts of the
+[gallery](gallery.md) show how.
+
 ### Parameters
 
 `EvacuationParams` holds the values that may change between episodes:

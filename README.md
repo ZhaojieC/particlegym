@@ -1,16 +1,39 @@
 # ParticleGym
 
-**Fast, physically validated 2D/3D particle-dynamics environments for reinforcement learning.**
+**Physics-based particle simulations as fast reinforcement-learning environments, in 2D and 3D.**
 
-> **Status: pre-alpha (v0.1.0.dev0).** The physics core and its validation
-> tests are in place, and a functional room-evacuation environment is
-> available as a preview; Gymnasium and PettingZoo wrappers come next. APIs
-> may change. See the [roadmap](docs/roadmap.md).
+[![CI](https://github.com/ZhaojieC/particlegym/actions/workflows/ci.yml/badge.svg)](https://github.com/ZhaojieC/particlegym/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-ParticleGym simulates many interacting particles — pedestrians, active
-colloids, cells, swarm robots — and lets reinforcement-learning agents control
-some of them. The first application, and the focus of version 1.0, is
-pedestrian evacuation. It is built around three goals:
+<table>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/evacuation_room.gif" width="100%" alt="Pedestrians leave a room through two doors"></td>
+    <td width="50%"><img src="docs/assets/gallery/crowd_10000.gif" width="100%" alt="10,000 pedestrians leave a hall"></td>
+  </tr>
+  <tr>
+    <td align="center">100 pedestrians leave a room; a pillar stands in front of the right door</td>
+    <td align="center">10,000 pedestrians leave a hall through ten doors</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/evacuation_chamber_3d.gif" width="100%" alt="Agents leave a 3D chamber"></td>
+    <td width="50%"><img src="docs/assets/gallery/encircle_3d.gif" width="100%" alt="Drones encircle a moving target"></td>
+  </tr>
+  <tr>
+    <td align="center">60 agents leave a 3D chamber through a door and a ceiling hatch</td>
+    <td align="center">8 drones encircle a moving target (<a href="https://github.com/ZhaojieC/drone-encircle">drone-encircle</a>, built on ParticleGym)</td>
+  </tr>
+</table>
+
+Every animation is a simulation with ParticleGym, made by a script in
+[`examples/gallery`](examples/gallery).
+
+> **Status: pre-alpha (v0.1.0.dev0).** The physics core, its validation tests
+> and a room-evacuation environment are in place; Gymnasium and PettingZoo
+> wrappers come next. APIs may change. See the [roadmap](docs/roadmap.md).
+
+ParticleGym simulates many interacting particles (pedestrians, active
+colloids, cells, swarm robots) and lets reinforcement-learning agents control
+some of them. It is built around three goals:
 
 - **Physically consistent.** Agents choose what they *want* (a desired
   direction of motion); the motion itself always follows from forces and a
@@ -24,6 +47,55 @@ pedestrian evacuation. It is built around three goals:
 - **Simple.** Pure Python, two dependencies (`jax`, `numpy`), the same code for
   2D and 3D, and readable models with references.
 
+## Quick start
+
+```bash
+git clone https://github.com/ZhaojieC/particlegym
+cd particlegym
+pip install -e ".[viz]"
+```
+
+ParticleGym requires Python 3.12 or later. For GPU support, install the
+matching JAX build first, following the
+[JAX installation guide](https://docs.jax.dev/en/latest/installation.html).
+
+```python
+import jax
+
+from particlegym import envs, viz
+from particlegym import physics as pp
+
+# A 10 m x 10 m room with a door in the right wall and 30 pedestrians.
+env = envs.Evacuation(room=(10.0, 10.0), exits=[pp.Opening("x+", (4.4, 5.6))], n_agents=30)
+step = jax.jit(env.step)
+
+key = jax.random.key(0)
+obs, state = env.reset(key)
+frames = [env.render(state)]
+for _ in range(100):  # 10 s
+    key, action_key, step_key = jax.random.split(key, 3)
+    action = jax.random.randint(action_key, (env.n_agents,), 0, 8)  # a random direction each
+    obs, state, reward, terminated, truncated, info = step(step_key, state, action)
+    frames.append(env.render(state))
+viz.save_gif("room.gif", frames)
+
+# The same environment, 1024 rooms at once.
+keys = jax.random.split(key, 1024)
+obs, states = jax.vmap(env.reset)(keys)
+actions = jax.random.randint(key, (1024, env.n_agents), 0, 8)
+obs, states, reward, *_ = jax.jit(jax.vmap(env.step))(keys, states, actions)
+print(obs.shape, reward.shape)  # (1024, 30, 4) (1024, 30)
+```
+
+An action sets the direction in which an agent wants to walk. The driving
+term of the social force model, `m (v0 e - v) / tau`, is exactly the friction
+term of Langevin dynamics with `gamma = 1 / tau` and drift velocity
+`u = v0 e`, so one integrator serves pedestrians, colloids and active
+particles; see [Physics models](docs/physics.md). The physics core can also be
+used directly, without an environment: see
+[`examples/room_evacuation_2d.py`](examples/room_evacuation_2d.py) and the
+other [examples](examples).
+
 ## Features
 
 | Component | Available |
@@ -35,74 +107,7 @@ pedestrian evacuation. It is built around three goals:
 | Geometry | plates (segments/rectangles), spheres, boxes, rooms with real door openings |
 | Integrators | velocity Verlet; BAOAB Langevin with a drift velocity (self-propulsion) |
 | Exits | `alive` mask: particles that leave are frozen, shapes stay static |
-| Output | extended XYZ for [OVITO](https://www.ovito.org/) and ASE |
-
-## Installation
-
-ParticleGym requires Python 3.12 or later.
-
-```bash
-git clone <repository-url>
-cd particlegym
-pip install -e .
-```
-
-For GPU support, install the matching JAX build first, following the
-[JAX installation guide](https://docs.jax.dev/en/latest/installation.html).
-
-## Quick start: pedestrians leaving a room through a door
-
-```python
-import jax
-import jax.numpy as jnp
-import numpy as np
-
-from particlegym import physics as pp
-
-# A 10 m x 10 m room with a 1.2 m wide door in the right wall.
-box = pp.Box(lo=(-1.0, -1.0), hi=(13.0, 11.0))
-walls = pp.box_walls((0, 0), (10, 10), openings=[pp.Opening("x+", (4.4, 5.6))])
-
-force_field = pp.ForceField(
-    box,
-    pair=[pp.SocialForce(), pp.TangentialFriction()],
-    walls=[pp.Walls(walls, pp.SocialForce(), friction=2.4e5)],
-)
-
-rng = np.random.default_rng(0)
-radius = rng.uniform(0.25, 0.30, size=50)
-state = pp.create_state(
-    pp.random_positions(rng, (0, 0), (10, 10), radius), mass=80.0, radius=radius
-)
-state, _ = pp.init_forces(state, force_field)
-
-door = jnp.array([10.0, 5.0])
-
-
-@jax.jit
-def step(state):
-    # Desired direction: towards the door, then straight out.
-    to_door = door - state.pos
-    direction = jnp.where(state.pos[:, :1] < 10.0, to_door, jnp.array([1.0, 0.0]))
-    direction = direction / jnp.linalg.norm(direction, axis=1, keepdims=True)
-    state, info = pp.langevin_baoab(
-        state, force_field, dt=0.005, gamma=1 / 0.5, drift=1.5 * direction
-    )
-    # Pedestrians that have walked 1 m past the door have left the room.
-    return state._replace(alive=state.alive & (state.pos[:, 0] < 11.0)), info
-
-
-for _ in range(20_000):  # 100 s
-    state, info = step(state)
-print("still inside:", int(state.alive.sum()))
-```
-
-The driving term of the social force model, `m (v0 e - v) / tau`, is exactly
-the friction term of Langevin dynamics with `gamma = 1 / tau` and drift
-velocity `u = v0 e`; see [Physics models](docs/physics.md). In the upcoming
-environment layer, the RL action sets the desired direction `e`.
-
-More examples are in [`examples/`](examples).
+| Output | pictures, GIF and MP4 animations of 2D systems (`particlegym.viz`); pixel images for observations; extended XYZ for [OVITO](https://www.ovito.org/) and ASE |
 
 ## Validation
 
