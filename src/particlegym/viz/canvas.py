@@ -139,6 +139,42 @@ class Canvas:
             joint="curve",
         )  # fmt: skip
 
+    def field(self, values, lo=None, hi=None, *, low=None, high=None, colors=(WHITE, GREY)):
+        """Draw a scalar field on a regular grid as a smooth image.
+
+        Draw the field first: it covers what was drawn before in its region.
+
+        Args:
+            values: (nx, ny) values; ``values[i, j]`` belongs to the cell
+                number i along x and j along y, the layout of
+                :class:`~particlegym.physics.Grid`.
+            lo: Lower-left corner of the grid; the corner of the canvas if omitted.
+            hi: Upper-right corner of the grid; the corner of the canvas if omitted.
+            low: Value drawn in the first colour; the smallest value if omitted.
+            high: Value drawn in the last colour; the largest value if omitted.
+            colors: Two or more (r, g, b) colours, spaced evenly between
+                ``low`` and ``high``; values in between are interpolated.
+        """
+        image, _ = _pillow()
+        values = np.asarray(values, dtype=float)
+        if values.ndim != 2:
+            raise ValueError("values must have shape (nx, ny)")
+        low = values.min() if low is None else float(low)
+        high = values.max() if high is None else float(high)
+        level = np.clip((values - low) / max(high - low, 1e-300), 0.0, 1.0)
+        table = np.asarray(colors, dtype=float)
+        stops = np.linspace(0.0, 1.0, len(table))
+        rgb = np.stack([np.interp(level, stops, table[:, c]) for c in range(3)], axis=-1)
+        # Image rows run along x at fixed y, from the top of the region down.
+        picture = image.fromarray(np.rint(rgb).astype(np.uint8).transpose(1, 0, 2)[::-1])
+        a = self._to_pixels(self.lo if lo is None else lo)
+        b = self._to_pixels(self.hi if hi is None else hi)
+        left, top, right, bottom = (round(float(v)) for v in (a[0], b[1], b[0], a[1]))
+        if right <= left or bottom <= top:
+            raise ValueError("hi must be larger than lo")
+        picture = picture.resize((right - left, bottom - top), image.Resampling.BILINEAR)
+        self._image.paste(picture, (left, top))
+
     def shapes(self, shapes: ShapeSet, color=BLACK, thickness: float = 0.1) -> None:
         """Draw a 2D shape set.
 

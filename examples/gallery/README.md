@@ -8,6 +8,13 @@ fixed random seed.
 |---|---|---|
 | `evacuation_room.gif` | `evacuation_room.py` | Pillow |
 | `crowd_10000.gif` | `crowd_10000.py` (about six minutes on 12 CPU cores) | Pillow |
+| `counterflow.gif` | `counterflow.py` | Pillow |
+| `brick_wall.gif` | `brick_wall.py` | Pillow |
+| `billiards.gif` | `billiards.py` | Pillow |
+| `herding.gif` | `herding.py` | Pillow |
+| `microswimmer.gif` | `microswimmer.py` | Pillow |
+| `cell_migration.gif` | `cell_migration.py` | Pillow |
+| `dpd_demixing.gif` | `dpd_demixing.py` | Pillow |
 | `evacuation_chamber_3d.gif` | the four steps below | Pillow, OVITO |
 | `encircle_3d.gif` | the [drone-encircle](https://github.com/ZhaojieC/drone-encircle) repository | |
 

@@ -48,6 +48,21 @@ def test_reset_places_pedestrians_inside_without_overlap():
     np.testing.assert_allclose(obs[:, 2:], 0.0)
 
 
+def test_spaces_describe_one_agent():
+    env = _env(n_agents=3)
+    obs, _ = env.reset(jax.random.key(0))
+    assert env.observation_space.shape == obs.shape[1:] == (4,)
+    assert env.action_space.n == 8
+    assert env.action_space.sample(jax.random.key(0), (3,)).shape == (3,)
+    assert _env(n_agents=3, n_directions=4).action_space.n == 4
+    vector = _env(n_agents=3, action="continuous").action_space
+    assert vector.shape == (2,) and (vector.low, vector.high) == (-1.0, 1.0)
+    room = envs.Evacuation(
+        room=(4.0, 4.0, 3.0), exits=[pp.Opening("x+", ((1.5, 2.5), (0.0, 2.0)))]
+    )
+    assert room.observation_space.shape == (6,) and room.action_space.n == 26
+
+
 def test_reset_depends_only_on_the_key():
     env = _env(n_crowd=10)
     reset = jax.jit(env.reset)

@@ -46,6 +46,20 @@ All notable changes to this project are documented here. The format follows
     cell-migration model (`ContactExponential`).
 - Benchmark `benchmarks/dpd_fluid.py`: temperature and pressure of the DPD
   fluid, with its reference output.
+- Six experimental environments with the interface of `Evacuation`, each
+  with tests, a scripted policy and an animation (see
+  `docs/experimental.md`): `CounterFlow` (two groups of pedestrians in a
+  corridor), `BrickWall` (an arcade game with state or pixel observations),
+  `Billiards`, `Herding` (flock rules adapted from Strömbom et al. 2014),
+  `Microswimmer` (the task of Colabrese et al. 2017) and `CellMigration`
+  (after Zhang et al. 2020).
+- `observation_space` and `action_space` on every environment
+  (`envs.Discrete`, `envs.Continuous`).
+- Brownian dynamics integrator `brownian` for particles without inertia.
+- `Canvas.field` draws a scalar field behind the particles.
+- Gallery animation of two DPD fluids that separate.
+- Benchmark `benchmarks/baselines.py`: scripted and random policies in the
+  experimental environments, with its reference output.
 
 - Project scaffold: packaging, CI, documentation site, contribution guidelines.
 - Physics core (2D and 3D, JAX):

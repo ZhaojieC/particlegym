@@ -57,6 +57,42 @@ def test_shapes_are_drawn_in_place():
         canvas.shapes(pp.Spheres([[0.0, 0.0, 0.0]], [1.0]))
 
 
+def test_scalar_field_is_drawn_in_place():
+    grid = pp.Grid((0.0, 0.0), (4.0, 2.0), (8, 4))
+    # One bright cell: number 6 along x and 0 along y, centred at (3.25, 0.25).
+    values = np.zeros(grid.shape)
+    values[6, 0] = 1.0
+    canvas = viz.Canvas((0.0, 0.0), (4.0, 2.0), width=80, supersample=1)
+    canvas.field(values, colors=(viz.WHITE, viz.BLACK))
+    darkness = 255.0 - canvas.frame()[..., 0].astype(float)
+    rows, cols = np.indices(darkness.shape)
+    centroid = np.array([(cols * darkness).sum(), (rows * darkness).sum()]) / darkness.sum() + 0.5
+    np.testing.assert_allclose(centroid, [3.25 * 20, (2.0 - 0.25) * 20], atol=0.6)
+
+    # A ramp along x on a part of the canvas, with set limits and three colours.
+    ramp = np.broadcast_to(np.linspace(0.0, 2.0, 50)[:, None], (50, 10))
+    canvas = viz.Canvas((0.0, 0.0), (4.0, 2.0), width=80, supersample=1)
+    canvas.field(
+        ramp,
+        (1.0, 0.0),
+        (3.0, 1.0),
+        low=0.0,
+        high=2.0,
+        colors=[(0, 0, 0), (100, 0, 0), (100, 200, 0)],
+    )
+    frame = canvas.frame()
+    assert (
+        np.all(frame[:20] == 255) and np.all(frame[:, :20] == 255) and np.all(frame[:, 60:] == 255)
+    )
+    row = frame[30, 20:60].astype(int)
+    assert np.all(np.diff(row[:, 0]) >= 0) and np.all(np.diff(row[:, 1]) >= 0)
+    np.testing.assert_allclose(row[0], [0, 0, 0], atol=6)
+    np.testing.assert_allclose(row[20], [100, 0, 0], atol=12)
+    np.testing.assert_allclose(row[-1], [100, 200, 0], atol=6)
+    with pytest.raises(ValueError, match="shape"):
+        canvas.field(np.zeros(5))
+
+
 def test_evacuation_render_matches_the_state():
     env = envs.Evacuation(
         room=(10.0, 10.0),

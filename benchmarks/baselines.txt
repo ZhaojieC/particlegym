@@ -1,0 +1,37 @@
+# Herding: 40 sheep, 16 games of at most 1000 steps
+# shepherds  policy  solved  steps_min  steps_mean  steps_max  final_distance_mean
+1  scripted  16/16  432  498.0  605  9.1
+1  random  0/16  nan  nan  nan  159.2
+2  scripted  16/16  453  542.1  702  9.0
+2  random  0/16  nan  nan  nan  159.3
+
+# Microswimmer: 256 swimmers, 2000 steps of 0.1 time units; climbing speed
+# from the altitude gained in the second half, in units of the swimming speed
+# Phi  Psi  policy  mean  standard_deviation_over_swimmers
+0.3  1  up  0.0005  0.0090
+0.3  1  random  0.0055  0.2350
+0.1  0.3  up  0.4321  0.8573
+0.1  0.3  random  0.0687  0.5303
+0.3  0.1  up  0.3864  0.5516
+0.3  0.1  random  -0.0012  0.2106
+0.3  0.3  up  0.0250  0.1212
+0.3  0.3  random  0.0132  0.2424
+0.3  10  up  0.0603  0.2294
+0.3  10  random  0.0204  0.2354
+1  1  up  0.9360  0.0240
+1  1  random  0.0231  0.3405
+3  1  up  0.9893  0.0031
+3  1  random  -0.0296  0.4993
+
+# CellMigration: 9 leaders, source at (7.5, 7.5), 8 games of 400 steps,
+# gradient-following cells with a weight on the direction to the other cells
+# weight  arrived  steps_min  steps_mean  steps_max  distance_at_100  spread_at_100
+0  8/8  177  206.6  236  3.46  1.011
+0.3  8/8  154  181.8  204  3.62  0.975
+0.5  8/8  260  300.8  341  4.65  0.693
+
+# Billiards: 15 object balls, 16 games of 30 shots
+# policy  pocketed_mean  pocketed_min  pocketed_max  scratches_mean
+aim  14.50  8  15  0.31
+random  1.06  0  3  2.69
+

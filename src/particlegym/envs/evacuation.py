@@ -37,6 +37,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.envs.spaces import Continuous, Discrete
 
 CROWD_POLICIES = ("nearest_exit", "random", "stand")
 
@@ -245,6 +246,18 @@ class Evacuation:
     def default_params(self) -> EvacuationParams:
         """Default episode parameters."""
         return EvacuationParams()
+
+    @property
+    def observation_space(self) -> Continuous:
+        """Observation of one agent: position in the room and velocity."""
+        return Continuous(-jnp.inf, jnp.inf, (2 * self.dim,))
+
+    @property
+    def action_space(self) -> Discrete | Continuous:
+        """Action of one agent."""
+        if self.action == "discrete":
+            return Discrete(len(self.directions))
+        return Continuous(-1.0, 1.0, (self.dim,))
 
     def reset(
         self, key: jax.Array, params: EvacuationParams | None = None

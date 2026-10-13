@@ -12,7 +12,17 @@ import pathlib
 import subprocess
 import sys
 
-SCRIPTS = ["evacuation_room", "crowd_10000"]
+SCRIPTS = [
+    "evacuation_room",
+    "crowd_10000",
+    "counterflow",
+    "brick_wall",
+    "billiards",
+    "herding",
+    "microswimmer",
+    "cell_migration",
+    "dpd_demixing",
+]
 LARGE = {"crowd_10000"}  # several minutes on a CPU
 
 

@@ -22,6 +22,49 @@ than real crowds do: the parameters of the social force model are the
 published ones and have not been calibrated against measured flows yet (see
 the [roadmap](roadmap.md)).
 
+The two groups of pedestrians below walk in opposite directions along a
+corridor that is periodic along its length. Every pedestrian wants to walk
+straight on; the lanes form through the interactions.
+
+![Two groups of pedestrians form lanes](assets/gallery/counterflow.gif)
+
+## Games
+
+Arcade and table games built from the same physics core
+([details](experimental.md)): the ball and the balls move by Newton's
+equations, and every bounce is a contact force. The players in these
+animations follow simple scripted rules.
+
+![A scripted player knocks bricks out of a wall](assets/gallery/brick_wall.gif)
+
+![A simple player clears a billiards table](assets/gallery/billiards.gif)
+
+## Animals, swimmers and cells
+
+![A scripted shepherd drives a flock to the target](assets/gallery/herding.gif)
+
+A shepherd (red) collects a flock of 40 sheep and drives it to the target
+(green). Flock rules adapted from Strömbom et al. (2014).
+
+![Swimmers that steer upwards are trapped by vortices](assets/gallery/microswimmer.gif)
+
+400 swimmers that always steer upwards in a field of vortices (grey: the
+vorticity), the task of Colabrese et al. (2017). The vortices trap them; a
+swimmer that senses the vorticity can learn to escape.
+
+![Cells migrate together to a source](assets/gallery/cell_migration.gif)
+
+Nine cells move to a source of chemoattractant (top right). They secrete a
+second chemoattractant (orange) and move up its gradient, which keeps the
+group together. Model after Zhang, Chai, Sun and Lykotrafitis (2020).
+
+## Fluids
+
+![Two fluids that do not mix separate](assets/gallery/dpd_demixing.gif)
+
+1200 particles of two species with dissipative particle dynamics: unlike
+particles repel more strongly than like ones, and the mixture separates.
+
 ## Three dimensions
 
 ![Agents leave a 3D chamber](assets/gallery/evacuation_chamber_3d.gif)

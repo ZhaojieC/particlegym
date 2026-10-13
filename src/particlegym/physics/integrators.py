@@ -119,3 +119,60 @@ def langevin_baoab(
     force, info = _forces(state, force_field, pos, vel, force_key)
     vel = jnp.where(alive, vel + 0.5 * dt * force / mass, 0.0)  # B
     return state._replace(pos=pos, vel=vel, force=force), info
+
+
+def brownian(
+    state: ParticleState,
+    force_field: ForceField,
+    dt: float,
+    *,
+    gamma,
+    kT=0.0,
+    drift: jax.Array | None = None,
+    key: jax.Array | None = None,
+) -> tuple[ParticleState, ForceInfo]:
+    """One Euler-Maruyama step of overdamped (Brownian) dynamics.
+
+    Integrates
+
+        dx/dt = u + F(x) / (m gamma) + sqrt(2 kT / (m gamma)) xi(t),
+
+    the limit of the equation of :func:`langevin_baoab` in which the friction
+    is so strong that a particle has no inertia: it moves with the drift
+    velocity ``u`` (a surrounding flow, a swimming velocity) plus the
+    velocity that the forces give it against the friction. The diffusion
+    coefficient is ``kT / (m gamma)``. The step is of first order in ``dt``.
+
+    The stored velocity is the deterministic part ``u + F / (m gamma)``.
+
+    Args:
+        state: Current state with up-to-date forces.
+        force_field: The interactions.
+        dt: Time step.
+        gamma: Friction rate, scalar or (N,).
+        kT: Thermal energy of the noise.
+        drift: (N, d) drift velocities; zero if omitted.
+        key: JAX random key. Required unless ``kT`` is exactly 0.
+    """
+    if key is None and not (isinstance(kT, int | float) and kT == 0):
+        raise ValueError("a random key is required when kT is not 0")
+    alive = state.alive[:, None]
+    dtype = state.pos.dtype
+    gamma = jnp.asarray(gamma, dtype=dtype)
+    if gamma.ndim == 1:
+        gamma = gamma[:, None]
+    mobility = 1.0 / (state.mass[:, None] * gamma)
+    vel = state.force * mobility
+    if drift is not None:
+        vel = vel + drift
+    pos = state.pos + dt * vel
+    force_key = None
+    if key is not None:
+        noise = jax.random.normal(key, vel.shape, dtype=dtype)
+        pos = pos + jnp.sqrt(2.0 * kT * mobility * dt) * noise
+        if force_field.stochastic:
+            force_key = jax.random.fold_in(key, 1)
+    pos = jnp.where(alive, force_field.box.wrap(pos), state.pos)
+    vel = jnp.where(alive, vel, 0.0)
+    force, info = _forces(state, force_field, pos, vel, force_key)
+    return state._replace(pos=pos, vel=vel, force=force), info

@@ -7,29 +7,57 @@
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/assets/gallery/evacuation_room.gif" width="100%" alt="Pedestrians leave a room through two doors"></td>
-    <td width="50%"><img src="docs/assets/gallery/crowd_10000.gif" width="100%" alt="10,000 pedestrians leave a hall"></td>
+    <td width="33%"><img src="docs/assets/gallery/evacuation_room.gif" width="100%" alt="Pedestrians leave a room through two doors"></td>
+    <td width="33%"><img src="docs/assets/gallery/crowd_10000.gif" width="100%" alt="10,000 pedestrians leave a hall"></td>
+    <td width="33%"><img src="docs/assets/gallery/counterflow.gif" width="100%" alt="Two groups of pedestrians form lanes"></td>
   </tr>
   <tr>
     <td align="center">100 pedestrians leave a room; a pillar stands in front of the right door</td>
     <td align="center">10,000 pedestrians leave a hall through ten doors</td>
+    <td align="center">Two groups walk in opposite directions and form lanes</td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/assets/gallery/evacuation_chamber_3d.gif" width="100%" alt="Agents leave a 3D chamber"></td>
-    <td width="50%"><img src="docs/assets/gallery/encircle_3d.gif" width="100%" alt="Drones encircle a moving target"></td>
+    <td width="33%"><img src="docs/assets/gallery/brick_wall.gif" width="100%" alt="A scripted player knocks bricks out of a wall"></td>
+    <td width="33%"><img src="docs/assets/gallery/billiards.gif" width="100%" alt="A simple player clears a billiards table"></td>
+    <td width="33%"><img src="docs/assets/gallery/herding.gif" width="100%" alt="A scripted shepherd drives a flock to the target"></td>
+  </tr>
+  <tr>
+    <td align="center">An arcade game: the ball moves by Newton's equations</td>
+    <td align="center">Billiards with friction and inelastic collisions</td>
+    <td align="center">A shepherd (red) drives a flock to the target</td>
+  </tr>
+  <tr>
+    <td width="33%"><img src="docs/assets/gallery/microswimmer.gif" width="100%" alt="Swimmers that steer upwards are trapped by vortices"></td>
+    <td width="33%"><img src="docs/assets/gallery/cell_migration.gif" width="100%" alt="Cells migrate together to a source"></td>
+    <td width="33%"><img src="docs/assets/gallery/dpd_demixing.gif" width="100%" alt="Two fluids that do not mix separate"></td>
+  </tr>
+  <tr>
+    <td align="center">Microswimmers in a field of vortices</td>
+    <td align="center">Cells migrate together along a chemical signal</td>
+    <td align="center">Two fluids separate (dissipative particle dynamics)</td>
+  </tr>
+  <tr>
+    <td width="33%"><img src="docs/assets/gallery/evacuation_chamber_3d.gif" width="100%" alt="Agents leave a 3D chamber"></td>
+    <td width="33%"><img src="docs/assets/gallery/encircle_3d.gif" width="100%" alt="Drones encircle a moving target"></td>
+    <td width="33%"></td>
   </tr>
   <tr>
     <td align="center">60 agents leave a 3D chamber through a door and a ceiling hatch</td>
     <td align="center">8 drones encircle a moving target (<a href="https://github.com/ZhaojieC/drone-encircle">drone-encircle</a>, built on ParticleGym)</td>
+    <td align="center"></td>
   </tr>
 </table>
 
 Every animation is a simulation with ParticleGym, made by a script in
-[`examples/gallery`](examples/gallery).
+[`examples/gallery`](examples/gallery). The players, the shepherd, the
+swimmers and the cells follow simple scripted rules here; trained policies
+come next.
 
-> **Status: pre-alpha (v0.1.0.dev0).** The physics core, its validation tests
-> and a room-evacuation environment are in place; Gymnasium and PettingZoo
-> wrappers come next. APIs may change. See the [roadmap](docs/roadmap.md).
+> **Status: pre-alpha (v0.1.0.dev0).** The physics core, its validation
+> tests, a room-evacuation environment and six
+> [experimental environments](docs/experimental.md) are in place; Gymnasium
+> and PettingZoo wrappers come next. APIs may change. See the
+> [roadmap](docs/roadmap.md).
 
 ParticleGym simulates many interacting particles (pedestrians, active
 colloids, cells, swarm robots) and lets reinforcement-learning agents control
@@ -101,11 +129,12 @@ other [examples](examples).
 | Component | Available |
 |---|---|
 | Environments (preview) | functional `Evacuation` room environment in 2D and 3D: `reset`/`step` with `jit` and `vmap`, discrete or continuous desired directions, crowd policies ([docs](docs/environments.md)) |
+| Environments (experimental) | `CounterFlow`, `BrickWall` (state or pixel observations), `Billiards`, `Herding`, `Microswimmer`, `CellMigration`: tested mechanics and scripted policies, not yet compared with measurements ([docs](docs/experimental.md)) |
 | Domain | 2D or 3D box, periodic or open along each axis |
 | Neighbour search | brute force; cell list with overflow detection |
 | Pair interactions | harmonic, WCA, social force (Helbing et al. 2000), tangential friction |
 | Geometry | plates (segments/rectangles), spheres, boxes, rooms with real door openings |
-| Integrators | velocity Verlet; BAOAB Langevin with a drift velocity (self-propulsion) |
+| Integrators | velocity Verlet; BAOAB Langevin with a drift velocity (self-propulsion); Brownian dynamics |
 | Exits | `alive` mask: particles that leave are frozen, shapes stay static |
 | Output | pictures, GIF and MP4 animations of 2D systems (`particlegym.viz`); pixel images for observations; extended XYZ for [OVITO](https://www.ovito.org/) and ASE |
 

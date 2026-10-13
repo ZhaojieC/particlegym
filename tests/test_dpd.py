@@ -152,3 +152,40 @@ def test_mixture_scales_the_interaction_of_unlike_particles():
         field.pair_virial(dense.pos, dense.radius, dense.alive, dense.kind),
         listed.pair_virial(dense.pos, dense.radius, dense.alive, dense.kind),
     )
+
+
+def test_two_species_with_a_stronger_unlike_repulsion_separate():
+    side, dt, steps = 8.0, 0.02, 750
+    n = round(3.0 * side**2)
+    box = pp.Box((0.0, 0.0), (side, side), periodic=True)
+    kind = jnp.arange(n) % 2
+
+    def like_fraction(pos):
+        offset = box.displacement(pos[:, None, :], pos[None, :, :])
+        near = (jnp.sum(offset**2, axis=-1) < 1.0) & ~jnp.eye(n, dtype=bool)
+        return jnp.sum(near & (kind[:, None] == kind[None, :])) / jnp.sum(near)
+
+    def final_fraction(unlike):
+        key_pos, key_vel, key_run = jax.random.split(jax.random.key(0), 3)
+        state = pp.create_state(side * jax.random.uniform(key_pos, (n, 2)), radius=0.5, kind=kind)
+        state = state._replace(vel=pp.maxwell_boltzmann(key_vel, state.mass, 1.0, 2))
+        repulsion = pp.Mixture(pp.Harmonic(k=1.0), [[25.0, unlike], [unlike, 25.0]])
+        field = pp.ForceField(box, pair=[repulsion, pp.PairThermostat(4.5, 1.0, dt)])
+        state, _ = pp.init_forces(state, field, key_run)
+        start = like_fraction(state.pos)
+
+        @jax.jit
+        def run(state):
+            def body(s, k):
+                return pp.velocity_verlet(s, field, dt, key=k)[0], None
+
+            return jax.lax.scan(body, state, jax.random.split(key_run, steps))[0]
+
+        return float(start), float(like_fraction(run(state).pos))
+
+    start, same = final_fraction(25.0)
+    _, separated = final_fraction(60.0)
+    # A random mixture has half of its neighbour pairs of the same species.
+    # Reference run of the gallery script (1200 particles): 0.50 at the start, 0.91 at time 25.
+    assert abs(start - 0.5) < 0.05 and abs(same - 0.5) < 0.05
+    assert separated > 0.8

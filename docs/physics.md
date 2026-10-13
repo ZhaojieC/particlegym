@@ -250,6 +250,17 @@ Verlet. Velocity-dependent forces are evaluated with the velocities after the
 O step; in velocity Verlet they are evaluated with the velocities at the half
 step.
 
+**Brownian dynamics** (`brownian`) is the overdamped limit, for particles
+without inertia such as microswimmers:
+
+\[
+\mathbf x \leftarrow \mathbf x + \Bigl(\mathbf u + \frac{\mathbf F}{m\gamma}\Bigr)\Delta t
+  + \sqrt{2 D \Delta t}\;\boldsymbol\eta, \qquad D = \frac{k_B T}{m\gamma},
+\]
+
+an Euler–Maruyama step of first order in \(\Delta t\). The stored velocity is
+the deterministic part, \(\mathbf u + \mathbf F/(m\gamma)\).
+
 ## Units
 
 The code is unit-agnostic; parameters must be given in one consistent system.

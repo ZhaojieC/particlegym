@@ -16,7 +16,12 @@ from particlegym.physics.geometry import (
     box_walls,
 )
 from particlegym.physics.initial import lattice_positions, maxwell_boltzmann, random_positions
-from particlegym.physics.integrators import init_forces, langevin_baoab, velocity_verlet
+from particlegym.physics.integrators import (
+    brownian,
+    init_forces,
+    langevin_baoab,
+    velocity_verlet,
+)
 from particlegym.physics.neighbors import BruteForce, CellList
 from particlegym.physics.observables import kinetic_energy, pressure, temperature, total_momentum
 from particlegym.physics.potentials import (
@@ -73,6 +78,7 @@ __all__ = [
     "Walls",
     "active",
     "box_walls",
+    "brownian",
     "create_state",
     "damping_for_restitution",
     "init_forces",

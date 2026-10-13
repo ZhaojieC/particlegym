@@ -5,8 +5,8 @@ run in double precision on every pull request (`pytest`); statistical tests
 are marked `slow` and use fixed random seeds. This page lists what is tested,
 the acceptance criterion, and the result of the reference run.
 
-Reference results: version 0.1.0.dev0 (the section "More physics": the
-development version of 0.2), CPU, float64.
+Reference results: version 0.1.0.dev0 (the sections "More physics" and
+"Experimental environments": the development version of 0.2), CPU, float64.
 
 ## Physics core
 
@@ -106,6 +106,36 @@ The statistical error of the coefficient is below 1e-4. It rises with the
 density towards the value \(\pi/30 = 0.1047\) of uncorrelated particles. A comparison with the coefficient reported by Groot
 & Warren (1997) is open: the paper was not available when this was written.
 
+## Experimental environments
+
+The tests of the [experimental environments](experimental.md) check their
+mechanics against the equations they are built from, and that a scripted
+policy solves each task. They do not compare with measurements.
+
+| Property | Test | Criterion | Reference result |
+|---|---|---|---|
+| Brownian dynamics | `test_integrators.py::test_brownian_dynamics_diffusion_drift_and_relaxation` | mean displacement \(\mathbf u t\); variance \(2Dt\) with \(D = k_BT/(m\gamma)\) within 7 % (4000 particles); velocity \(\mathbf F/(m\gamma)\) under a constant force; decay of an overlap at the rate \(2k/(m\gamma)\) | passes; force and Euler decay equal to 1e-10 |
+| Two DPD fluids separate | `test_dpd.py::test_two_species_with_a_stronger_unlike_repulsion_separate` | fraction of like neighbour pairs stays at 0.5 for equal repulsion and exceeds 0.8 for a = 60 between the species (192 particles, 15 time units) | passes; 0.90 after 12 time units with 1200 particles |
+| Lanes in counter-flow | `test_env_counterflow.py::test_lanes_form_and_the_flow_speeds_up` (80 pedestrians, 4 runs of 90 s) | lane order below 0.2 at the start and above 0.8 at the end; the mean speed rises | order 0.08 to 0.98; speed 0.97 m/s after 10 s, 1.30 m/s at the end |
+| Rewards and frames of the counter-flow | `test_reward_is_the_progress_along_the_walking_direction`, `test_observations_are_given_in_the_own_frame` | reward equals the displacement along the walking direction; rotating the corridor by 180° and exchanging the groups exchanges the observations | passes |
+| Ball of the brick wall | `test_env_brick_wall.py::test_ball_bounces_elastically_between_the_side_walls` | a bounce changes the speed by less than 0.3 % | passes |
+| Bricks, lives, pixels | `test_brick_disappears_after_the_contact_and_gives_a_reward`, `test_lost_ball_costs_a_life_and_the_last_one_ends_the_game`, `test_pixel_observation_shows_the_ball_the_bricks_and_the_last_frame` | one reward per brick; game over after three lost balls; images show the state | passes |
+| Scripted brick-wall player | `test_scripted_player_clears_the_wall` (8 games of 5000 steps) | no ball lost, at least 35 of 40 bricks | 39 or 40 bricks in every game |
+| Restitution of billiard balls | `test_env_billiards.py::test_head_on_collision_has_the_set_restitution` | measured coefficient equals the set one within 0.4 % (0.95) and 2 % (0.7) | passes |
+| Elastic collision of equal balls | `test_elastic_balls_separate_at_a_right_angle` | velocities perpendicular after the collision | passes |
+| Friction and cushions | `test_friction_and_cushion` | stopping distance \(v^2/(2a)\); cushion returns the set fraction of the speed within 1 % | passes |
+| Pockets | `test_pocketing_a_ball_and_the_cue_ball` | reward 1 per ball, penalty and return of the cue ball after a scratch, end of the game | passes |
+| Aiming billiards player | `test_aiming_player_clears_most_of_the_table` (16 games of 30 shots) | more than 12 of 15 balls on average | 14.25 |
+| Flock rules | `test_env_herding.py::test_sheep_flee_graze_gather_and_keep_apart` | sheep move away from a shepherd they see, graze otherwise, gather, and keep apart | passes |
+| Scripted shepherds | `test_scripted_shepherd_brings_the_flock_to_the_target`, `test_two_shepherds_also_solve_the_task` (40 sheep) | all games solved within 800 (900) steps; bodies overlap by less than a fifth of a diameter | 430 to 610 steps; smallest centre distance 0.84 m |
+| Alignment of a swimmer | `test_env_microswimmer.py::test_swimmer_in_still_fluid_turns_and_swims_as_the_equations_say` | heading equals the exact solution \(\tan(\tfrac{\theta_k - \theta}{2}) \propto e^{-t/(2B)}\) within 5e-3 rad | 3.1e-3 rad |
+| Swimmer in the flow | `test_flow_carries_and_turns_the_swimmer` | a passive particle stays on its streamline and turns at half the vorticity | passes |
+| Naive swimmers | `test_naive_swimmers_are_trapped_or_rise_depending_on_the_parameters` | no net climb at \(\Phi = 0.3, \Psi = 1\); climb at the swimming speed at \(\Phi = 3, \Psi = 0.1\) within 3 % | 0.000; 0.989 of the swimming speed |
+| A single cell | `test_env_cell_migration.py::test_single_leader_moves_as_the_equation_of_motion_says_and_is_paid_per_step` | velocity \(u(1 - e^{-t/\tau})\); arrival after the distance over the speed plus \(\tau\); reward -0.1 per step | velocity within 1e-5 |
+| Chemoattractant field | `test_interface_shapes_and_batching`, `test_cells_attract_through_the_field_and_the_local_reward_follows_the_angle` | amount of secreted substance after one decay time; gradient points to the other cell; reward \(e^{-\beta^2} - 1\) | amount within 0.1 %; reward within 1e-4 |
+| Contact between cells | `test_contact_inhibition_and_walls_keep_cells_apart` | cells driven against each other or into a corner stay a diameter apart and inside the region | passes |
+| Migrating group of cells | `test_gradient_following_leaders_reach_the_source_and_co_attraction_keeps_them_together` (6 games, 9 leaders) | all leaders arrive; with co-attraction the group is more compact and slower | spread 0.69 against 1.01 at step 100 |
+
 ## Pictures
 
 | Property | Test | Criterion | Reference result |
@@ -113,6 +143,7 @@ density towards the value \(\pi/30 = 0.1047\) of uncorrelated particles. A compa
 | Discs are drawn where the particles are | `test_viz.py::test_disc_is_drawn_at_its_position_with_its_area` | centroid and area of the drawn disc | centroid within 0.17 pixels (0.5 without oversampling), area within 1 % |
 | A rendered room shows the state | `test_viz.py::test_evacuation_render_matches_the_state` | the pixel at the centre of every pedestrian has its colour; pedestrians that have left are not drawn | exact |
 | Pixel images in JAX | `test_viz.py::test_pixel_coverage_matches_areas_and_positions` | summed coverage equals the area of discs and boxes; centroid equals the position | area within 1 %, centroid within 0.001 length units |
+| Scalar fields as background | `test_viz.py::test_scalar_field_is_drawn_in_place` | the colours follow the values of the field at the right places | passes |
 
 ## Planned validation
 
@@ -121,12 +152,14 @@ density towards the value \(\pi/30 = 0.1047\) of uncorrelated particles. A compa
 - The "faster-is-slower" effect of Helbing et al. (2000).
 - Reproduction of the evacuation results of Zhang, Chai & Lykotrafitis (2021).
 - Velocity profile and viscosity of the DPD fluid in a channel flow.
+- The learning gain of smart microswimmers of Colabrese et al. (2017).
+- Collective migration with follower cells as in Zhang et al. (2020).
 - The DPD equation of state against the published coefficient.
 
 ## Running the tests
 
 ```bash
 pip install -e ".[test]"
-pytest              # all tests, about 5 minutes on 12 CPU cores
+pytest              # all tests, about 12 minutes on 12 CPU cores
 pytest -m "not slow"  # skip the long statistical tests
 ```

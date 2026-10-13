@@ -2,8 +2,47 @@
 
 !!! note "Preview"
     The environment layer is under development for version 0.2
-    ([roadmap](roadmap.md)). Observations and rewards will become
-    configurable, and Gymnasium and PettingZoo wrappers will follow.
+    ([roadmap](roadmap.md)). Gymnasium and PettingZoo wrappers will follow.
+
+| Environment | What the agents do | Status |
+|---|---|---|
+| [`Evacuation`](#room-evacuation) | pedestrians leave a 2D or 3D room through doors | tested physics; calibration against measured flows is planned |
+| [`CounterFlow`](experimental.md#counter-flow-in-a-corridor) | pedestrians pass each other in a corridor | experimental |
+| [`BrickWall`](experimental.md#brick-wall) | a paddle keeps a ball in play that removes bricks; state or pixel observations | experimental |
+| [`Billiards`](experimental.md#billiards) | a player pockets balls with a cue ball | experimental |
+| [`Herding`](experimental.md#herding) | shepherds drive a flock to a target | experimental |
+| [`Microswimmer`](experimental.md#microswimmer) | swimmers steer upwards through vortices | experimental |
+| [`CellMigration`](experimental.md#cell-migration) | cells move together to a source of chemoattractant | experimental |
+
+"Experimental" means: the mechanics are tested, but the environment has not
+been compared with measurements and reproduces no published result in
+numbers. The drone-encirclement environment of the gallery lives in its own
+repository, [drone-encircle](https://github.com/ZhaojieC/drone-encircle).
+
+## Interface
+
+All environments have the same functional interface:
+
+```python
+env = envs.Herding(n_sheep=40)  # static structure
+params = env.default_params  # episode parameters, a pytree
+obs, state = env.reset(key, params)
+obs, state, reward, terminated, truncated, info = env.step(key, state, action, params)
+image = env.render(state)  # RGB picture, needs Pillow
+```
+
+- `reset` and `step` are pure functions of their arguments. They compile
+  with `jax.jit`, batch with `jax.vmap` (over keys, states, actions and
+  parameters) and iterate with `jax.lax.scan`.
+- `env.n_agents` is the number of agents. Observations, actions, rewards and
+  the two end-of-episode flags have a leading axis of this length, also for
+  a single agent.
+- `env.observation_space` and `env.action_space` describe the observation and
+  the action of *one* agent: `Discrete(n)` or `Continuous(low, high, shape)`,
+  each with `sample(key, batch)` and `contains(x)`.
+- `step` does not reset finished episodes.
+- An action sets what an agent *wants*; the motion follows from forces and an
+  integrator ([design principle P1](design.md#design-principles)).
 
 ## Room evacuation
 

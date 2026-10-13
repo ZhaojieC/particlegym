@@ -187,3 +187,58 @@ def test_float32_states_stay_float32():
     for leaf in (state.pos, state.vel, state.force, info.potential_energy):
         assert leaf.dtype == jnp.float32
         assert bool(jnp.all(jnp.isfinite(leaf)))
+
+
+def test_brownian_dynamics_diffusion_drift_and_relaxation():
+    box = pp.Box((-100.0, -100.0), (100.0, 100.0))
+    free = pp.ForceField(box)
+    n, gamma, kT, dt, steps = 4000, 2.0, 0.5, 0.01, 200
+    state = pp.create_state(jnp.zeros((n, 2)), mass=1.5, radius=0.0)
+    state, _ = pp.init_forces(state, free)
+    drift = jnp.broadcast_to(jnp.array([0.3, -0.1]), (n, 2))
+
+    @jax.jit
+    def run(state, key):
+        def body(s, k):
+            return pp.brownian(s, free, dt, gamma=gamma, kT=kT, drift=drift, key=k)[0], None
+
+        return jax.lax.scan(body, state, jax.random.split(key, steps))[0]
+
+    final = run(state, jax.random.key(0))
+    time = steps * dt
+    # The mean follows the drift; the spread is that of diffusion with D = kT / (m gamma).
+    np.testing.assert_allclose(final.pos.mean(axis=0), [0.3 * time, -0.1 * time], atol=0.03)
+    diffusion = kT / (1.5 * gamma)
+    np.testing.assert_allclose(final.pos.var(axis=0), 2 * diffusion * time, rtol=0.07)
+    np.testing.assert_allclose(final.vel, drift)
+    with pytest.raises(ValueError, match="random key"):
+        pp.brownian(state, free, dt, gamma=gamma, kT=kT)
+
+    # A constant force gives the velocity F / (m gamma).
+    falling = pp.ForceField(box, external=[pp.Gravity((0.0, -3.0))])
+    one = pp.create_state(jnp.zeros((1, 2)), mass=1.5, radius=0.0)
+    one, _ = pp.init_forces(one, falling)
+    for _ in range(10):
+        one, _ = pp.brownian(one, falling, dt, gamma=gamma)
+    np.testing.assert_allclose(one.vel, [[0.0, -1.5]], rtol=1e-12)
+    np.testing.assert_allclose(one.pos, [[0.0, -1.5 * 10 * dt]], rtol=1e-12)
+
+    # Two overlapping discs: the overlap decays at the rate 2 k / (m gamma).
+    k = 20.0
+    contact = pp.ForceField(box, pair=[pp.Harmonic(k=k)])
+    pair = pp.create_state(jnp.array([[0.0, 0.0], [0.8, 0.0]]), mass=1.5, radius=0.5)
+    pair, _ = pp.init_forces(pair, contact)
+    dead = pair._replace(alive=jnp.array([True, False]))
+    for _ in range(50):
+        pair, _ = pp.brownian(pair, contact, 1e-3, gamma=gamma)
+    overlap = 1.0 - float(pair.pos[1, 0] - pair.pos[0, 0])
+    rate = 2 * k / (1.5 * gamma)
+    np.testing.assert_allclose(overlap, 0.2 * (1 - rate * 1e-3) ** 50, rtol=1e-10)
+    np.testing.assert_allclose(overlap, 0.2 * np.exp(-rate * 0.05), rtol=1e-2)
+    np.testing.assert_allclose(pp.total_momentum(pair), 0.0, atol=1e-12)
+
+    # Dead particles do not move and do not push.
+    dead, _ = pp.init_forces(dead, contact)
+    moved, _ = pp.brownian(dead, contact, 1e-3, gamma=gamma, drift=jnp.ones((2, 2)))
+    np.testing.assert_allclose(moved.pos[1], dead.pos[1])
+    np.testing.assert_allclose(moved.pos[0], [1e-3, 1e-3], rtol=1e-12)
