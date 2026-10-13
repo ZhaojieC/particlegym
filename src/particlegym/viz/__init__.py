@@ -14,7 +14,13 @@ from particlegym.viz.canvas import (
     save_mp4,
     upscale,
 )
-from particlegym.viz.pixels import box_coverage, disc_coverage, pixel_centres
+from particlegym.viz.pixels import (
+    box_coverage,
+    box_coverage_table,
+    disc_coverage,
+    pixel_centres,
+    table_coverage,
+)
 
 __all__ = [
     "BLACK",
@@ -27,9 +33,11 @@ __all__ = [
     "WHITE",
     "Canvas",
     "box_coverage",
+    "box_coverage_table",
     "disc_coverage",
     "pixel_centres",
     "save_gif",
     "save_mp4",
+    "table_coverage",
     "upscale",
 ]

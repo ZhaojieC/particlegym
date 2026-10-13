@@ -192,3 +192,22 @@ def test_pixel_coverage_batches_with_vmap():
     assert images.shape == (2, 16, 16)
     assert float(images[0, 12, 4]) > 0.5 and float(images[1, 4, 12]) > 0.5  # row 0 is the top
     assert float(images[0, 4, 12]) == 0.0
+
+
+def test_coverage_table_gives_the_image_of_the_boxes_that_are_present():
+    points = viz.pixel_centres((0.0, 0.0), (8.0, 4.0), (40, 80))
+    pixel = 0.1
+    # 3 x 4 boxes that touch each other, shifted off the pixel grid.
+    column, row = np.meshgrid(np.arange(4), np.arange(3))
+    lo = np.stack([0.33 + 1.7 * column, 0.47 + 0.9 * row], axis=-1).reshape(-1, 2)
+    hi = lo + np.array([1.7, 0.9])
+    index, cover = viz.box_coverage_table(points, lo, hi, pixel)
+    # Four boxes meet at a corner, so no pixel is touched by more than four.
+    assert index.shape == cover.shape == (40, 80, 4)
+    draw = jax.jit(lambda mask: viz.table_coverage(index, jnp.asarray(cover, points.dtype), mask))
+    for seed in range(4):
+        mask = jax.random.bernoulli(jax.random.key(seed), 0.6, (12,))
+        direct = viz.box_coverage(points, jnp.asarray(lo), jnp.asarray(hi), pixel, mask=mask)
+        np.testing.assert_allclose(draw(mask), direct, atol=2e-5)
+    masks = jax.random.bernoulli(jax.random.key(9), 0.5, (5, 12))
+    assert jax.vmap(draw)(masks).shape == (5, 40, 80)
