@@ -6,6 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `viz.box_coverage_table` and `viz.table_coverage`: the image of many boxes
+  that do not move, from a table of the boxes that can cover each pixel.
+
+### Changed
+
+- Pixel observations of the brick wall compile on a GPU and are faster: the
+  bricks are drawn from the table, and `viz.disc_coverage` and
+  `viz.box_coverage` no longer reduce over short axes. The images are the
+  same within rounding. One environment runs at 15,000 control steps per
+  second on four CPU cores (1,900 in version 0.2.0), and 16384 environments
+  at 8,300,000 on one NVIDIA L40S GPU (not compiled within 600 s in version
+  0.2.0).
+
 ## [0.2.0] - 2026-10-13
 
 The first release. It contains what the roadmap planned for the versions

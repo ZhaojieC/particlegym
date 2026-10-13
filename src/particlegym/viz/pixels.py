@@ -82,7 +82,13 @@ def disc_coverage(points: jax.Array, pos, radius, pixel, mask=None) -> jax.Array
 
 
 def box_coverage(points: jax.Array, lo, hi, pixel, mask=None) -> jax.Array:
-    """Coverage of the pixels at ``points`` by boxes with corners ``lo``, ``hi`` (both (M, 2))."""
+    """Coverage of the pixels at ``points`` by boxes with corners ``lo``, ``hi`` (both (M, 2)).
+
+    Every pixel is tested against every box. With many boxes this compiled
+    very slowly on a GPU (84 x 84 pixels and 40 boxes: the first call did
+    not finish within 300 s with JAX 0.11.2). For boxes that do not move,
+    use :func:`box_coverage_table`.
+    """
     lo, hi = jnp.asarray(lo), jnp.asarray(hi)
     centre, half = 0.5 * (lo + hi), 0.5 * (hi - lo)
     qx = jnp.abs(points[..., None, 0] - centre[..., 0]) - half[..., 0]
