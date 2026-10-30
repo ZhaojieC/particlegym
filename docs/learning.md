@@ -25,6 +25,8 @@ frame = env.render()
 | Id | Environment |
 |---|---|
 | `particlegym/Evacuation2D-v0` | one pedestrian in a room of 10 m × 10 m with one door |
+| `particlegym/EvacuationFourExits-v0` | one pedestrian in the [room with four doors](environments.md#rooms-of-zhang-chai-lykotrafitis-2021) of Zhang, Chai & Lykotrafitis (2021) |
+| `particlegym/EvacuationThreeExitsTwoObstacles-v0` | one pedestrian in the [room with three doors and two obstacles](environments.md#rooms-of-zhang-chai-lykotrafitis-2021) of the same paper |
 | `particlegym/BrickWall-v0` | [brick wall](experimental.md#brick-wall), state observations |
 | `particlegym/Billiards-v0` | [billiards](experimental.md#billiards) |
 | `particlegym/Herding-v0` | [herding](experimental.md#herding) with one shepherd |

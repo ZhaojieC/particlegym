@@ -14,7 +14,7 @@ families of environments are included as experimental
 |---|---|---|
 | **0.1** | Physics core, validation tests, packaging, CI, documentation site | month 1–2 |
 | **0.2** | Environment layer: functional `reset`/`step`, actions as desired directions, exits, 2D and 3D rooms; Gymnasium and PettingZoo wrappers; pictures and animations; more physics (external forces, flows, moving shapes, contact damping, active particles, bonds, DPD, scalar fields); six experimental environments; PPO and Q-learning baselines | month 2–3 |
-| **0.3** | `Evacuation2D` reproducing Zhang, Chai & Lykotrafitis (2021) (four exits; three exits and two obstacles); Verlet neighbour lists with skin; crowd validation against experiments (speed-density relation, bottleneck flow) and the faster-is-slower effect; calibrated parameter sets; `Bottleneck` scenario; a DQN baseline and a Stable-Baselines3 example | month 3–4 |
+| **0.3** | The rooms of Zhang, Chai & Lykotrafitis (2021) (`envs.zhang2021`: four exits; three exits and two obstacles) and the reproduction of its results; Verlet neighbour lists with skin; crowd validation against experiments (speed-density relation, bottleneck flow) and the faster-is-slower effect; calibrated parameter sets; `Bottleneck` scenario; a DQN baseline and a Stable-Baselines3 example | month 3–4 |
 | **0.4** | Multi-agent evacuation (shared and independent policies), rooms with complex obstacles, multi-storey buildings in 3D; GPU benchmarks | month 4–5 |
 | **0.5** | Tutorials (notebooks), API reference, performance guide, external users | month 5–6 |
 | **1.0** | Stable API, JOSS submission | month 6–7 |

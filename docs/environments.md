@@ -144,6 +144,64 @@ and nothing afterwards. `terminated` is true once an agent has left;
 `truncated` is true when the episode reaches `params.max_steps` with the agent
 still inside.
 
+### Rooms of Zhang, Chai & Lykotrafitis (2021)
+
+`envs.zhang2021` builds the two rooms of the study that ParticleGym grows out
+of, with the layouts of the code that accompanies the paper:
+
+```python
+env = envs.zhang2021("four_exits")  # one agent alone in the room, as in the paper
+crowd = envs.zhang2021("three_exits_two_obstacles", n_agents=0, n_crowd=80)
+```
+
+![The two rooms with 80 pedestrians, 3 s after the start](assets/environments/zhang2021_rooms.png)
+
+80 pedestrians walking to the nearest door, 3 s after the start, coloured by
+the door they leave through. Left: `"four_exits"`; right:
+`"three_exits_two_obstacles"`.
+
+| Layout | Doors, 1 m wide (centres in m) | Obstacles |
+|---|---|---|
+| `"four_exits"` | (5, 10), (5, 0), (0, 5) and (10, 5): the centres of the four walls | none |
+| `"three_exits_two_obstacles"` | (7, 10), (5, 0) and (0, 7) | discs of diameter 2 m at (8, 8) and 3 m at (3, 5) |
+
+Both rooms are 10 m × 10 m. Other keyword arguments go to `Evacuation`; the
+layout fixes `room`, `exits` and `obstacles`. Pedestrians have the diameter
+(0.5 m) and the mass (80 kg) of the paper unless `radius` or `mass` is given.
+The default actions, observations and episode parameters of `Evacuation` are
+those of the paper: one of eight directions every 0.1 s; the scaled position
+and the velocity as the observation; a desired speed of 2 m/s and a
+relaxation time of 0.5 s; a reward of -0.1 per step and 0 at the exit. The
+Gymnasium ids `particlegym/EvacuationFourExits-v0` and
+`particlegym/EvacuationThreeExitsTwoObstacles-v0` put one agent in each room
+([Learning](learning.md#wrappers)).
+
+The physics differs from the code of the paper:
+
+| | Code of the paper | ParticleGym |
+|---|---|---|
+| Exits | a point in a closed wall; a pedestrian leaves when its centre comes within 0.75 m of it | a door opening of 1 m; a pedestrian leaves when its centre is outside the room by more than its radius |
+| Contacts | a repulsion of \(100\,\mathrm{N}\; e^{\delta / 0.08\,\mathrm{m}}\) between pedestrians that overlap by \(\delta\), similar forces from walls and obstacles, no sliding friction | the social force of Helbing et al. (2000) with body force and sliding friction ([Physics models](physics.md)) |
+| Time steps | one step of 0.1 s per decision | 20 BAOAB steps of 5 ms per decision |
+| Start | random positions in [0.5, 9.5] m × [0.5, 9.5] m without overlaps | sites of a lattice with 0.2 m clearance, shifted by up to 0.1 m |
+
+With the built-in rule `nearest_exit`, 80 pedestrians leave the empty room in
+18.5 ± 1.1 s and the room with obstacles in 25.1 ± 1.4 s (mean and standard
+deviation of 20 random starts; `benchmarks/zhang2021_rooms.py`, output in
+`benchmarks/zhang2021_rooms.txt`).
+
+The code of the paper compares its learned policies with another rule: every
+pedestrian takes the one of the eight directions that is closest to the
+heading to the nearest exit. With real doors, this rule can leave pedestrians
+stuck. A pedestrian beside a door can be sent straight into the door post,
+where the contact force balances its drive; in the code of the paper it would
+be within 0.75 m of the exit and leave. Below the obstacle at (8, 8), the
+closest direction switches back and forth between up and up-left, and the
+pedestrian stays where it is. In 20 starts, 2 of 1600 pedestrians in the empty
+room and 22 of 1600 in the room with obstacles (one in every start) were still
+inside after 60 s. Reproducing the learned policies and the evacuation times
+of the paper is planned for version 0.3 ([roadmap](roadmap.md)).
+
 ### Three-dimensional rooms
 
 A `room` with three edge lengths gives a 3D room. Everything above carries

@@ -6,6 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `envs.zhang2021`: the two rooms of Zhang, Chai & Lykotrafitis (2021), with
+  the layouts of the code of the paper (four exits; three exits and two
+  obstacles), the pedestrians of the paper and the Gymnasium ids
+  `particlegym/EvacuationFourExits-v0` and
+  `particlegym/EvacuationThreeExitsTwoObstacles-v0`. The Environments page
+  lists the differences from the code of the paper
+  ([#6](https://github.com/ZhaojieC/particlegym/issues/6)).
+- Benchmark `benchmarks/zhang2021_rooms.py`: evacuation of both rooms by 80
+  pedestrians walking to the nearest door, with its reference output.
+
+### Changed
+
+- `examples/evacuation_env.py` takes `--layout` to choose one of the two
+  rooms.
+
 ## [0.2.0] - 2026-10-13
 
 The first release. It contains what the roadmap planned for the versions

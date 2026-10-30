@@ -1,0 +1,7 @@
+JAX 0.11.2 on CPU, 80 pedestrians, 20 random starts per row
+| Room | Rule | Runs in which all left | Evacuation time (s) | 95 % out (s) | Inside after 60 s | Pedestrians per door |
+|---|---|---|---|---|---|---|
+| `four_exits` | nearest_exit | 20 of 20 | 18.5 ± 1.1 (16.8 to 20.4) | 15.6 ± 0.7 | 0 | 20.2 / 20.0 / 20.1 / 19.8 |
+| `four_exits` | eight directions | 18 of 20 | 20.8 ± 3.3 (17.5 to 32.0) | 17.6 ± 2.2 | 2 | 20.2 / 20.0 / 20.1 / 19.8 |
+| `three_exits_two_obstacles` | nearest_exit | 20 of 20 | 25.1 ± 1.4 (23.1 to 28.2) | 20.1 ± 1.1 | 0 | 25.1 / 38.0 / 16.8 |
+| `three_exits_two_obstacles` | eight directions | 0 of 20 | n/a | 22.8 ± 2.5 | 22 | 25.1 / 38.0 / 16.8 |
