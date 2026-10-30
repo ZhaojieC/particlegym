@@ -16,10 +16,12 @@ from particlegym.envs.evacuation import (
 )
 from particlegym.envs.herding import Herding, HerdingParams, HerdingState
 from particlegym.envs.microswimmer import Microswimmer, MicroswimmerParams, MicroswimmerState
+from particlegym.envs.scenarios import ZHANG2021_LAYOUTS, RoomLayout, zhang2021
 from particlegym.envs.spaces import Continuous, Discrete
 
 __all__ = [
     "CROWD_POLICIES",
+    "ZHANG2021_LAYOUTS",
     "Billiards",
     "BilliardsParams",
     "BilliardsState",
@@ -43,4 +45,6 @@ __all__ = [
     "Microswimmer",
     "MicroswimmerParams",
     "MicroswimmerState",
+    "RoomLayout",
+    "zhang2021",
 ]

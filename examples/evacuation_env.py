@@ -1,11 +1,14 @@
 """Agents leave a room through the nearest door, using the evacuation environment.
 
-The room is the four-exit room of Zhang, Chai & Lykotrafitis (2021). Every
-agent picks, among the eight action directions, the one closest to the
-direction of the nearest door. Prints the evacuation time and writes a
-trajectory that OVITO can open.
+The room is one of the two rooms of Zhang, Chai & Lykotrafitis (2021), by
+default the one with four exits. Every agent picks, among the eight action
+directions, the one closest to the direction of the nearest door. Prints the
+evacuation time and writes a trajectory that OVITO can open. In the room with
+obstacles, this rule can leave an agent stuck below the smaller obstacle
+(see the Environments page of the documentation).
 
     python examples/evacuation_env.py --agents 80
+    python examples/evacuation_env.py --layout three_exits_two_obstacles
 """
 
 import argparse
@@ -15,20 +18,19 @@ import jax.numpy as jnp
 import numpy as np
 
 from particlegym import envs
-from particlegym import physics as pp
 from particlegym.io import write_extxyz
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--layout", choices=list(envs.ZHANG2021_LAYOUTS), default="four_exits")
     parser.add_argument("--agents", type=int, default=80)
     parser.add_argument("--steps", type=int, default=600, help="control steps of 0.1 s")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--output", default="evacuation_env.xyz")
     args = parser.parse_args()
 
-    doors = [pp.Opening(face, (4.5, 5.5)) for face in ("y+", "y-", "x-", "x+")]
-    env = envs.Evacuation(room=(10.0, 10.0), exits=doors, n_agents=args.agents)
+    env = envs.zhang2021(args.layout, n_agents=args.agents)
     params = env.default_params
     directions = jnp.asarray(env.directions)
     centres = jnp.asarray(env.door_centres)

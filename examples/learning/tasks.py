@@ -7,7 +7,6 @@ import jax
 import jax.numpy as jnp
 
 from particlegym import envs
-from particlegym import physics as pp
 from particlegym.baselines import ppo
 
 
@@ -57,8 +56,7 @@ def microswimmer() -> Task:
 
 def evacuation() -> Task:
     """Leave the four-door room of Zhang, Chai and Lykotrafitis (2021)."""
-    doors = [pp.Opening(face, (4.5, 5.5)) for face in ("y+", "y-", "x-", "x+")]
-    env = envs.Evacuation(room=(10.0, 10.0), exits=doors, n_agents=40)
+    env = envs.zhang2021("four_exits", n_agents=40)
     params = env.default_params._replace(max_steps=300)
     config = ppo.PPOConfig(n_envs=128, n_steps=64, n_iterations=300, n_minibatches=16)
     directions = jnp.asarray(env.directions)

@@ -182,7 +182,9 @@ ParticleGym grows out of the particle-dynamics environment used in
 > [doi:10.1016/j.physa.2021.125845](https://doi.org/10.1016/j.physa.2021.125845)
 
 It generalises that environment to 3D, to other particle systems, and to
-modern, fast, tested software.
+modern, fast, tested software. The two rooms of the paper are available as
+`envs.zhang2021("four_exits")` and `envs.zhang2021("three_exits_two_obstacles")`
+([docs](docs/environments.md#rooms-of-zhang-chai-lykotrafitis-2021)).
 
 ## Contributing and citing
 
