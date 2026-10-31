@@ -174,14 +174,19 @@ pytest
 
 ## Background
 
-ParticleGym grows out of the particle-dynamics environment used in
+ParticleGym grows out of the particle-dynamics environments used in
 
 > Y. Zhang, Z. Chai, G. Lykotrafitis. *Deep reinforcement learning with a
 > particle dynamics environment applied to emergency evacuation of a room with
 > obstacles.* Physica A 571, 125845 (2021).
 > [doi:10.1016/j.physa.2021.125845](https://doi.org/10.1016/j.physa.2021.125845)
 
-It generalises that environment to 3D, to other particle systems, and to
+> Y. Zhang, Z. Chai, Y. Sun, G. Lykotrafitis. *A deep reinforcement learning
+> model based on deterministic policy gradient for collective neural crest
+> cell migration.* arXiv:2007.03190 (2020).
+> [arXiv:2007.03190](https://arxiv.org/abs/2007.03190)
+
+It generalises those environments to 3D, to other particle systems, and to
 modern, fast, tested software.
 
 ## Contributing and citing
