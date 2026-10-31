@@ -189,6 +189,20 @@ ParticleGym grows out of the particle-dynamics environments used in
 It generalises those environments to 3D, to other particle systems, and to
 modern, fast, tested software.
 
+## Related publications
+
+Red blood cell models built from bonded membrane networks, area constraints
+and dissipative particle dynamics, as in `Bonds`, `AreaConstraint` and
+`PairThermostat`:
+
+1. Z. Chai, J. Zheng, H. Li, M. Dao, G. E. Karniadakis. *Quantifying the
+   biophysical properties of stomatocytes in health and disease.* Biophys. J.
+   (2026). [doi:10.1016/j.bpj.2026.10.007](https://doi.org/10.1016/j.bpj.2026.10.007)
+2. Z. Chai, G. Li, P. A. Ndour, P. Connes, P. A. Buffet, M. Franco,
+   G. E. Karniadakis. *In silico biophysics and rheology of blood and red
+   blood cells in Gaucher Disease.* PLOS Comput. Biol. 21, e1012705 (2025).
+   [doi:10.1371/journal.pcbi.1012705](https://doi.org/10.1371/journal.pcbi.1012705)
+
 ## Contributing and citing
 
 Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). Citation
