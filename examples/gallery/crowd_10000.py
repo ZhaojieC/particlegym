@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: 10,000 pedestrians leave a hall of 120 m x 90 m through ten doors.
 
 Every pedestrian walks to the nearest door (the crowd policy

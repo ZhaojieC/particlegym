@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Evacuation: the doors through which the pedestrians of each policy leave.
 
 Reads the policies written by ``train.py`` for the task ``evacuation`` and

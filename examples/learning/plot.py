@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Draw the learning curves written by ``train.py`` and ``microswimmer_q.py``.
 
 One figure per task: the return of the episodes that ended during training

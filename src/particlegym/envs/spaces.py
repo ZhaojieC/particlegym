@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Descriptions of observation and action spaces.
 
 Every environment describes the observation and the action of one agent with

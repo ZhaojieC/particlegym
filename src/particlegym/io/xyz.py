@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Extended XYZ output, readable by OVITO and ASE."""
 
 from __future__ import annotations

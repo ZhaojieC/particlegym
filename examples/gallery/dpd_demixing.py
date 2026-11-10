@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: two fluids that do not mix separate (dissipative particle dynamics).
 
 A two-dimensional DPD fluid of two species in a periodic box. Particles of

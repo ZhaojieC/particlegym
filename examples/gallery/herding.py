@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: a scripted shepherd drives a flock to the target.
 
 The sheep (blue) follow the flock rules adapted from Strömbom et al. (2014).

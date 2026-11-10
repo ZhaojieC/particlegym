@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Agents leave a room through the nearest door, using the evacuation environment.
 
 The room is the four-exit room of Zhang, Chai & Lykotrafitis (2021). Every

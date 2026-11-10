@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Render the 3D evacuation example with OVITO (Tachyon renderer).
 
 Reads the trajectory `evacuation_env_3d.xyz` and the wall meshes written by

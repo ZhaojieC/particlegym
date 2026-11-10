@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: two groups of pedestrians form lanes in a corridor.
 
 80 pedestrians walk in a corridor of 30 m x 6 m that is periodic along its

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Cell migration: leader and follower cells move to a source of chemoattractant.
 
 After the model of neural crest cell migration of Zhang, Chai, Sun and
@@ -47,6 +49,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.citation import remind
 from particlegym.envs.herding import _unit
 from particlegym.envs.spaces import Continuous
 
@@ -123,6 +126,9 @@ class CellMigration:
         substeps: Physics steps per control step.
     """
 
+    # Papers behind this environment, listed by particlegym.cite.
+    references = ("zhang2020",)
+
     def __init__(
         self,
         n_leaders: int = 9,
@@ -164,6 +170,7 @@ class CellMigration:
         if self.dt > self.grid.max_time_step(self.diffusivity):
             raise ValueError("dt is above the stability limit of the diffusion step")
         self._sites = self._start_sites()
+        remind(self)
 
     def _start_sites(self) -> tuple[np.ndarray, np.ndarray]:
         """Lattice sites on which the leaders and the followers may start."""

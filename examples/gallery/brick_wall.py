@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: a scripted player knocks bricks out of a wall.
 
 The ball moves by Newton's equations and bounces off the walls, the bricks

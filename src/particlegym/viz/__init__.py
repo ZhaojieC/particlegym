@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Pictures and animations of 2D systems, and pixel images for observations."""
 
 from particlegym.viz.canvas import (

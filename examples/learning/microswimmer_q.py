@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Tabular Q-learning of the microswimmer task, after Colabrese et al. (2017).
 
 Every swimmer senses one of 12 states (three levels of the vorticity times

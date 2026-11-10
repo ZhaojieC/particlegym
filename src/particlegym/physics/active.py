@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Self-propelled particles with an orientation, in 2D.
 
 An active particle has a heading angle ``theta`` and propels itself along

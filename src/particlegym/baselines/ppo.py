@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Proximal policy optimisation (PPO) in JAX, in one file.
 
 A compact implementation for the functional environments of ParticleGym. The

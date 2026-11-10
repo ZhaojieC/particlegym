@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """A WCA fluid in a periodic 3D box, thermostatted with Langevin dynamics.
 
 Prints the kinetic temperature while the fluid equilibrates and writes a

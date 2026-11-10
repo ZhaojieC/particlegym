@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: a simple player clears a billiards table.
 
 The first shot breaks the rack. After that the cue ball is aimed at the

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Microswimmer: swim upwards through a field of vortices.
 
 The task of Colabrese et al. (2017). A swimmer moves at a constant speed
@@ -37,6 +39,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.citation import remind
 from particlegym.envs.evacuation import _ring
 from particlegym.envs.spaces import Continuous, Discrete
 
@@ -104,6 +107,9 @@ class Microswimmer:
         substeps: Physics steps per control step.
     """
 
+    # Papers behind this environment, listed by particlegym.cite.
+    references = ("colabrese2017",)
+
     def __init__(
         self,
         n_agents: int = 1,
@@ -129,6 +135,7 @@ class Microswimmer:
         self.directions = _ring(4)
         self.box = pp.Box((0.0, 0.0), (self.period, self.period), periodic=True)
         self.force_field = pp.ForceField(self.box)
+        remind(self)
 
     @property
     def default_params(self) -> MicroswimmerParams:

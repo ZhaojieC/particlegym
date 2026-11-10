@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: 100 pedestrians leave a room with two doors and a pillar.
 
 Every pedestrian is an agent that walks to the nearest door. The pillar stands

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Images of two-dimensional particle systems.
 
 A :class:`Canvas` maps a rectangular region of the simulation domain to an

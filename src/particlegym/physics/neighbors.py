@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Neighbour search with static array shapes.
 
 A strategy returns, for every particle, a fixed-size row of candidate

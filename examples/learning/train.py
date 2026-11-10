@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Train policies with PPO on one of the tasks, several seeds at once.
 
 All seeds train in one compiled program (``jax.vmap`` over the random key).

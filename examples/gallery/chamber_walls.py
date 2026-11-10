@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Write the walls of the 3D chamber of `examples/evacuation_env_3d.py` as OBJ meshes.
 
 One file per face of the room (walls_x-.obj, ..., walls_z+.obj), so that the

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """The tasks of the learning examples: environment, settings and baselines."""
 
 from collections.abc import Callable

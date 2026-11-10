@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `particlegym.cite`: the references for ParticleGym and for the published
+  models behind each environment (`env.references`), as text or BibTeX. The
+  first environment of each kind that a program creates prints them once;
+  `PARTICLEGYM_CITE=0` turns this off.
+- Every source file of the package and of the examples starts with a line
+  that asks for a citation.
+
 ## [0.2.0] - 2026-10-13
 
 The first release. It contains what the roadmap planned for the versions

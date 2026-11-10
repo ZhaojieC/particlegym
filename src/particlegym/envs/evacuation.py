@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Room evacuation environment.
 
 Pedestrians move in a rectangular room with doors in its walls, following the
@@ -37,6 +39,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.citation import remind
 from particlegym.envs.spaces import Continuous, Discrete
 
 CROWD_POLICIES = ("nearest_exit", "random", "stand")
@@ -147,6 +150,9 @@ class Evacuation:
         force_field: The interactions between pedestrians, walls and obstacles.
     """
 
+    # Papers behind this environment, listed by particlegym.cite.
+    references = ("zhang2021", "helbing2000")
+
     def __init__(
         self,
         room=(10.0, 10.0),
@@ -241,6 +247,7 @@ class Evacuation:
                 f"the room has space for {len(self._sites)} pedestrians at reset, "
                 f"but {self.n} were requested; lower min_gap or the number of pedestrians"
             )
+        remind(self)
 
     @property
     def default_params(self) -> EvacuationParams:

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Scalar fields on a regular grid, coupled to the particles.
 
 A field, for example the concentration of a chemical, is an array with one

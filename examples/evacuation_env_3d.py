@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Agents leave a 3D chamber through the nearest exit, using the evacuation environment.
 
 The chamber measures 10 m x 10 m x 4 m and has a door in a side wall and a

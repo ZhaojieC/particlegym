@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Counter-flow in a corridor.
 
 Two groups of pedestrians walk in opposite directions along a corridor that
@@ -24,6 +26,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.citation import remind
 from particlegym.envs.evacuation import _ring
 from particlegym.envs.spaces import Continuous, Discrete
 
@@ -84,6 +87,9 @@ class CounterFlow:
         substeps: Physics steps per control step.
         min_gap: Minimum clearance between pedestrians at reset (m).
     """
+
+    # Papers behind this environment, listed by particlegym.cite.
+    references = ("helbing2000",)
 
     def __init__(
         self,
@@ -152,6 +158,7 @@ class CounterFlow:
         x = (np.arange(nx) + 0.5) * (length / nx)
         y = width / 2 + (np.arange(ny) - (ny - 1) / 2) * spacing
         self._sites = np.stack(np.meshgrid(x, y), axis=-1).reshape(-1, 2)
+        remind(self)
 
     @property
     def default_params(self) -> CounterFlowParams:

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Pixel images computed in JAX, for image observations.
 
 The functions return, for every pixel, the fraction of it that is covered by

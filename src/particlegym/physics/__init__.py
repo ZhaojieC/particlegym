@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Particle-dynamics core: 2D/3D, written in JAX, independent of any RL interface."""
 
 from particlegym.physics import active

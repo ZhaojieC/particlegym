@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Interactions between listed particles: bonds, angles and enclosed areas.
 
 Every term is defined by its energy; the force field obtains the forces by

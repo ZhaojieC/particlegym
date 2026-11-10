@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Wrappers that expose the environments through Gymnasium and PettingZoo.
 
 The libraries are optional: install them with ``pip install

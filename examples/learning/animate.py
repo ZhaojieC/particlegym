@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: a policy before and after training, side by side.
 
 Reads the policies written by ``train.py``. Of the seeds, the one with the
