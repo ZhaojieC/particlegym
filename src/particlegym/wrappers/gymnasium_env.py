@@ -162,6 +162,8 @@ class GymnasiumVectorEnv(gymnasium.vector.VectorEnv):
 
 _REGISTERED = {
     "particlegym/Evacuation2D-v0": "_evacuation_2d",
+    "particlegym/EvacuationFourExits-v0": "_four_exits",
+    "particlegym/EvacuationThreeExitsTwoObstacles-v0": "_three_exits_two_obstacles",
     "particlegym/BrickWall-v0": "_brick_wall",
     "particlegym/Billiards-v0": "_billiards",
     "particlegym/Herding-v0": "_herding",
@@ -176,6 +178,20 @@ def _evacuation_2d(render_mode=None, **kwargs):
     kwargs.setdefault("room", (10.0, 10.0))
     kwargs.setdefault("exits", [pp.Opening("x+", (4.4, 5.6))])
     return GymnasiumEnv(envs.Evacuation(n_agents=1, **kwargs), render_mode=render_mode)
+
+
+def _four_exits(render_mode=None, **kwargs):
+    from particlegym import envs
+
+    env = envs.zhang2021("four_exits", n_agents=1, **kwargs)
+    return GymnasiumEnv(env, render_mode=render_mode)
+
+
+def _three_exits_two_obstacles(render_mode=None, **kwargs):
+    from particlegym import envs
+
+    env = envs.zhang2021("three_exits_two_obstacles", n_agents=1, **kwargs)
+    return GymnasiumEnv(env, render_mode=render_mode)
 
 
 def _brick_wall(render_mode=None, **kwargs):
