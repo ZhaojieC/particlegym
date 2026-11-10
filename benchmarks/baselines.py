@@ -7,7 +7,7 @@ reference output is in ``benchmarks/baselines.txt``. Run with
     python benchmarks/baselines.py > benchmarks/baselines.txt
 
 or with the names of the parts to run (herding, microswimmer, cell_migration,
-billiards).
+billiards, orbit_transfer).
 """
 
 import sys
@@ -17,6 +17,7 @@ import jax.numpy as jnp
 import numpy as np
 
 from particlegym import envs
+from particlegym import physics as pp
 
 jax.config.update("jax_enable_x64", True)
 
@@ -160,11 +161,68 @@ def billiards(n_games=16, shots=30):
         )
 
 
+def orbit_transfer(n_games=16, steps=400):
+    print(f"# OrbitTransfer: from the circular orbit r = 1 to r = r1 (G M = 1), at most {steps}")
+    print("# control steps of 0.1 time units. Hohmann controller: the step of arrival and the")
+    print("# delta-v spent, against the impulsive optimum")
+    print("# action  r1  arrived_at_step  delta_v  optimum  ratio")
+    for action in ("continuous", "discrete"):
+        env = envs.OrbitTransfer(action=action)
+        for target in (1.5, 2.0, 3.0, 4.0):
+            params = env.default_params._replace(target_radius=target)
+
+            @jax.jit
+            def run(key, env=env, params=params):
+                _, state = env.reset(key, params)
+
+                def body(s, _):
+                    out = env.step(None, s, env.hohmann_policy(s, params), params)
+                    return out[1], out[5]["arrived"][0]
+
+                return jax.lax.scan(body, state, None, length=steps)
+
+            final, arrived = run(jax.random.key(0))
+            arrived = np.asarray(arrived)
+            used = float(final.fuel_used[0])
+            optimum = pp.hohmann_delta_v(1.0, target)
+            at = f"{arrived.argmax() + 1}" if arrived.any() else "no"
+            print(f"{action}  {target:g}  {at}  {used:.4f}  {optimum:.4f}  {used / optimum:.3f}")
+
+    print(f"# Random actions, r1 = 2, {n_games} games")
+    print("# action  arrived  crashed  escaped  delta_v_mean")
+    for action in ("continuous", "discrete"):
+        env = envs.OrbitTransfer(action=action)
+        params = env.default_params
+
+        @jax.jit
+        @jax.vmap
+        def game(key, env=env, params=params):
+            reset_key, run_key = jax.random.split(key)
+            _, state = env.reset(reset_key, params)
+
+            def body(s, k):
+                out = env.step(None, s, env.action_space.sample(k, (1,)), params)
+                info = out[5]
+                return out[1], (info["arrived"][0], info["crashed"][0], info["escaped"][0])
+
+            final, ends = jax.lax.scan(body, state, jax.random.split(run_key, steps))
+            return final.fuel_used[0], *(jnp.any(end) for end in ends)
+
+        used, arrived, crashed, escaped = (
+            np.asarray(x) for x in game(jax.random.split(jax.random.key(0), n_games))
+        )
+        print(
+            f"{action}  {arrived.sum()}/{n_games}  {crashed.sum()}/{n_games}  "
+            f"{escaped.sum()}/{n_games}  {used.mean():.3f}"
+        )
+
+
 PARTS = {
     "herding": herding,
     "microswimmer": microswimmer,
     "cell_migration": cell_migration,
     "billiards": billiards,
+    "orbit_transfer": orbit_transfer,
 }
 
 if __name__ == "__main__":

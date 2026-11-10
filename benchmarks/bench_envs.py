@@ -40,6 +40,7 @@ CASES = (
     ("Herding, 40 sheep", lambda: envs.Herding(), 50),
     ("Microswimmer", lambda: envs.Microswimmer(), 200),
     ("Cell migration, 9 cells", lambda: envs.CellMigration(), 20),
+    ("Orbit transfer, 1 spacecraft", lambda: envs.OrbitTransfer(), 200),
 )
 
 

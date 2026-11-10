@@ -21,7 +21,14 @@ DOOR = pp.Opening("x+", (4.4, 5.6))
 
 @pytest.mark.parametrize(
     "name",
-    ["Evacuation2D-v0", "BrickWall-v0", "Billiards-v0", "Herding-v0", "Microswimmer-v0"],
+    [
+        "Evacuation2D-v0",
+        "BrickWall-v0",
+        "Billiards-v0",
+        "Herding-v0",
+        "Microswimmer-v0",
+        "OrbitTransfer-v0",
+    ],
 )
 def test_registered_environments_pass_the_gymnasium_checker(name):
     env = gymnasium.make(f"particlegym/{name}", render_mode="rgb_array")

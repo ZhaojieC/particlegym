@@ -16,6 +16,7 @@ ENVIRONMENTS = [
     envs.Evacuation,
     envs.Herding,
     envs.Microswimmer,
+    envs.OrbitTransfer,
 ]
 
 

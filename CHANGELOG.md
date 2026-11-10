@@ -14,6 +14,16 @@ All notable changes to this project are documented here. The format follows
   `PARTICLEGYM_CITE=0` turns this off.
 - Every source file of the package and of the examples starts with a line
   that asks for a citation.
+- `physics.NewtonGravity`: Newtonian gravity with Plummer softening, between
+  all particles or from the first few particles on test particles (the
+  restricted N-body problem); `physics.orbital_elements` and
+  `physics.hohmann_delta_v` for Kepler orbits.
+- Experimental environment `OrbitTransfer` (Gymnasium id
+  `particlegym/OrbitTransfer-v0`): spacecraft raise their orbit on as little
+  fuel as possible, with continuous or discrete thrust; the Hohmann transfer
+  flown in closed loop (`hohmann_policy`) is the baseline.
+- Gallery animations of a galaxy encounter after Toomre & Toomre (1972) and of
+  an orbit transfer.
 
 ## [0.2.0] - 2026-10-13
 

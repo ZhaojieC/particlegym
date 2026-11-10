@@ -13,6 +13,7 @@
 | [`Herding`](experimental.md#herding) | shepherds drive a flock to a target | experimental |
 | [`Microswimmer`](experimental.md#microswimmer) | swimmers steer upwards through vortices | experimental |
 | [`CellMigration`](experimental.md#cell-migration) | cells move together to a source of chemoattractant | experimental |
+| [`OrbitTransfer`](experimental.md#orbit-transfer) | spacecraft raise their orbit on as little fuel as possible | experimental |
 
 "Experimental" means: the mechanics are tested, but the environment has not
 been compared with measurements and reproduces no published result in
