@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Animation: gyrotactic swimmers in a field of vortices.
 
 Swimmers that always steer upwards (naive gyrotaxis) in a Taylor-Green flow,

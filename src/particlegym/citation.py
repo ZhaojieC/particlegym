@@ -1,0 +1,181 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
+"""References to cite when using ParticleGym.
+
+Every environment lists the published models it is built on in its
+``references`` attribute. :func:`cite` returns the references for
+ParticleGym and for the environments passed to it, as text or BibTeX::
+
+    import particlegym
+
+    print(particlegym.cite(env))  # one line per reference
+    print(particlegym.cite(env, style="bibtex"))
+
+The first environment of each kind that a process creates prints its
+references once, like the citation reminder of LAMMPS. Set the environment
+variable ``PARTICLEGYM_CITE=0`` to turn the reminder off.
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+from typing import NamedTuple
+
+
+class Reference(NamedTuple):
+    """A work to cite: one line of text and a BibTeX entry."""
+
+    text: str
+    bibtex: str
+
+
+REFERENCES = {
+    "particlegym": Reference(
+        "Z. Chai, ParticleGym: fast, physically validated particle-dynamics environments for "
+        "reinforcement learning, version {version}, https://github.com/ZhaojieC/particlegym",
+        "@software{particlegym,\n"
+        "  author = {Chai, Zhaojie},\n"
+        "  title = {{ParticleGym}: fast, physically validated particle-dynamics environments "
+        "for reinforcement learning},\n"
+        "  version = {{version}},\n"
+        "  year = {2026},\n"
+        "  url = {https://github.com/ZhaojieC/particlegym}\n"
+        "}",
+    ),
+    "zhang2021": Reference(
+        "Y. Zhang, Z. Chai and G. Lykotrafitis, Deep reinforcement learning with a particle "
+        "dynamics environment applied to emergency evacuation of a room with obstacles, "
+        "Physica A 571, 125845 (2021), https://doi.org/10.1016/j.physa.2021.125845",
+        "@article{zhang2021,\n"
+        "  author = {Zhang, Yihao and Chai, Zhaojie and Lykotrafitis, George},\n"
+        "  title = {Deep reinforcement learning with a particle dynamics environment applied "
+        "to emergency evacuation of a room with obstacles},\n"
+        "  journal = {Physica A: Statistical Mechanics and its Applications},\n"
+        "  volume = {571},\n"
+        "  pages = {125845},\n"
+        "  year = {2021},\n"
+        "  doi = {10.1016/j.physa.2021.125845}\n"
+        "}",
+    ),
+    "zhang2020": Reference(
+        "Y. Zhang, Z. Chai, Y. Sun and G. Lykotrafitis, A deep reinforcement learning model "
+        "based on deterministic policy gradient for collective neural crest cell migration, "
+        "arXiv:2007.03190 (2020), https://arxiv.org/abs/2007.03190",
+        "@article{zhang2020,\n"
+        "  author = {Zhang, Yihao and Chai, Zhaojie and Sun, Yubing and Lykotrafitis, George},\n"
+        "  title = {A deep reinforcement learning model based on deterministic policy gradient "
+        "for collective neural crest cell migration},\n"
+        "  journal = {arXiv preprint arXiv:2007.03190},\n"
+        "  year = {2020},\n"
+        "  doi = {10.48550/arXiv.2007.03190}\n"
+        "}",
+    ),
+    "helbing2000": Reference(
+        "D. Helbing, I. Farkas and T. Vicsek, Simulating dynamical features of escape panic, "
+        "Nature 407, 487 (2000), https://doi.org/10.1038/35035023",
+        "@article{helbing2000,\n"
+        "  author = {Helbing, Dirk and Farkas, Ill{\\'e}s and Vicsek, Tam{\\'a}s},\n"
+        "  title = {Simulating dynamical features of escape panic},\n"
+        "  journal = {Nature},\n"
+        "  volume = {407},\n"
+        "  pages = {487--490},\n"
+        "  year = {2000},\n"
+        "  doi = {10.1038/35035023}\n"
+        "}",
+    ),
+    "colabrese2017": Reference(
+        "S. Colabrese, K. Gustavsson, A. Celani and L. Biferale, Flow navigation by smart "
+        "microswimmers via reinforcement learning, Phys. Rev. Lett. 118, 158004 (2017), "
+        "https://doi.org/10.1103/PhysRevLett.118.158004",
+        "@article{colabrese2017,\n"
+        "  author = {Colabrese, Simona and Gustavsson, Kristian and Celani, Antonio and "
+        "Biferale, Luca},\n"
+        "  title = {Flow navigation by smart microswimmers via reinforcement learning},\n"
+        "  journal = {Physical Review Letters},\n"
+        "  volume = {118},\n"
+        "  pages = {158004},\n"
+        "  year = {2017},\n"
+        "  doi = {10.1103/PhysRevLett.118.158004}\n"
+        "}",
+    ),
+    "strombom2014": Reference(
+        "D. Strömbom, R. P. Mann, A. M. Wilson, S. Hailes, A. J. Morton, D. J. T. Sumpter and "
+        "A. J. King, Solving the shepherding problem: heuristics for herding autonomous, "
+        "interacting agents, J. R. Soc. Interface 11, 20140719 (2014), "
+        "https://doi.org/10.1098/rsif.2014.0719",
+        "@article{strombom2014,\n"
+        '  author = {Str{\\"o}mbom, Daniel and Mann, Richard P. and Wilson, Alan M. and '
+        "Hailes, Stephen and Morton, A. Jennifer and Sumpter, David J. T. and King, "
+        "Andrew J.},\n"
+        "  title = {Solving the shepherding problem: heuristics for herding autonomous, "
+        "interacting agents},\n"
+        "  journal = {Journal of The Royal Society Interface},\n"
+        "  volume = {11},\n"
+        "  number = {100},\n"
+        "  pages = {20140719},\n"
+        "  year = {2014},\n"
+        "  doi = {10.1098/rsif.2014.0719}\n"
+        "}",
+    ),
+}
+
+# Kinds of environment whose references have been printed in this process.
+_reminded: set[str] = set()
+
+
+def cite(*environments, style: str = "text") -> str:
+    """The references for ParticleGym and for the given environments.
+
+    Args:
+        *environments: Environments, or environment classes, whose
+            ``references`` follow ParticleGym's own, each listed once.
+        style: ``"text"`` for one line per reference, ``"bibtex"`` for BibTeX
+            entries.
+
+    Returns:
+        The references, ParticleGym first.
+    """
+    if style not in ("text", "bibtex"):
+        raise ValueError("style must be 'text' or 'bibtex'")
+    keys = ["particlegym"]
+    for env in environments:
+        for key in getattr(env, "references", ()):
+            if key not in REFERENCES:
+                raise KeyError(f"unknown reference {key!r}")
+            if key not in keys:
+                keys.append(key)
+    if style == "text":
+        return "\n".join(f"- {_reference(key).text}" for key in keys)
+    return "\n\n".join(_reference(key).bibtex for key in keys)
+
+
+def remind(env) -> None:
+    """Print the references of an environment, once per kind and process.
+
+    Environments call this at the end of their constructor. Nothing is
+    printed when the environment variable ``PARTICLEGYM_CITE`` is ``0``.
+    """
+    kind = type(env).__name__
+    if kind in _reminded or os.environ.get("PARTICLEGYM_CITE", "1").strip() == "0":
+        return
+    _reminded.add(kind)
+    print(
+        f"ParticleGym: if you publish results obtained with {kind}, please cite\n"
+        f"{cite(env)}\n"
+        "BibTeX: particlegym.cite(env, style='bibtex'). "
+        "Set PARTICLEGYM_CITE=0 to hide this note.",
+        file=sys.stderr,
+    )
+
+
+def _reference(key: str) -> Reference:
+    """A reference, with the version of ParticleGym filled in."""
+    if key != "particlegym":
+        return REFERENCES[key]
+    from particlegym import __version__
+
+    text, bibtex = REFERENCES[key]
+    return Reference(
+        text.replace("{version}", __version__), bibtex.replace("{version}", __version__)
+    )

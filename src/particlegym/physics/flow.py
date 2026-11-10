@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Prescribed flow fields of a surrounding fluid.
 
 A flow field gives the fluid velocity at any point. Particles are coupled to

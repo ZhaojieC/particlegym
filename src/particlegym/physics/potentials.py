@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Pair interactions.
 
 A pair potential is an energy ``phi(r, sigma)`` of the centre-to-centre

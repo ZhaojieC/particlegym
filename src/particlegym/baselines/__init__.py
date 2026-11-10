@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Learning baselines for the environments, in pure JAX.
 
 - :mod:`particlegym.baselines.ppo`: proximal policy optimisation with a

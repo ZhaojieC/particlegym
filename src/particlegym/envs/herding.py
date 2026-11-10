@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Herding: shepherds drive a flock to a target.
 
 The flock follows the rules of the model of Strömbom et al. (2014): a sheep
@@ -30,6 +32,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.citation import remind
 from particlegym.envs.evacuation import _ring
 from particlegym.envs.spaces import Continuous, Discrete
 
@@ -116,6 +119,9 @@ class Herding:
             ``dt * substeps`` should be 1 s for the default parameters.
     """
 
+    # Papers behind this environment, listed by particlegym.cite.
+    references = ("strombom2014",)
+
     def __init__(
         self,
         n_sheep: int = 40,
@@ -154,6 +160,7 @@ class Herding:
         self._sites = np.stack(np.meshgrid(axis, axis), axis=-1).reshape(-1, 2)
         if len(self._sites) < self.n_sheep:
             raise ValueError("the field is too small for the flock")
+        remind(self)
 
     @property
     def default_params(self) -> HerdingParams:

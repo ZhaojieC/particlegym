@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Regenerate the animations of the gallery.
 
 Runs every script of the gallery that needs only ParticleGym and Pillow and

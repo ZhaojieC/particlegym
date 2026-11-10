@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Simulation domain: an axis-aligned box with optional periodicity per axis."""
 
 from __future__ import annotations

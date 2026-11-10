@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Gymnasium wrappers: a single environment and a vector environment."""
 
 from __future__ import annotations

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Reinforcement-learning environments built on the physics core."""
 
 from particlegym.envs.billiards import Billiards, BilliardsParams, BilliardsState

@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """PettingZoo wrapper: a multi-agent environment as a ``ParallelEnv``."""
 
 from __future__ import annotations

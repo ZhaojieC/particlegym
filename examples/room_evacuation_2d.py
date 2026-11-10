@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Pedestrians leave a room through a door (social force model).
 
 Every pedestrian walks towards the door centre with the desired speed; once

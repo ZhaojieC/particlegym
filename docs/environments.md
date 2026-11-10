@@ -43,6 +43,12 @@ image = env.render(state)  # RGB picture, needs Pillow
 - `step` does not reset finished episodes.
 - An action sets what an agent *wants*; the motion follows from forces and an
   integrator ([design principle P1](design.md#design-principles)).
+- `env.references` names the published models an environment is built on.
+  `particlegym.cite(env)` lists ParticleGym and these papers, and
+  `particlegym.cite(env, style="bibtex")` gives BibTeX entries. The first
+  environment of each kind that a program creates prints the list once, like
+  the citation reminder of LAMMPS; set the environment variable
+  `PARTICLEGYM_CITE=0` to turn this off.
 
 Wrappers for the Gymnasium and PettingZoo interfaces, and learners that train
 on the functional interface, are described on the page

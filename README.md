@@ -208,3 +208,9 @@ and dissipative particle dynamics, as in `Bonds`, `AreaConstraint` and
 Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). Citation
 metadata is in [CITATION.cff](CITATION.cff). ParticleGym is released under
 the [MIT license](LICENSE).
+
+If you use ParticleGym in published work, please cite it together with the
+papers behind the environments you use. `particlegym.cite(env)` lists them,
+and `particlegym.cite(env, style="bibtex")` gives BibTeX entries. The first
+environment of each kind that a program creates prints the same list once;
+set `PARTICLEGYM_CITE=0` to turn this off.

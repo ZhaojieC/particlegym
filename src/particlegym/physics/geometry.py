@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Geometry described by distance functions.
 
 A shape set holds M shapes of one kind and returns the distances from

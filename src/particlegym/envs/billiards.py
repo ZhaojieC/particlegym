@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Billiards: pocket the balls on a table with a cue ball.
 
 Balls are discs that slide on a table with a constant friction, collide with
@@ -21,6 +23,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.citation import remind
 from particlegym.envs.spaces import Continuous
 
 _BALL_COLORS = np.array(
@@ -92,6 +95,9 @@ class Billiards:
             (1.3 % for a restitution of 0.7 between balls).
     """
 
+    # Papers behind this environment, listed by particlegym.cite.
+    references = ()
+
     n_agents = 1
 
     def __init__(
@@ -141,6 +147,7 @@ class Billiards:
         # Places for the cue ball after a scratch, tried in this order.
         offsets = np.array([0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5]) * 3.0 * self.ball_radius
         self._spots = self.head_spot + np.stack([np.zeros_like(offsets), offsets], axis=1)
+        remind(self)
 
     @property
     def default_params(self) -> BilliardsParams:

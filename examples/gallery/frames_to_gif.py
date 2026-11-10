@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Join numbered PNG frames, for example from OVITO, into an animated GIF.
 
 python examples/gallery/frames_to_gif.py scene/frames evacuation_chamber_3d.gif --width 480

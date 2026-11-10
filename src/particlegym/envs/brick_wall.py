@@ -1,3 +1,5 @@
+# ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
+# Please cite it in published work: particlegym.cite() gives the references.
 """Brick wall: a paddle keeps a ball in play that knocks bricks out of a wall.
 
 An arcade game built from the physics core. The ball is a particle that moves
@@ -22,6 +24,7 @@ import numpy as np
 
 from particlegym import physics as pp
 from particlegym import viz
+from particlegym.citation import remind
 from particlegym.envs.spaces import Continuous, Discrete
 
 _ROW_COLORS = (viz.RED, viz.ORANGE, viz.GREEN, viz.BLUE, (150, 60, 200))
@@ -102,6 +105,9 @@ class BrickWall:
         substeps: Physics steps per control step.
     """
 
+    # Papers behind this environment, listed by particlegym.cite.
+    references = ()
+
     n_agents = 1
 
     def __init__(
@@ -167,6 +173,7 @@ class BrickWall:
         half_width = float(np.sqrt(_PADDLE_RADIUS**2 - self.paddle_y**2))
         self.paddle_half_width = half_width
         self.paddle_range = (0.5 * half_width, width - 0.5 * half_width)
+        remind(self)
 
     @property
     def default_params(self) -> BrickWallParams:
