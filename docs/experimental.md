@@ -333,6 +333,90 @@ thrust have made it exactly circular at r1. Random actions use up the fuel
 and reach the orbit in none of 16 games, with either kind of action. No
 policy has been trained on this task yet.
 
+## Ring road
+
+![A phantom traffic jam, and one automated vehicle that dissolves it](assets/gallery/ring_road.gif)
+
+`envs.RingRoad` is the experiment of Sugiyama et al. (2008) with automated
+vehicles. 22 vehicles drive in one lane of a ring road of 230 m. The human
+drivers follow the
+[intelligent driver model](physics.md#traffic-on-a-ring-road) with random
+fluctuations of their acceleration (`noise` = 0.2 \(\mathrm{m\,s^{-3/2}}\): in a time
+\(\Delta t\) a speed changes by an extra 0.2 \(\sqrt{\Delta t}\) times a
+standard normal number). At this density uniform flow is unstable. The
+fluctuations grow into a stop-and-go wave that travels backward around the
+ring at 4.3 m/s (15.5 km/h, measured in
+`test_a_phantom_jam_forms_and_moves_backward`), and the vehicles in the wave
+come to a standstill. Sugiyama et al. observed such a jam form without any
+bottleneck and found that it moved backward at the speed of jams on
+highways. Some vehicles are automated (`n_agents`, default 1), as in the
+mixed-autonomy ring of the Flow framework (Wu et al. 2022) and in the field
+experiment of Stern et al. (2018), in which one automated vehicle dissipated
+the waves of more than 20 human drivers.
+
+```python
+env = envs.RingRoad(n_agents=1, action="continuous")  # or "discrete"
+params = env.default_params._replace(ring_length=260.0)
+obs, state = env.reset(key, params)
+action = env.smoothing_policy(state, params)  # the baseline
+```
+
+- **Action**: the acceleration of an automated vehicle, between −1 and
+  1 m/s² (`max_accel`); with discrete actions one of nine levels from
+  −1 to 1 m/s². With `safe=True`, the default, the vehicle never accelerates
+  more than a human driver would in its place, which prevents collisions.
+- **Observation** (3 numbers): its speed, the speed of the vehicle ahead and
+  the gap to it.
+- **Reward**: the distance that the vehicles have driven in the step,
+  averaged over all vehicles; every agent receives the same. The return is
+  the mean distance driven in the episode, which the stop-and-go wave
+  reduces.
+- **Start and end**: an episode starts in a stop-and-go wave. The gaps vary
+  around the ring as a cosine of relative amplitude `wave` = 0.5 with a
+  random phase, and every vehicle drives at the speed of uniform flow at its
+  gap. It lasts 600 control steps of 0.5 s (300 s), each of five physics
+  steps. A collision, possible only with `safe=False`, ends it.
+
+Starting from a wave, instead of a simulated warm-up, keeps `reset` cheap:
+the PPO baseline and the vectorised Gymnasium wrapper call it at every step.
+
+Two scripted policies serve as baselines. `idm_policy` asks for the
+acceleration of a human driver, without the fluctuations, once per control
+step: the reference without control.
+`smoothing_policy` cruises gently at 90 % of the speed of uniform flow, which
+it computes from the ring length and the number of vehicles, and accelerates
+with 0.1 per second times the difference. It leaves the jam slowly and opens
+a gap to the vehicle ahead, which absorbs the next wave. From
+`benchmarks/baselines.py`, with continuous actions and 32 games each:
+
+| Ring length | Uniform flow | Return, like a human | Return, cruising gently | Gain | Speed spread |
+|---|---|---|---|---|---|
+| 220 m | 3.00 m/s | 644 m | 777 m | +21 % | 2.65 → 0.32 m/s |
+| 230 m | 3.45 m/s | 737 m | 900 m | +22 % | 2.89 → 0.30 m/s |
+| 250 m | 4.36 m/s | 921 m | 1142 m | +24 % | 3.34 → 0.29 m/s |
+| 270 m | 5.27 m/s | 1108 m | 1384 m | +25 % | 3.73 → 0.28 m/s |
+
+The speed spread is the standard deviation of the speeds of all vehicles,
+averaged over the last 150 s. With discrete actions the gain is 16 to 22 %.
+At 230 m every one of the 32 games gained between 17 and 26 %, and the
+spread fell below 0.6 m/s after 42 s in the median game and after 100 s at
+the latest. In trials during development, a vehicle that cruised at the full
+speed of uniform flow, or that accelerated three times as fast, ran into the
+back of the jam and did not dissolve it. Random actions also reduce the
+spread, to about 0.9 m/s, but only by holding up all vehicles: the return
+falls by more than a third. No policy has been trained on this task yet; the
+baseline drives 10 % below the speed of uniform flow, which leaves room for a
+better one.
+
+![Trajectories of the vehicles on the ring road, coloured by speed](assets/gallery/ring_road_spacetime.png)
+
+The trajectories of the two runs of the animation. Left: the jam is the dark
+band of standing vehicles that moves backward, against the traffic; the
+automated vehicle (blue) stops in it like everybody else. Right: the
+automated vehicle leaves the first jam slowly, the white region ahead of it
+is the gap it opens, and after about 40 s all vehicles drive at the same
+speed.
+
 ## Demixing of two fluids
 
 ![Two fluids that do not mix separate](assets/gallery/dpd_demixing.gif)
@@ -388,12 +472,27 @@ pull for longer.
   escape panic, Nature 407, 487 (2000).
 - W. Hohmann, Die Erreichbarkeit der Himmelskörper, Oldenbourg, Munich
   (1925).
+- R. E. Stern, S. Cui, M. L. Delle Monache, R. Bhadani, M. Bunting, M.
+  Churchill, N. Hamilton, R. Haulcy, H. Pohlmann, F. Wu, B. Piccoli, B.
+  Seibold, J. Sprinkle and D. B. Work, Dissipation of stop-and-go waves via
+  control of autonomous vehicles: Field experiments, Transp. Res. C 89, 205
+  (2018).
 - D. Strömbom, R. P. Mann, A. M. Wilson, S. Hailes, A. J. Morton, D. J. T.
   Sumpter and A. J. King, Solving the shepherding problem: heuristics for
   herding autonomous, interacting agents, J. R. Soc. Interface 11, 20140719
   (2014).
+- Y. Sugiyama, M. Fukui, M. Kikuchi, K. Hasebe, A. Nakayama, K. Nishinari,
+  S. Tadaki and S. Yukawa, Traffic jams without bottlenecks: experimental
+  evidence for the physical mechanism of the formation of a jam, New J.
+  Phys. 10, 033001 (2008).
 - A. Toomre and J. Toomre, Galactic bridges and tails, Astrophys. J. 178, 623
   (1972).
+- M. Treiber, A. Hennecke and D. Helbing, Congested traffic states in
+  empirical observations and microscopic simulations, Phys. Rev. E 62, 1805
+  (2000).
+- C. Wu, A. R. Kreidieh, K. Parvate, E. Vinitsky and A. M. Bayen, Flow: A
+  modular learning framework for mixed autonomy traffic, IEEE Trans. Robot.
+  38, 1270 (2022).
 - Y. Zhang, Z. Chai, Y. Sun and G. Lykotrafitis, A deep reinforcement
   learning model based on deterministic policy gradient for collective
   neural crest cell migration, arXiv:2007.03190 (2020).

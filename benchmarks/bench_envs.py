@@ -41,6 +41,7 @@ CASES = (
     ("Microswimmer", lambda: envs.Microswimmer(), 200),
     ("Cell migration, 9 cells", lambda: envs.CellMigration(), 20),
     ("Orbit transfer, 1 spacecraft", lambda: envs.OrbitTransfer(), 200),
+    ("Ring road, 22 vehicles", lambda: envs.RingRoad(), 200),
 )
 
 

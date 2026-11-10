@@ -28,6 +28,7 @@ DOOR = pp.Opening("x+", (4.4, 5.6))
         "Herding-v0",
         "Microswimmer-v0",
         "OrbitTransfer-v0",
+        "RingRoad-v0",
     ],
 )
 def test_registered_environments_pass_the_gymnasium_checker(name):

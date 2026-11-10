@@ -118,6 +118,55 @@ REFERENCES = {
         "  doi = {10.1098/rsif.2014.0719}\n"
         "}",
     ),
+    "sugiyama2008": Reference(
+        "Y. Sugiyama, M. Fukui, M. Kikuchi, K. Hasebe, A. Nakayama, K. Nishinari, S. Tadaki and "
+        "S. Yukawa, Traffic jams without bottlenecks: experimental evidence for the physical "
+        "mechanism of the formation of a jam, New J. Phys. 10, 033001 (2008), "
+        "https://doi.org/10.1088/1367-2630/10/3/033001",
+        "@article{sugiyama2008,\n"
+        "  author = {Sugiyama, Yuki and Fukui, Minoru and Kikuchi, Macoto and Hasebe, Katsuya "
+        "and Nakayama, Akihiro and Nishinari, Katsuhiro and Tadaki, Shin-ichi and Yukawa, "
+        "Satoshi},\n"
+        "  title = {Traffic jams without bottlenecks: experimental evidence for the physical "
+        "mechanism of the formation of a jam},\n"
+        "  journal = {New Journal of Physics},\n"
+        "  volume = {10},\n"
+        "  pages = {033001},\n"
+        "  year = {2008},\n"
+        "  doi = {10.1088/1367-2630/10/3/033001}\n"
+        "}",
+    ),
+    "treiber2000": Reference(
+        "M. Treiber, A. Hennecke and D. Helbing, Congested traffic states in empirical "
+        "observations and microscopic simulations, Phys. Rev. E 62, 1805 (2000), "
+        "https://doi.org/10.1103/PhysRevE.62.1805",
+        "@article{treiber2000,\n"
+        "  author = {Treiber, Martin and Hennecke, Ansgar and Helbing, Dirk},\n"
+        "  title = {Congested traffic states in empirical observations and microscopic "
+        "simulations},\n"
+        "  journal = {Physical Review E},\n"
+        "  volume = {62},\n"
+        "  pages = {1805--1824},\n"
+        "  year = {2000},\n"
+        "  doi = {10.1103/PhysRevE.62.1805}\n"
+        "}",
+    ),
+    "wu2022": Reference(
+        "C. Wu, A. R. Kreidieh, K. Parvate, E. Vinitsky and A. M. Bayen, Flow: A modular "
+        "learning framework for mixed autonomy traffic, IEEE Trans. Robot. 38, 1270 (2022), "
+        "https://doi.org/10.1109/TRO.2021.3087314",
+        "@article{wu2022,\n"
+        "  author = {Wu, Cathy and Kreidieh, Abdul Rahman and Parvate, Kanaad and Vinitsky, "
+        "Eugene and Bayen, Alexandre M.},\n"
+        "  title = {Flow: A Modular Learning Framework for Mixed Autonomy Traffic},\n"
+        "  journal = {IEEE Transactions on Robotics},\n"
+        "  volume = {38},\n"
+        "  number = {2},\n"
+        "  pages = {1270--1286},\n"
+        "  year = {2022},\n"
+        "  doi = {10.1109/TRO.2021.3087314}\n"
+        "}",
+    ),
 }
 
 # Kinds of environment whose references have been printed in this process.

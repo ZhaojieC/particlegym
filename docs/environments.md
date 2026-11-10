@@ -14,6 +14,7 @@
 | [`Microswimmer`](experimental.md#microswimmer) | swimmers steer upwards through vortices | experimental |
 | [`CellMigration`](experimental.md#cell-migration) | cells move together to a source of chemoattractant | experimental |
 | [`OrbitTransfer`](experimental.md#orbit-transfer) | spacecraft raise their orbit on as little fuel as possible | experimental |
+| [`RingRoad`](experimental.md#ring-road) | automated vehicles dissolve a traffic jam on a ring road | experimental |
 
 "Experimental" means: the mechanics are tested, but the environment has not
 been compared with measurements and reproduces no published result in
