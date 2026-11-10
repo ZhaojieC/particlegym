@@ -174,17 +174,37 @@ pytest
 
 ## Background
 
-ParticleGym grows out of the particle-dynamics environment used in
+ParticleGym grows out of the particle-dynamics environments used in
 
 > Y. Zhang, Z. Chai, G. Lykotrafitis. *Deep reinforcement learning with a
 > particle dynamics environment applied to emergency evacuation of a room with
 > obstacles.* Physica A 571, 125845 (2021).
 > [doi:10.1016/j.physa.2021.125845](https://doi.org/10.1016/j.physa.2021.125845)
 
-It generalises that environment to 3D, to other particle systems, and to
-modern, fast, tested software. The two rooms of the paper are available as
-`envs.zhang2021("four_exits")` and `envs.zhang2021("three_exits_two_obstacles")`
+> Y. Zhang, Z. Chai, Y. Sun, G. Lykotrafitis. *A deep reinforcement learning
+> model based on deterministic policy gradient for collective neural crest
+> cell migration.* arXiv:2007.03190 (2020).
+> [arXiv:2007.03190](https://arxiv.org/abs/2007.03190)
+
+It generalises those environments to 3D, to other particle systems, and to
+modern, fast, tested software. The two rooms of the evacuation paper are
+available as `envs.zhang2021("four_exits")` and
+`envs.zhang2021("three_exits_two_obstacles")`
 ([docs](docs/environments.md#rooms-of-zhang-chai-lykotrafitis-2021)).
+
+## Related publications
+
+Red blood cell models built from bonded membrane networks, area constraints
+and dissipative particle dynamics, as in `Bonds`, `AreaConstraint` and
+`PairThermostat`:
+
+1. Z. Chai, J. Zheng, H. Li, M. Dao, G. E. Karniadakis. *Quantifying the
+   biophysical properties of stomatocytes in health and disease.* Biophys. J.
+   (2026). [doi:10.1016/j.bpj.2026.10.007](https://doi.org/10.1016/j.bpj.2026.10.007)
+2. Z. Chai, G. Li, P. A. Ndour, P. Connes, P. A. Buffet, M. Franco,
+   G. E. Karniadakis. *In silico biophysics and rheology of blood and red
+   blood cells in Gaucher Disease.* PLOS Comput. Biol. 21, e1012705 (2025).
+   [doi:10.1371/journal.pcbi.1012705](https://doi.org/10.1371/journal.pcbi.1012705)
 
 ## Contributing and citing
 

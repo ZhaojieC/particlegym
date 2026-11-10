@@ -28,3 +28,18 @@ references:
     start: 125845
     year: 2021
     doi: 10.1016/j.physa.2021.125845
+  - type: article
+    title: "A deep reinforcement learning model based on deterministic policy gradient for collective neural crest cell migration"
+    authors:
+      - family-names: Zhang
+        given-names: Yihao
+      - family-names: Chai
+        given-names: Zhaojie
+      - family-names: Sun
+        given-names: Yubing
+      - family-names: Lykotrafitis
+        given-names: George
+    journal: "arXiv"
+    year: 2020
+    doi: 10.48550/arXiv.2007.03190
+    url: "https://arxiv.org/abs/2007.03190"
