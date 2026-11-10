@@ -17,6 +17,7 @@ ENVIRONMENTS = [
     envs.Herding,
     envs.Microswimmer,
     envs.OrbitTransfer,
+    envs.RingRoad,
 ]
 
 

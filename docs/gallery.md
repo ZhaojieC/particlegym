@@ -28,6 +28,18 @@ straight on; the lanes form through the interactions.
 
 ![Two groups of pedestrians form lanes](assets/gallery/counterflow.gif)
 
+## Traffic
+
+![A phantom traffic jam, and one automated vehicle that dissolves it](assets/gallery/ring_road.gif)
+
+22 vehicles on a ring road of 230 m, as in the experiment of Sugiyama et al.
+(2008), both rings from the same start. Left: every vehicle is driven like a
+human, and a stop-and-go wave, a traffic jam without a bottleneck, travels
+backward around the ring. Right: the blue automated vehicle cruises gently
+below the speed of uniform flow, and the jam dissolves; every vehicle drives
+22 % farther in 300 s. Vehicles turn red as they slow down; the bar under
+each ring shows the mean speed ([details](experimental.md#ring-road)).
+
 ## Games
 
 Arcade and table games built from the same physics core

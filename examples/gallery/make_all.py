@@ -26,6 +26,7 @@ SCRIPTS = [
     "dpd_demixing",
     "galaxy_encounter",
     "orbit_transfer",
+    "ring_road",
 ]
 LARGE = {"crowd_10000"}  # several minutes on a CPU
 

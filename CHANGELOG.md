@@ -24,6 +24,18 @@ All notable changes to this project are documented here. The format follows
   flown in closed loop (`hohmann_policy`) is the baseline.
 - Gallery animations of a galaxy encounter after Toomre & Toomre (1972) and of
   an orbit transfer.
+- `physics.traffic`: the car-following models `IntelligentDriver` (Treiber,
+  Hennecke & Helbing 2000) and `OptimalVelocity` (Bando et al. 1995) in one
+  lane of a ring road, the ballistic update with stops, and `ring_modes`, the
+  linear stability of uniform flow for any car-following model by automatic
+  differentiation.
+- Experimental environment `RingRoad` (Gymnasium id
+  `particlegym/RingRoad-v0`): automated vehicles among human drivers on the
+  ring of Sugiyama et al. (2008). A gently cruising automated vehicle
+  (`smoothing_policy`) dissolves the stop-and-go wave; every vehicle then
+  drives 21 to 25 % farther.
+- Gallery: a traffic jam without a bottleneck and its dissolution, and a
+  space-time diagram of the vehicles.
 
 ## [0.2.0] - 2026-10-13
 

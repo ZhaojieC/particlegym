@@ -17,6 +17,8 @@ fixed random seed.
 | `dpd_demixing.gif` | `dpd_demixing.py` | Pillow |
 | `galaxy_encounter.gif` | `galaxy_encounter.py` | Pillow |
 | `orbit_transfer.gif` | `orbit_transfer.py` | Pillow |
+| `ring_road.gif` | `ring_road.py` | Pillow |
+| `ring_road_spacetime.png` | `ring_road_spacetime.py` (not run by `make_all.py`) | matplotlib |
 | `evacuation_chamber_3d.gif` | the four steps below | Pillow, OVITO |
 | `encircle_3d.gif` | the [drone-encircle](https://github.com/ZhaojieC/drone-encircle) repository | |
 

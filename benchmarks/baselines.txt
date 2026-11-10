@@ -52,3 +52,40 @@ discrete  4  140  0.4500  0.4487  1.003
 continuous  0/16  0/16  0/16  1.000
 discrete  0/16  0/16  0/16  1.000
 
+# RingRoad: 22 vehicles, one automated, 32 games of 600 control steps (300 s)
+# from a stop-and-go wave. Return: mean distance driven per vehicle (m); speed
+# spread: standard deviation of the speeds over the vehicles, mean over the last 150 s
+# ring_length  action  policy  return_mean  return_min  return_max  speed_spread
+220  continuous  idm  644.4  633.8  655.0  2.650
+220  continuous  smoothing  776.8  746.5  793.5  0.316
+220  continuous  random  408.6  229.6  535.7  0.944
+# smoothing, gain per game: min 0.158, max 0.242; spread below 0.6 m/s after 41.5 s (median), 100.0 s (latest)
+220  discrete  idm  640.4  628.4  652.0  2.654
+220  discrete  smoothing  745.3  734.6  759.0  0.318
+220  discrete  random  393.1  241.9  562.3  0.798
+# smoothing, gain per game: min 0.135, max 0.202; spread below 0.6 m/s after 41.2 s (median), 74.0 s (latest)
+230  continuous  idm  737.2  722.0  750.8  2.894
+230  continuous  smoothing  899.5  862.3  916.3  0.304
+230  continuous  random  465.9  238.1  671.0  0.950
+# smoothing, gain per game: min 0.169, max 0.257; spread below 0.6 m/s after 42.5 s (median), 100.5 s (latest)
+230  discrete  idm  733.8  721.6  747.2  2.896
+230  discrete  smoothing  866.3  848.7  878.8  0.307
+230  discrete  random  453.7  255.0  677.5  0.809
+# smoothing, gain per game: min 0.149, max 0.208; spread below 0.6 m/s after 41.8 s (median), 82.0 s (latest)
+250  continuous  idm  921.4  911.5  936.2  3.340
+250  continuous  smoothing  1141.7  1107.5  1159.7  0.291
+250  continuous  random  565.1  255.4  772.6  0.948
+# smoothing, gain per game: min 0.195, max 0.263; spread below 0.6 m/s after 40.5 s (median), 88.5 s (latest)
+250  discrete  idm  917.5  906.0  935.6  3.345
+250  discrete  smoothing  1108.5  1083.7  1124.7  0.293
+250  discrete  random  584.5  274.5  853.5  0.806
+# smoothing, gain per game: min 0.179, max 0.231; spread below 0.6 m/s after 39.5 s (median), 86.5 s (latest)
+270  continuous  idm  1107.8  1091.7  1133.3  3.733
+270  continuous  smoothing  1383.7  1335.7  1402.7  0.283
+270  continuous  random  711.9  273.0  1115.9  0.930
+# smoothing, gain per game: min 0.202, max 0.277; spread below 0.6 m/s after 41.5 s (median), 90.0 s (latest)
+270  discrete  idm  1104.0  1090.9  1132.7  3.738
+270  discrete  smoothing  1349.8  1310.0  1365.5  0.284
+270  discrete  random  704.3  292.8  1083.7  0.808
+# smoothing, gain per game: min 0.179, max 0.241; spread below 0.6 m/s after 41.0 s (median), 88.5 s (latest)
+

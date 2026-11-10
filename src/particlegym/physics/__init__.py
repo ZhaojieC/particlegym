@@ -1,6 +1,9 @@
 # ParticleGym, https://github.com/ZhaojieC/particlegym (MIT license).
 # Please cite it in published work: particlegym.cite() gives the references.
-"""Particle-dynamics core: 2D/3D, written in JAX, independent of any RL interface."""
+"""Particle-dynamics core: 2D/3D, written in JAX, independent of any RL interface.
+
+The module :mod:`particlegym.physics.traffic` adds vehicles in one lane of a ring road.
+"""
 
 from particlegym.physics import active
 from particlegym.physics.bonded import Angles, AreaConstraint, BondedTerm, Bonds
@@ -43,6 +46,15 @@ from particlegym.physics.potentials import (
 )
 from particlegym.physics.space import Box
 from particlegym.physics.state import ParticleState, create_state
+from particlegym.physics.traffic import (
+    CarFollowing,
+    IntelligentDriver,
+    OptimalVelocity,
+    ballistic_step,
+    ring_accelerations,
+    ring_gaps,
+    ring_modes,
+)
 
 __all__ = [
     "WCA",
@@ -53,6 +65,7 @@ __all__ = [
     "Box",
     "Boxes",
     "BruteForce",
+    "CarFollowing",
     "CellList",
     "ContactExponential",
     "ExternalForce",
@@ -62,11 +75,13 @@ __all__ = [
     "Gravity",
     "Grid",
     "Harmonic",
+    "IntelligentDriver",
     "KineticFriction",
     "Mixture",
     "NewtonGravity",
     "NormalDamping",
     "Opening",
+    "OptimalVelocity",
     "PairDissipation",
     "PairPotential",
     "PairThermostat",
@@ -81,6 +96,7 @@ __all__ = [
     "UniformFlow",
     "Walls",
     "active",
+    "ballistic_step",
     "box_walls",
     "brownian",
     "create_state",
@@ -95,6 +111,9 @@ __all__ = [
     "pressure",
     "random_positions",
     "restitution_coefficient",
+    "ring_accelerations",
+    "ring_gaps",
+    "ring_modes",
     "temperature",
     "total_momentum",
     "velocity_verlet",

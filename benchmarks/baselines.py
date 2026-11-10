@@ -7,7 +7,7 @@ reference output is in ``benchmarks/baselines.txt``. Run with
     python benchmarks/baselines.py > benchmarks/baselines.txt
 
 or with the names of the parts to run (herding, microswimmer, cell_migration,
-billiards, orbit_transfer).
+billiards, orbit_transfer, ring_road).
 """
 
 import sys
@@ -217,12 +217,68 @@ def orbit_transfer(n_games=16, steps=400):
         )
 
 
+def ring_road(n_games=32):
+    print(f"# RingRoad: 22 vehicles, one automated, {n_games} games of 600 control steps (300 s)")
+    print("# from a stop-and-go wave. Return: mean distance driven per vehicle (m); speed")
+    print("# spread: standard deviation of the speeds over the vehicles, mean over the last 150 s")
+    print("# ring_length  action  policy  return_mean  return_min  return_max  speed_spread")
+    for ring_length in (220.0, 230.0, 250.0, 270.0):
+        for action in ("continuous", "discrete"):
+            env = envs.RingRoad(action=action)
+            params = env.default_params._replace(ring_length=ring_length)
+            results = {}
+            policies = {
+                "idm": lambda k, s, env=env, params=params: env.idm_policy(s, params),
+                "smoothing": lambda k, s, env=env, params=params: env.smoothing_policy(s, params),
+                "random": lambda k, s, env=env: env.action_space.sample(k, (env.n_agents,)),
+            }
+            for name, policy in policies.items():
+
+                @jax.jit
+                @jax.vmap
+                def game(key, env=env, params=params, policy=policy):
+                    reset_key, run_key = jax.random.split(key)
+                    _, state = env.reset(reset_key, params)
+
+                    def body(s, k):
+                        action_key, step_key = jax.random.split(k)
+                        out = env.step(step_key, s, policy(action_key, s), params)
+                        return out[1], (out[2][0], out[5]["speed_std"])
+
+                    keys = jax.random.split(run_key, params.max_steps)
+                    _, (reward, spread) = jax.lax.scan(body, state, keys)
+                    return jnp.sum(reward), spread
+
+                returns, spread = (
+                    np.asarray(x) for x in game(jax.random.split(jax.random.key(0), n_games))
+                )
+                results[name] = returns, spread
+                low, high = returns.min(), returns.max()
+                late = spread[:, params.max_steps // 2 :].mean()
+                print(
+                    f"{ring_length:g}  {action}  {name}  {returns.mean():.1f}  {low:.1f}  "
+                    f"{high:.1f}  {late:.3f}"
+                )
+            # The same games with and without smoothing: the gain of every game, and
+            # the time after which the spread first falls below 0.6 m/s.
+            gain = results["smoothing"][0] / results["idm"][0] - 1.0
+            below = results["smoothing"][1] < 0.6
+            calm = np.where(below.any(axis=1), below.argmax(axis=1) + 1, np.inf)
+            calm = calm * env.control_interval
+            print(
+                f"# smoothing, gain per game: min {gain.min():.3f}, max {gain.max():.3f}; "
+                f"spread below 0.6 m/s after {np.median(calm):.1f} s (median), "
+                f"{calm.max():.1f} s (latest)"
+            )
+
+
 PARTS = {
     "herding": herding,
     "microswimmer": microswimmer,
     "cell_migration": cell_migration,
     "billiards": billiards,
     "orbit_transfer": orbit_transfer,
+    "ring_road": ring_road,
 }
 
 if __name__ == "__main__":

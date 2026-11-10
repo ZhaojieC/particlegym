@@ -124,6 +124,20 @@ to 0.7 % lower, which is within the accuracy of the reading.
 | Softened field | `test_a_ring_of_test_particles_circles_a_source` (36 test particles of mass 1, \(\epsilon\) = 0.05) | the ring keeps its radius at the circular speed \(v^2 = R^2/(R^2+\epsilon^2)^{3/2}\): the test particles pull neither on each other nor on the source | radius within 1e-5 |
 | Hohmann transfer | `test_hohmann_delta_v` | velocity change from the vis-viva equation, for raising and for lowering an orbit | equal to 1e-12 |
 
+## Traffic
+
+| Property | Test | Criterion | Reference result |
+|---|---|---|---|
+| Intelligent driver model | `test_traffic.py::test_intelligent_driver_model_follows_its_formula` | free-road acceleration \(a\) from rest and 0 at \(v_0\); 0 at rest at the gap \(s_0\); the formula of Treiber et al. (2000) | equal to 1e-12 |
+| Uniform flow | `test_equilibrium_speeds_make_the_acceleration_vanish` (IDM, IDM with other parameters, optimal velocity model) | the acceleration vanishes at the equilibrium speed, which rises with the gap; no motion below \(s_0\) | equal to 1e-12 |
+| Ballistic update | `test_ballistic_step_is_exact_for_constant_accelerations_and_stops_vehicles` | exact for constant accelerations; a braking vehicle stops after \(v^2/(2|a|)\) and stays; positions wrap around the ring | equal to 1e-12 |
+| Order of the update | `test_free_road_relaxation_converges_at_first_order` | the exact relaxation \(v = v_0(1 - e^{-at/v_0})\) of the IDM with \(\delta = 1\); halving \(\Delta t\) halves the error | ratio 2.00 |
+| No collisions | `test_a_driver_stops_behind_a_standing_vehicle_without_collision` (from 10, 15 and 30 m/s) | stops close to \(s_0\) behind a standing vehicle, without touching it | smallest gap 1.78 m |
+| Steady uniform flow | `test_uniform_flow_is_a_steady_state` (22 vehicles, 230 m, 100 s) | speeds and gaps stay constant | to 1e-9 |
+| Stability of the optimal velocity model | `test_optimal_velocity_modes_follow_the_exact_stability_condition` | the rates of `ring_modes` solve the dispersion relation; a mode is unstable exactly where \(V'(s) > k/(1 + \cos\theta)\), for long waves \(V' > k/2\) (Bando et al. 1995) | to 1e-12; all modes |
+| Growth of disturbances | `test_disturbances_grow_or_decay_at_the_rate_of_linear_theory` (IDM with \(a\) = 1 and 2, optimal velocity model; \(\Delta t\) = 0.01 s, 300 s) | the measured growth or decay rate of the longest wave equals \(\mathrm{Re}\,\lambda\) from automatic differentiation within 1.5 % | +0.023/s within 0.5 %; −0.013/s and −0.016/s within 0.3 % |
+| Phantom jam | `test_a_phantom_jam_forms_and_moves_backward` (22 vehicles, 230 m, noise 0.2, 600 s) | stop-and-go: speed spread above 2 m/s, standing vehicles, mean speed below 80 % of uniform flow; the jam moves backward at 3 to 6 m/s; no collision | spread 2.9 m/s, mean speed 2.38 of 3.45 m/s; the jam moves at −4.3 m/s |
+
 ## Experimental environments
 
 The tests of the [experimental environments](experimental.md) check their
@@ -156,6 +170,10 @@ policy solves each task. They do not compare with measurements.
 | Coasting spacecraft | `test_env_orbit.py::test_reset_puts_the_spacecraft_on_the_circular_orbit_and_coasting_keeps_it` (100 control steps, 1.6 periods) | without thrust the radius stays 1 and the radial velocity 0; the planet stays at rest | within 1e-4 |
 | Thrust and fuel | `test_thrust_acts_in_the_orbital_frame_and_spends_fuel`, `test_the_thrust_stops_when_the_fuel_is_used_up` | the velocity change of a step points in the chosen direction of the orbital frame and is charged to the fuel and the reward; no thrust once the fuel is used up | passes |
 | Crash | `test_crashing_ends_the_episode_and_later_steps_give_nothing` | a spacecraft that brakes falls on the planet; its episode ends and gives no reward afterwards | passes |
+| Ring road at the start | `test_env_ring_road.py::test_reset_starts_in_a_wave_with_every_vehicle_at_its_equilibrium_speed` | the gaps are a single cosine of relative amplitude 0.5 around the ring; every vehicle at the equilibrium speed of its gap | to 1e-10 |
+| Reward of the ring road | `test_uniform_flow_without_fluctuations_pays_the_distance_driven`, `test_reward_is_the_mean_distance_driven_in_the_step` | the reward is the mean distance driven in the step; uniform flow pays its speed times the control interval | to 1e-9 |
+| Safety rule | `test_the_safety_rule_caps_the_acceleration_at_the_one_of_a_human_driver`, `test_without_the_safety_rule_full_throttle_crashes_and_ends_the_episode` | an automated vehicle accelerates at most as a human driver would; full throttle for 300 s does not collide; without the rule it collides, the episode ends and the vehicles stand still | passes |
+| Gently cruising vehicle | `test_a_gently_cruising_vehicle_dissolves_the_stop_and_go_wave` (3 games, continuous and discrete actions) | the jam persists when the automated vehicle drives like a human (spread above 2 m/s) and is gone with the smoothing policy (below 0.5 m/s); the return rises by more than 15 % | +22 % and +19 % |
 | Hohmann controller | `test_hohmann_controller_reaches_the_orbit_with_little_more_than_the_impulsive_optimum`, `test_discrete_hohmann_controller_reaches_the_orbit_on_one_transfer` (r1 from 1.5 to 4) | arrives; \(\Delta v\) between 1 and 1.01 times the Hohmann value with continuous thrust, between 0.97 and 1.01 with discrete thrust; arrival on the first pass through the apoapsis | 1.001 to 1.002; 0.984 to 1.003 |
 
 ## Learning

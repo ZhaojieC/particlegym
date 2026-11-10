@@ -210,6 +210,70 @@ For \(r_1/r_0 < 11.94\) no other transfer with impulsive burns needs less.
 The [orbit-transfer environment](experimental.md#orbit-transfer) uses it as
 the optimum.
 
+## Traffic on a ring road
+
+`particlegym.physics.traffic` moves vehicles along one lane of a ring road of
+length \(L\). The vehicles do not overtake, so each one follows the vehicle
+ahead of it. A car-following model gives the acceleration of a driver from
+the gap \(s\) to the vehicle ahead (bumper to bumper), the own speed \(v\)
+and the speed \(v_\ell\) of the vehicle ahead. Two models are included. The
+intelligent driver model (IDM) of Treiber, Hennecke & Helbing (2000),
+
+\[
+\dot v = a\left[1 - \left(\frac{v}{v_0}\right)^{\delta}
+- \left(\frac{s^*(v, v - v_\ell)}{s}\right)^2\right], \qquad
+s^*(v, w) = s_0 + \max\!\left(0,\ vT + \frac{v\,w}{2\sqrt{ab}}\right):
+\]
+
+a driver accelerates with at most \(a\) towards the desired speed \(v_0\),
+keeps the time headway \(T\) and the minimum gap \(s_0\), and brakes with
+about \(b\) in normal situations, harder when a collision threatens. The
+defaults are those of the Flow framework (Wu et al. 2022): \(v_0\) = 30 m/s,
+\(T\) = 1 s, \(a\) = 1 m/s², \(b\) = 1.5 m/s², \(\delta\) = 4 and \(s_0\) =
+2 m. The optimal velocity model of Bando et al. (1995),
+
+\[
+\dot v = k\,[V(s) - v], \qquad
+V(s) = v_{\max}\,\frac{\tanh(s/w - 2) + \tanh 2}{1 + \tanh 2}:
+\]
+
+a driver relaxes at the rate \(k\) to the speed \(V(s)\) that suits the gap.
+In the form of the BAOAB integrator, \(V(s)\) is the drift velocity and \(k\)
+the friction rate: such a driver behaves like a pedestrian of the social
+force model, which relaxes to its desired velocity.
+
+`ballistic_step` advances the vehicles with a constant acceleration over a
+time step, \(x' = x + v\,\Delta t + a\,\Delta t^2/2\) and
+\(v' = v + a\,\Delta t\). A vehicle that would come to a stop within the step
+stops after its braking distance \(v^2/(2|a|)\), so that speeds never become
+negative. Treiber & Kanagaraj (2015) compared integration schemes for
+car-following models: this ballistic update is of first order, like Euler's
+method, but more accurate, and it handles vehicles that stop.
+
+**Uniform flow and its stability.** In uniform flow all \(N\) vehicles keep
+the gap \(s = L/N - l\), with \(l\) the length of a vehicle, and drive at the
+equilibrium speed \(v_e(s)\) at which the acceleration vanishes
+(`equilibrium_speed`). A small displacement
+\(y_n \propto e^{i\theta n + \lambda t}\) of vehicle \(n\), with
+\(\theta = 2\pi k/N\), grows at the rate \(\mathrm{Re}\,\lambda\), where
+
+\[
+\lambda^2 - \lambda\,(f_v + f_u z) - f_s\,(z - 1) = 0, \qquad z = e^{i\theta},
+\]
+
+and \(f_s\), \(f_v\) and \(f_u\) are the derivatives of the acceleration with
+respect to the gap, the own speed and the speed of the vehicle ahead.
+`ring_modes` evaluates them by automatic differentiation, for any
+car-following model, and returns the rates of all modes. For the optimal
+velocity model a mode is unstable where \(V'(s) > k/(1 + \cos\theta)\); for
+long waves this is the condition \(V'(s) > k/2\) of Bando et al. (1995).
+
+The IDM with the defaults above is unstable on the ring of Sugiyama et al.
+(2008), 22 vehicles on 230 m: uniform flow at 3.45 m/s, in which the longest
+wave grows at 0.023 per second. Small disturbances grow into a stop-and-go
+wave that travels backward around the ring, a traffic jam without a
+bottleneck (see the [ring road](experimental.md#ring-road)).
+
 ## Active particles
 
 In 2D a self-propelled particle has a heading angle \(\theta\), kept by the
@@ -386,3 +450,18 @@ With these stiffnesses, contacts need time steps of a few milliseconds
   623–666 (1972).
 - W. Hohmann, *Die Erreichbarkeit der Himmelskörper*, Oldenbourg, Munich
   (1925).
+- M. Treiber, A. Hennecke and D. Helbing, Congested traffic states in
+  empirical observations and microscopic simulations, *Phys. Rev. E* 62,
+  1805–1824 (2000).
+- M. Bando, K. Hasebe, A. Nakayama, A. Shibata and Y. Sugiyama, Dynamical
+  model of traffic congestion and numerical simulation, *Phys. Rev. E* 51,
+  1035 (1995).
+- C. Wu, A. R. Kreidieh, K. Parvate, E. Vinitsky and A. M. Bayen, Flow: A
+  modular learning framework for mixed autonomy traffic, *IEEE Trans.
+  Robot.* 38, 1270–1286 (2022).
+- M. Treiber and V. Kanagaraj, Comparing numerical integration schemes for
+  time-continuous car-following models, *Physica A* 419, 183–195 (2015).
+- Y. Sugiyama, M. Fukui, M. Kikuchi, K. Hasebe, A. Nakayama, K. Nishinari,
+  S. Tadaki and S. Yukawa, Traffic jams without bottlenecks: experimental
+  evidence for the physical mechanism of the formation of a jam, *New J.
+  Phys.* 10, 033001 (2008).
