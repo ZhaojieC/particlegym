@@ -39,12 +39,12 @@
   <tr>
     <td width="33%"><img src="docs/assets/gallery/evacuation_chamber_3d.gif" width="100%" alt="Agents leave a 3D chamber"></td>
     <td width="33%"><img src="docs/assets/gallery/encircle_3d.gif" width="100%" alt="Drones encircle a moving target"></td>
-    <td width="33%"></td>
+    <td width="33%"><img src="docs/assets/gallery/galaxy_encounter.gif" width="100%" alt="Two galaxies pass each other and pull out tidal tails"></td>
   </tr>
   <tr>
     <td align="center">60 agents leave a 3D chamber through a door and a ceiling hatch</td>
     <td align="center">8 drones encircle a moving target (<a href="https://github.com/ZhaojieC/drone-encircle">drone-encircle</a>, built on ParticleGym)</td>
-    <td align="center"></td>
+    <td align="center">Two galaxies pass each other and pull out tidal tails: 4948 stars in 3D under Newtonian gravity</td>
   </tr>
   <tr>
     <td width="33%"><img src="docs/assets/gallery/learned_microswimmer.gif" width="100%" alt="Swimmers before and after training"></td>
@@ -67,14 +67,14 @@ cells follow simple scripted rules. [Learning](docs/learning.md) has the
 numbers, also for the tasks that PPO does not solve.
 
 > **Status: pre-alpha (v0.2.0).** The physics core, its validation
-> tests, a room-evacuation environment, six
+> tests, a room-evacuation environment, seven
 > [experimental environments](docs/experimental.md), Gymnasium and PettingZoo
 > wrappers and two [learning baselines](docs/learning.md) are in place. APIs
 > may change. See the [roadmap](docs/roadmap.md).
 
 ParticleGym simulates many interacting particles (pedestrians, active
-colloids, cells, swarm robots) and lets reinforcement-learning agents control
-some of them. It is built around three goals:
+colloids, cells, swarm robots, spacecraft and stars) and lets
+reinforcement-learning agents control some of them. It is built around three goals:
 
 - **Physically consistent.** Agents choose what they *want* (a desired
   direction of motion); the motion itself always follows from forces and a
@@ -147,12 +147,13 @@ other [examples](examples).
 | Component | Available |
 |---|---|
 | Environments (preview) | functional `Evacuation` room environment in 2D and 3D: `reset`/`step` with `jit` and `vmap`, discrete or continuous desired directions, crowd policies ([docs](docs/environments.md)) |
-| Environments (experimental) | `CounterFlow`, `BrickWall` (state or pixel observations), `Billiards`, `Herding`, `Microswimmer`, `CellMigration`: tested mechanics and scripted policies, not yet compared with measurements ([docs](docs/experimental.md)) |
+| Environments (experimental) | `CounterFlow`, `BrickWall` (state or pixel observations), `Billiards`, `Herding`, `Microswimmer`, `CellMigration`, `OrbitTransfer`: tested mechanics and scripted policies, not yet compared with measurements ([docs](docs/experimental.md)) |
 | Wrappers | Gymnasium (single and vector environments, registered ids) and PettingZoo (parallel interface) ([docs](docs/learning.md)) |
 | Baselines | PPO with a shared policy and tabular Q-learning in pure JAX, several seeds in one compiled program ([docs](docs/learning.md)) |
 | Domain | 2D or 3D box, periodic or open along each axis |
 | Neighbour search | brute force; cell list with overflow detection |
 | Pair interactions | harmonic, WCA, social force (Helbing et al. 2000), tangential friction |
+| Gravity | Newtonian gravity with Plummer softening, between all particles or from a few heavy ones on test particles (restricted N-body problem); Kepler orbital elements and the Hohmann transfer ([docs](docs/physics.md#newtonian-gravity)) |
 | Geometry | plates (segments/rectangles), spheres, boxes, rooms with real door openings |
 | Integrators | velocity Verlet; BAOAB Langevin with a drift velocity (self-propulsion); Brownian dynamics |
 | Exits | `alive` mask: particles that leave are frozen, shapes stay static |
@@ -165,7 +166,8 @@ The test suite checks, among others: energy conservation with the expected
 gradient, cell list against brute force, the Langevin temperature, the
 Einstein diffusion law against the exact Ornstein-Uhlenbeck result, the
 published social-force law, and that pedestrians leave a room only through
-the door. See [Validation](docs/validation.md).
+the door, and Kepler orbits under gravity. See
+[Validation](docs/validation.md).
 
 ```bash
 pip install -e ".[test]"

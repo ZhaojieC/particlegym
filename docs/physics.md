@@ -157,6 +157,59 @@ enters through the drift velocity of the BAOAB integrator: the friction term
 vortices \(\mathbf u = \tfrac{u_0}{2}(-\cos kx \sin ky,\ \sin kx \cos ky)\).
 The particles do not act back on the flow.
 
+## Newtonian gravity
+
+`NewtonGravity(G, softening, sources)` couples every particle to every other
+one by Newton's law of gravitation, with the softening length \(\epsilon\)
+of Plummer (1911):
+
+\[
+U = -\sum_{i<j} \frac{G m_i m_j}{\sqrt{r_{ij}^2 + \epsilon^2}}, \qquad
+\mathbf F_i = -G m_i \sum_{j \ne i}
+\frac{m_j\,(\mathbf r_i - \mathbf r_j)}{(r_{ij}^2 + \epsilon^2)^{3/2}}.
+\]
+
+The softening keeps close encounters finite; \(\epsilon = 0\) gives Newton's
+law. Gravity has no cut-off, so the pairs are summed directly: work and
+memory grow as \(N^2\), which suits up to a few thousand particles. It is
+added to a `ForceField` as an external term, and positions are not wrapped
+into a periodic box.
+
+With `sources=k` only the first k particles attract. They move under their
+mutual attraction; all other particles are test particles, which feel the
+sources but act neither on them nor on each other, and the work grows as
+\(Nk\). This is the restricted N-body problem with which Toomre & Toomre
+(1972) explained the tails of interacting galaxies: a point mass at the
+centre of each galaxy, and its stars as test particles (see the
+[galaxy encounter](experimental.md#galaxy-encounter)). The energy of a test
+particle is its potential energy in the field of the sources, and the force
+on it is minus the gradient of that energy. Because the test particles do
+not act back, their energies change when the sources move.
+
+Two functions describe Kepler orbits. `orbital_elements(r, v, gm)` gives,
+for the position and the velocity of one body relative to the other and
+\(GM = G(M + m)\), the semi-major axis and the eccentricity vector, which
+points to the periapsis:
+
+\[
+a = -\frac{GM}{2E}, \quad E = \frac{v^2}{2} - \frac{GM}{r}, \qquad
+\mathbf e = \frac{(v^2 - GM/r)\,\mathbf r - (\mathbf r\cdot\mathbf v)\,\mathbf v}{GM}.
+\]
+
+`hohmann_delta_v(r0, r1, gm)` is the velocity change of the Hohmann transfer
+between two circular orbits (Hohmann 1925): two tangential burns, at the two
+ends of the ellipse that touches both orbits,
+
+\[
+\Delta v = \sqrt{\frac{GM}{r_0}}\left(\sqrt{\frac{2r_1}{r_0 + r_1}} - 1\right)
++ \sqrt{\frac{GM}{r_1}}\left(1 - \sqrt{\frac{2r_0}{r_0 + r_1}}\right)
+\quad (r_1 > r_0).
+\]
+
+For \(r_1/r_0 < 11.94\) no other transfer with impulsive burns needs less.
+The [orbit-transfer environment](experimental.md#orbit-transfer) uses it as
+the optimum.
+
 ## Active particles
 
 In 2D a self-propelled particle has a heading angle \(\theta\), kept by the
@@ -327,3 +380,9 @@ With these stiffnesses, contacts need time steps of a few milliseconds
 - S. Colabrese, K. Gustavsson, A. Celani and L. Biferale, Flow navigation by
   smart microswimmers via reinforcement learning, *Phys. Rev. Lett.* 118,
   158004 (2017).
+- H. C. Plummer, On the problem of distribution in globular star clusters,
+  *Mon. Not. R. Astron. Soc.* 71, 460–470 (1911).
+- A. Toomre and J. Toomre, Galactic bridges and tails, *Astrophys. J.* 178,
+  623–666 (1972).
+- W. Hohmann, *Die Erreichbarkeit der Himmelskörper*, Oldenbourg, Munich
+  (1925).

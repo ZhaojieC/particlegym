@@ -266,6 +266,73 @@ and the speed differ.
     draws it to a wall; whether this is the only cause has not been
     established. The default is therefore leaders only.
 
+## Orbit transfer
+
+![A spacecraft flies a Hohmann transfer to an orbit twice as large](assets/gallery/orbit_transfer.gif)
+
+`envs.OrbitTransfer` is a task of orbital mechanics with a known optimum. A
+spacecraft circles a planet on the orbit of radius 1 and must reach the
+circular orbit of radius r1 (`target_radius`, default 2) with a thruster of
+limited acceleration (`max_thrust` = 0.5), spending as little velocity
+change \(\Delta v\), that is fuel, as possible. The units are \(GM = 1\) and
+the radius of the first orbit, so the speed on it is 1 and its period
+\(2\pi\). The planet and the spacecraft move under
+[Newtonian gravity](physics.md#newtonian-gravity); the spacecraft are test
+particles, so that several of them (`n_agents`) are independent copies of
+the task, simulated together.
+
+```python
+env = envs.OrbitTransfer(n_agents=1, action="continuous")  # or "discrete"
+params = env.default_params._replace(target_radius=3.0)
+obs, state = env.reset(key, params)
+action = env.hohmann_policy(state, params)  # the baseline
+```
+
+- **Action**: a thrust in the orbital frame of the spacecraft (radially out,
+  and along the motion). Continuous: a vector whose length, capped at 1,
+  scales the largest thrust. Discrete: one of nine, to coast or to thrust in
+  one of the four directions at full thrust or at a tenth of it. The thrust
+  is applied as half kicks before and after each velocity Verlet step (10
+  steps of 0.01 per control step), which keeps the integration of second
+  order.
+- **Observation** (5 numbers): the distance from the planet, the radial and
+  the transverse velocity, the target radius and the fuel left. They do not
+  depend on where on its orbit the spacecraft is.
+- **Reward**: minus the \(\Delta v\) spent in the step, and 1 on arrival.
+- **End**: the spacecraft arrives when the semi-major axis of its orbit is
+  within 2 % of r1 and the eccentricity below 0.02. It crashes closer than
+  0.3 to the centre of the planet and escapes beyond 10. The fuel allows a
+  \(\Delta v\) of 1 in all; an episode is truncated after 400 control steps
+  (40 time units).
+
+For impulsive burns the optimum is the Hohmann transfer: a prograde burn onto
+the ellipse that touches both orbits, half a revolution, and a second
+prograde burn at the far end of the ellipse, the apoapsis. Its \(\Delta v\)
+is 0.2845 for r1 = 2. `env.hohmann_policy` flies it in closed loop. It burns
+prograde until the apoapsis is at r1 and coasts; it starts the second burn
+half the duration of that burn before the apoapsis, which it finds from
+Kepler's equation, so that the burn is centred on the apoapsis, and burns
+until the orbit is circular. With discrete actions it uses only the two
+prograde thrusts. From `benchmarks/baselines.py`:
+
+| Actions | r1 | Arrival (control step) | \(\Delta v\) | Hohmann \(\Delta v\) | Ratio |
+|---|---|---|---|---|---|
+| continuous | 1.5 | 46 | 0.1818 | 0.1816 | 1.001 |
+| continuous | 2 | 61 | 0.2849 | 0.2845 | 1.002 |
+| continuous | 3 | 94 | 0.3945 | 0.3938 | 1.002 |
+| continuous | 4 | 130 | 0.4498 | 0.4487 | 1.002 |
+| discrete | 1.5 | 55 | 0.1800 | 0.1816 | 0.991 |
+| discrete | 2 | 67 | 0.2800 | 0.2845 | 0.984 |
+| discrete | 3 | 101 | 0.3950 | 0.3938 | 1.003 |
+| discrete | 4 | 140 | 0.4500 | 0.4487 | 1.003 |
+
+Burns of finite thrust need a little more than the impulsive optimum. The
+discrete controller can arrive with less, because the episode ends as soon
+as the orbit is within the tolerances, before the steps of a tenth of the
+thrust have made it exactly circular at r1. Random actions use up the fuel
+and reach the orbit in none of 16 games, with either kind of action. No
+policy has been trained on this task yet.
+
 ## Demixing of two fluids
 
 ![Two fluids that do not mix separate](assets/gallery/dpd_demixing.gif)
@@ -280,6 +347,36 @@ which heats the fluid at first: the kinetic temperature without the flow
 that the growing domains drive is 1.25 in the first 12 time units and 1.01
 afterwards (set: 1).
 
+## Galaxy encounter
+
+![Two galaxies pass each other and pull out tidal tails](assets/gallery/galaxy_encounter.gif)
+
+Not an environment either, but a demonstration of
+[Newtonian gravity](physics.md#newtonian-gravity) in 3D, with the
+restricted three-body model of Toomre & Toomre (1972). Each galaxy is a point
+mass (\(GM = 1\)) at the centre of a disc of stars on circular orbits, and the
+4948 stars are test particles that feel the two centres but not each other
+(`NewtonGravity(softening=0.05, sources=2)`). The two centres approach on a
+parabola with a closest distance of 1. Both discs turn in the sense of the
+orbit; the first (blue) lies in the plane of the orbit, the second (orange)
+is tilted by 45°. The picture is the projection on the plane of the orbit.
+The passage draws a bridge of stars from each disc towards the other galaxy
+and a tail on the far side.
+
+In the simulation the centres come as close as 1.0012: the softening weakens
+their attraction a little. At the end, 5 time units after the closest
+approach, the stars are counted by the centre to which they are bound, that
+is, relative to which alone their energy is negative:
+
+| Stars of | Bound to their own centre | Captured by the other | Bound to neither |
+|---|---|---|---|
+| the flat disc | 74.1 % | 21.8 % | 4.2 % |
+| the tilted disc | 84.7 % | 12.8 % | 2.5 % |
+
+The flat disc loses more stars. Its stars move in the plane of the orbit and
+in the same sense as the other galaxy, so they stay in step with its tidal
+pull for longer.
+
 ## References
 
 - S. Colabrese, K. Gustavsson, A. Celani and L. Biferale, Flow navigation by
@@ -289,10 +386,14 @@ afterwards (set: 1).
   Rev. E 51, 4282 (1995).
 - D. Helbing, I. Farkas and T. Vicsek, Simulating dynamical features of
   escape panic, Nature 407, 487 (2000).
+- W. Hohmann, Die Erreichbarkeit der Himmelskörper, Oldenbourg, Munich
+  (1925).
 - D. Strömbom, R. P. Mann, A. M. Wilson, S. Hailes, A. J. Morton, D. J. T.
   Sumpter and A. J. King, Solving the shepherding problem: heuristics for
   herding autonomous, interacting agents, J. R. Soc. Interface 11, 20140719
   (2014).
+- A. Toomre and J. Toomre, Galactic bridges and tails, Astrophys. J. 178, 623
+  (1972).
 - Y. Zhang, Z. Chai, Y. Sun and G. Lykotrafitis, A deep reinforcement
   learning model based on deterministic policy gradient for collective
   neural crest cell migration, arXiv:2007.03190 (2020).

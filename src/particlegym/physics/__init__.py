@@ -24,6 +24,7 @@ from particlegym.physics.integrators import (
     langevin_baoab,
     velocity_verlet,
 )
+from particlegym.physics.nbody import NewtonGravity, hohmann_delta_v, orbital_elements
 from particlegym.physics.neighbors import BruteForce, CellList
 from particlegym.physics.observables import kinetic_energy, pressure, temperature, total_momentum
 from particlegym.physics.potentials import (
@@ -63,6 +64,7 @@ __all__ = [
     "Harmonic",
     "KineticFriction",
     "Mixture",
+    "NewtonGravity",
     "NormalDamping",
     "Opening",
     "PairDissipation",
@@ -83,11 +85,13 @@ __all__ = [
     "brownian",
     "create_state",
     "damping_for_restitution",
+    "hohmann_delta_v",
     "init_forces",
     "kinetic_energy",
     "langevin_baoab",
     "lattice_positions",
     "maxwell_boltzmann",
+    "orbital_elements",
     "pressure",
     "random_positions",
     "restitution_coefficient",

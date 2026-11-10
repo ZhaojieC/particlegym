@@ -18,6 +18,7 @@ from particlegym.envs.evacuation import (
 )
 from particlegym.envs.herding import Herding, HerdingParams, HerdingState
 from particlegym.envs.microswimmer import Microswimmer, MicroswimmerParams, MicroswimmerState
+from particlegym.envs.orbit import OrbitTransfer, OrbitTransferParams, OrbitTransferState
 from particlegym.envs.spaces import Continuous, Discrete
 
 __all__ = [
@@ -45,4 +46,7 @@ __all__ = [
     "Microswimmer",
     "MicroswimmerParams",
     "MicroswimmerState",
+    "OrbitTransfer",
+    "OrbitTransferParams",
+    "OrbitTransferState",
 ]

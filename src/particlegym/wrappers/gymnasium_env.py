@@ -168,6 +168,7 @@ _REGISTERED = {
     "particlegym/Billiards-v0": "_billiards",
     "particlegym/Herding-v0": "_herding",
     "particlegym/Microswimmer-v0": "_microswimmer",
+    "particlegym/OrbitTransfer-v0": "_orbit_transfer",
 }
 
 
@@ -202,6 +203,12 @@ def _microswimmer(render_mode=None, **kwargs):
     from particlegym import envs
 
     return GymnasiumEnv(envs.Microswimmer(n_agents=1, **kwargs), render_mode=render_mode)
+
+
+def _orbit_transfer(render_mode=None, **kwargs):
+    from particlegym import envs
+
+    return GymnasiumEnv(envs.OrbitTransfer(n_agents=1, **kwargs), render_mode=render_mode)
 
 
 def register_envs() -> None:

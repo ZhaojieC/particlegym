@@ -24,6 +24,8 @@ SCRIPTS = [
     "microswimmer",
     "cell_migration",
     "dpd_demixing",
+    "galaxy_encounter",
+    "orbit_transfer",
 ]
 LARGE = {"crowd_10000"}  # several minutes on a CPU
 

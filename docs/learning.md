@@ -29,6 +29,7 @@ frame = env.render()
 | `particlegym/Billiards-v0` | [billiards](experimental.md#billiards) |
 | `particlegym/Herding-v0` | [herding](experimental.md#herding) with one shepherd |
 | `particlegym/Microswimmer-v0` | one [microswimmer](experimental.md#microswimmer) |
+| `particlegym/OrbitTransfer-v0` | one spacecraft of the [orbit transfer](experimental.md#orbit-transfer), continuous thrust |
 
 Other single-agent environments, or other settings, are wrapped directly:
 

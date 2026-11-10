@@ -65,6 +65,24 @@ group together. Model after Zhang, Chai, Sun and Lykotrafitis (2020).
 1200 particles of two species with dissipative particle dynamics: unlike
 particles repel more strongly than like ones, and the mixture separates.
 
+## Space
+
+![Two galaxies pass each other and pull out tidal tails](assets/gallery/galaxy_encounter.gif)
+
+Two disc galaxies pass each other and pull out a bridge and tidal tails, as
+in the model of Toomre & Toomre (1972): 4948 stars, simulated in 3D as test
+particles in the field of the two galactic centres under Newtonian gravity.
+The orange disc is tilted by 45° against the plane of the orbit
+([details](experimental.md#galaxy-encounter)).
+
+![A spacecraft flies a Hohmann transfer to an orbit twice as large](assets/gallery/orbit_transfer.gif)
+
+A spacecraft raises its orbit to one twice as large, with a burn (orange) at
+each end of the transfer ellipse: the scripted controller of the
+[orbit-transfer environment](experimental.md#orbit-transfer). It spends a
+velocity change of 0.2849; the Hohmann transfer with impulsive burns needs
+0.2845.
+
 ## Before and after training
 
 Policies trained with the PPO baseline of the library

@@ -15,6 +15,8 @@ fixed random seed.
 | `microswimmer.gif` | `microswimmer.py` | Pillow |
 | `cell_migration.gif` | `cell_migration.py` | Pillow |
 | `dpd_demixing.gif` | `dpd_demixing.py` | Pillow |
+| `galaxy_encounter.gif` | `galaxy_encounter.py` | Pillow |
+| `orbit_transfer.gif` | `orbit_transfer.py` | Pillow |
 | `evacuation_chamber_3d.gif` | the four steps below | Pillow, OVITO |
 | `encircle_3d.gif` | the [drone-encircle](https://github.com/ZhaojieC/drone-encircle) repository | |
 

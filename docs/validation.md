@@ -113,6 +113,17 @@ scanned page with an accuracy of about 0.002, are 0.092, 0.096, 0.099, 0.100
 and 0.102 at the densities 3, 4, 5, 6 and 8. The values of the table are 0.4
 to 0.7 % lower, which is within the accuracy of the reading.
 
+## Gravity
+
+| Property | Test | Criterion | Reference result |
+|---|---|---|---|
+| Forces are minus the energy gradient | `test_nbody.py::test_forces_are_minus_the_gradient_of_the_energy` (7 masses, 2D and 3D, \(\epsilon\) = 0 and 0.3) | agreement with `jax.grad` of the energy; total force zero; the energy of one pair equals \(-Gm_im_j/\sqrt{r^2+\epsilon^2}\) | equal to 1e-12 |
+| Restricted problem | `test_test_particles_feel_the_sources_and_do_not_act_back` | the sources feel only each other; the force on a test particle is minus the gradient of its own energy and equals the direct sum over the sources | equal to 1e-12 |
+| Circular orbit of two bodies | `test_two_bodies_on_a_circular_orbit_keep_keplers_period_and_conserve_energy` (masses 1 and 0.5, 2000 steps per period) | distance constant; back at the start after Kepler's period \(2\pi\sqrt{a^3/GM}\); energy, momentum and angular momentum conserved | distance within 1e-5, position within 1e-4, energy within 1e-8 |
+| Elliptic orbit | `test_an_elliptic_orbit_keeps_its_elements_and_period` (\(a\) = 1.5, \(e\) = 0.6, 20,000 steps) | semi-major axis, eccentricity and direction of the periapsis constant; back at the periapsis after one period; the source stays at rest | elements within 1e-4, position within 1e-3 |
+| Softened field | `test_a_ring_of_test_particles_circles_a_source` (36 test particles of mass 1, \(\epsilon\) = 0.05) | the ring keeps its radius at the circular speed \(v^2 = R^2/(R^2+\epsilon^2)^{3/2}\): the test particles pull neither on each other nor on the source | radius within 1e-5 |
+| Hohmann transfer | `test_hohmann_delta_v` | velocity change from the vis-viva equation, for raising and for lowering an orbit | equal to 1e-12 |
+
 ## Experimental environments
 
 The tests of the [experimental environments](experimental.md) check their
@@ -142,6 +153,10 @@ policy solves each task. They do not compare with measurements.
 | Chemoattractant field | `test_interface_shapes_and_batching`, `test_cells_attract_through_the_field_and_the_local_reward_follows_the_angle` | amount of secreted substance after one decay time; gradient points to the other cell; reward \(e^{-\beta^2} - 1\) | amount within 0.1 %; reward within 1e-4 |
 | Contact between cells | `test_contact_inhibition_and_walls_keep_cells_apart` | cells driven against each other or into a corner stay a diameter apart and inside the region | passes |
 | Migrating group of cells | `test_gradient_following_leaders_reach_the_source_and_co_attraction_keeps_them_together` (6 games, 9 leaders) | all leaders arrive; with co-attraction the group is more compact and slower | spread 0.69 against 1.01 at step 100 |
+| Coasting spacecraft | `test_env_orbit.py::test_reset_puts_the_spacecraft_on_the_circular_orbit_and_coasting_keeps_it` (100 control steps, 1.6 periods) | without thrust the radius stays 1 and the radial velocity 0; the planet stays at rest | within 1e-4 |
+| Thrust and fuel | `test_thrust_acts_in_the_orbital_frame_and_spends_fuel`, `test_the_thrust_stops_when_the_fuel_is_used_up` | the velocity change of a step points in the chosen direction of the orbital frame and is charged to the fuel and the reward; no thrust once the fuel is used up | passes |
+| Crash | `test_crashing_ends_the_episode_and_later_steps_give_nothing` | a spacecraft that brakes falls on the planet; its episode ends and gives no reward afterwards | passes |
+| Hohmann controller | `test_hohmann_controller_reaches_the_orbit_with_little_more_than_the_impulsive_optimum`, `test_discrete_hohmann_controller_reaches_the_orbit_on_one_transfer` (r1 from 1.5 to 4) | arrives; \(\Delta v\) between 1 and 1.01 times the Hohmann value with continuous thrust, between 0.97 and 1.01 with discrete thrust; arrival on the first pass through the apoapsis | 1.001 to 1.002; 0.984 to 1.003 |
 
 ## Learning
 
