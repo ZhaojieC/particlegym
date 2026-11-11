@@ -31,7 +31,7 @@ def test_reset_puts_a_round_tumour_of_mostly_sensitive_cells():
     assert alive.sum() == 200 and not alive[200:].any()
     np.testing.assert_allclose(obs, [[1.0, 0.0, 0.0]])
     resistant = int(np.sum(alive & (np.asarray(cells.kind) == 1)))
-    assert 0 < resistant < 15  # 2 % of 200 cells
+    assert 0 < resistant < 25  # 5 % of 200 cells
     distance = np.linalg.norm(np.asarray(cells.pos)[alive], axis=1)
     assert distance.max() < 0.85 * math.sqrt(200 / math.pi * 2 / math.sqrt(3)) + 0.5
     age, cycle = np.asarray(state.age)[alive], np.asarray(state.cycle)[alive]
@@ -40,17 +40,17 @@ def test_reset_puts_a_round_tumour_of_mostly_sensitive_cells():
     assert np.all((radius > 0.5 / math.sqrt(2) - 1e-12) & (radius < 0.5 + 1e-12))
 
 
-@pytest.mark.parametrize(("dose", "rate"), [(1.0, 0.05), (0.5, 0.025)])
-def test_the_drug_kills_cycling_sensitive_cells_at_its_rate(dose, rate):
+@pytest.mark.parametrize("dose", [1.0, 0.5])
+def test_the_drug_kills_cycling_sensitive_cells_at_its_rate(dose):
     # No divisions, no contact inhibition, no other deaths: within one day a
-    # sensitive cell survives with probability exp(-rate * 24).
+    # sensitive cell survives with probability exp(-kill_rate * dose * 24).
     env = envs.TumorTherapy(initial_cells=400, capacity=450, cycle_time=1e6, inhibition=1e9)
     params = env.default_params._replace(death_rate=0.0, resistant_fraction=0.5)
     _, state = env.reset(jax.random.key(1), params)
     alive, kind = np.asarray(state.cells.alive), np.asarray(state.cells.kind)
     sensitive, resistant = np.sum(alive & (kind == 0)), np.sum(alive & (kind == 1))
     *_, info = env.step(jax.random.key(2), state, jnp.array([[dose]]), params)
-    survival = math.exp(-rate * 24)
+    survival = math.exp(-params.kill_rate * dose * 24)
     expected = sensitive * survival
     sigma = math.sqrt(sensitive * survival * (1 - survival))
     assert abs(int(info["sensitive"]) - expected) < 4 * sigma
@@ -59,10 +59,10 @@ def test_the_drug_kills_cycling_sensitive_cells_at_its_rate(dose, rate):
 
 def test_every_cell_dies_at_the_turnover_rate():
     env = envs.TumorTherapy(initial_cells=400, capacity=450, cycle_time=1e6, inhibition=1e9)
-    params = env.default_params._replace(death_rate=0.01, resistant_fraction=0.5)
+    params = env.default_params._replace(resistant_fraction=0.5)
     _, state = env.reset(jax.random.key(3), params)
     _, _, *_, info = env.step(jax.random.key(4), state, jnp.zeros((1, 1)), params)
-    survival = math.exp(-0.01 * 24)
+    survival = math.exp(-params.death_rate * 24)
     sigma = math.sqrt(400 * survival * (1 - survival))
     assert abs(int(info["sensitive"]) + int(info["resistant"]) - 400 * survival) < 4 * sigma
 
@@ -70,7 +70,7 @@ def test_every_cell_dies_at_the_turnover_rate():
 def test_contact_inhibition_confines_cycling_to_the_rim():
     env = envs.TumorTherapy()
     params = env.default_params._replace(progression=10.0)
-    state, (_, _, _, _, info) = _rollout(env, params, env.no_treatment_policy, 4)
+    state, (_, _, _, _, info) = _rollout(env, params, env.no_treatment_policy, 8)
     cells = state.cells
     pressure = pp.overlap_sum(cells.pos, cells.radius, cells.alive, env.box, env.neighbors)
     cycling = np.asarray(cells.alive & (pressure < env.inhibition))
@@ -119,6 +119,12 @@ def test_the_adaptive_rule_pauses_at_half_and_resumes_at_the_start():
         alive = jnp.arange(env.capacity) < cells
         s = state._replace(cells=state.cells._replace(alive=alive), dose=jnp.asarray(dose))
         np.testing.assert_allclose(env.adaptive_policy(s), [[expected]])
+    # Containment: treat whenever the tumour has grown back to its initial size.
+    cases = [(1.0, 202, 1.0), (1.0, 198, 0.0), (0.0, 198, 0.0), (0.0, 200, 1.0)]
+    for dose, cells, expected in cases:
+        alive = jnp.arange(env.capacity) < cells
+        s = state._replace(cells=state.cells._replace(alive=alive), dose=jnp.asarray(dose))
+        np.testing.assert_allclose(env.adaptive_policy(s, stop=1.0, restart=1.0), [[expected]])
 
 
 def test_discrete_actions_are_doses():

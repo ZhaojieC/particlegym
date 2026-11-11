@@ -14,8 +14,8 @@ active colloids, cells, swarm robots, soft robots, spacecraft and stars — and
 lets reinforcement-learning agents control some of them. Pedestrian
 evacuation is the first application and the one that is validated against
 published work; games, herding, microswimmers, cell migration, orbit
-transfers, traffic on a ring road and a walking soft robot are included as
-experimental environments.
+transfers, traffic on a ring road, a walking soft robot and the therapy of a
+tumour are included as experimental environments.
 
 - **Physically consistent.** Agents choose a desired direction; the motion
   follows from forces and a proper integrator. Conservative forces come from
@@ -72,7 +72,8 @@ the `examples/` directory contains complete scripts.
 
 - [Environments](environments.md): the interface and the evacuation
   environment; [experimental environments](experimental.md): games, herding,
-  microswimmers, cell migration, orbit transfers, traffic and a soft robot.
+  microswimmers, cell migration, orbit transfers, traffic, a soft robot and
+  tumour therapy.
 - [Learning](learning.md): Gymnasium and PettingZoo wrappers, the PPO and
   Q-learning baselines, and first results.
 - [Design](design.md): principles, architecture and design decisions.

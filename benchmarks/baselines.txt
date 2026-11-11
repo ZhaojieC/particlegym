@@ -102,3 +102,19 @@ discrete  0/16  0/16  0/16  1.000
 1.5  idle  0.00  -0.00  0.00
 1.5  random  1.02  -0.14  3.61
 
+# TumorTherapy: 200 cells, 32 games from random starts for each share of
+# resistant cells. Days to progression (1.2 times the initial size), or 365 if the
+# tumour did not progress within the episode; games that progressed, games in which
+# all cells died, share of days treated, and the share of resistant cells at
+# progression. Adaptive: the rule of the abiraterone trial (pause at half the
+# initial size, resume at the initial size); containment: treat whenever the
+# tumour has grown back to its initial size.
+# resistant  policy  days_mean  days_median  days_min  days_max  progressed  extinct  treated  resistant_share
+0.02  none  5.8  6.0  5  7  32/32  0/32  0.00  0.02
+0.02  mtd  85.7  58.0  41  365  29/32  3/32  1.00  1.00
+0.02  adaptive  92.0  64.5  42  365  29/32  0/32  0.56  0.99
+0.02  containment  99.8  68.5  46  365  30/32  0/32  0.46  0.89
+0.05  none  5.9  6.0  5  7  32/32  0/32  0.00  0.04
+0.05  mtd  52.8  42.5  32  365  31/32  1/32  1.00  1.00
+0.05  adaptive  55.6  45.0  32  365  31/32  0/32  0.63  0.99
+0.05  containment  51.5  46.5  41  89  32/32  0/32  0.49  0.92

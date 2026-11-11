@@ -16,6 +16,7 @@
 | [`OrbitTransfer`](experimental.md#orbit-transfer) | spacecraft raise their orbit on as little fuel as possible | experimental |
 | [`RingRoad`](experimental.md#ring-road) | automated vehicles dissolve a traffic jam on a ring road | experimental |
 | [`SoftWalker`](experimental.md#soft-walker) | a robot of soft voxels learns to walk | experimental |
+| [`TumorTherapy`](experimental.md#tumour-therapy) | daily doses of a drug keep a tumour of sensitive and resistant cells in check | experimental |
 
 "Experimental" means: the mechanics are tested, but the environment has not
 been compared with measurements and reproduces no published result in

@@ -7,7 +7,7 @@ disc that grows and divides into two daughters (Drasdo & Hoehme 2005). A cell
 pressed by its neighbours stops cycling, so a dense tumour grows only at its
 rim. Most cells are sensitive to the drug, a few are resistant; resistance
 has a cost, a longer cell cycle. The drug kills sensitive cells while they
-cycle.
+cycle, and every cell can die of other causes, the turnover of the tissue.
 
 The agent, the oncologist, chooses the dose every day and is rewarded for
 every day before the tumour progresses, that is, grows to 1.2 times its
@@ -19,7 +19,9 @@ et al. (2017) and the agent-based model of Gallaher et al. (2018). This
 environment is experimental.
 
 Units: the diameter of a cell at division, and hours; a control step is one
-day.
+day. Cells cycle in three days, as tumour cells in the body divide more
+slowly than in culture; with faster cycles the tumour regrows within a day
+after treatment, faster than daily doses can follow.
 """
 
 from __future__ import annotations
@@ -48,18 +50,20 @@ class TumorTherapyParams(NamedTuple):
     Attributes:
         resistant_fraction: Probability that a cell of the initial tumour is resistant.
         resistance_cost: Relative lengthening of the cell cycle of resistant cells.
-        kill_rate: Rate at which a cycling sensitive cell dies at full dose (per hour).
-        death_rate: Rate at which any cell dies of other causes (per hour).
+        kill_rate: Rate at which a cycling sensitive cell dies at full dose
+            (per hour; 0.4 per day).
+        death_rate: Rate at which any cell dies of other causes, the
+            turnover of the tissue (per hour; 0.08 per day).
         progression: The tumour progresses when it grows to this multiple
             of its number of cells at the start; the episode ends.
         toxicity: Reward deducted per day for a full dose.
         max_days: Episode length in days.
     """
 
-    resistant_fraction: float = 0.02
+    resistant_fraction: float = 0.05
     resistance_cost: float = 0.3
-    kill_rate: float = 0.05
-    death_rate: float = 0.01
+    kill_rate: float = 1 / 60
+    death_rate: float = 1 / 300
     progression: float = 1.2
     toxicity: float = 0.0
     max_days: int = 365
@@ -101,9 +105,10 @@ class TumorTherapy:
 
     Every hour, a cell whose neighbours press it less than ``inhibition``
     (the sum of its overlaps, in cell diameters) advances in its cycle and
-    grows; when its cycle is complete it divides. A cycling sensitive cell
-    dies at the rate ``kill_rate`` times the dose. In between, the cells move
-    by overdamped dynamics under a harmonic contact repulsion.
+    grows; when its cycle is complete it divides. Every cell dies at the
+    rate ``death_rate``, and a cycling sensitive cell in addition at the rate
+    ``kill_rate`` times the dose. In between, the cells move by overdamped
+    dynamics under a harmonic contact repulsion.
 
     Args:
         initial_cells: Number of cells at the start.
@@ -119,19 +124,19 @@ class TumorTherapy:
     """
 
     # Papers behind this environment, listed by particlegym.cite.
-    references = ("drasdo2005", "gatenby2009", "zhang2017", "gallaher2018")
+    references = ("drasdo2005", "gatenby2009", "zhang2017", "gallaher2018", "viossat2021")
 
     def __init__(
         self,
         initial_cells: int = 200,
         capacity: int = 512,
         action: str = "continuous",
-        cycle_time: float = 24.0,
+        cycle_time: float = 72.0,
         cycle_spread: float = 0.15,
         inhibition: float = 0.1,
         stiffness: float = 10.0,
         friction: float = 30.0,
-        substeps: int = 5,
+        substeps: int = 2,
         size: float = 40.0,
     ) -> None:
         if not 1 <= initial_cells < capacity:
@@ -299,7 +304,9 @@ class TumorTherapy:
         et al. 2017) applied to the number of cells: treat at the maximum
         tolerated dose until the tumour has fallen to ``stop`` times its
         initial size, then pause until it has grown back to ``restart`` times
-        it.
+        it. With ``stop=1.0`` and ``restart=1.0`` it holds the tumour near
+        its initial size, treating whenever it has grown back to it
+        (containment).
         """
         size = self._count(state) / state.initial
         treating = state.dose > 0

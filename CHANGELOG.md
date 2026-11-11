@@ -45,6 +45,17 @@ All notable changes to this project are documented here. The format follows
   `particlegym/SoftWalker-v0`): a robot of 13 soft voxels learns to walk;
   an open-loop gait (`gait_policy`) covers about 40 voxels in an episode.
 - Gallery: the soft walker.
+- `physics.birth_slots`, `physics.divide` and `physics.overlap_sum`: cells
+  that divide into the free slots of a state of fixed size, and the
+  compression of each cell, for contact inhibition of growth.
+- Experimental environment `TumorTherapy` (Gymnasium id
+  `particlegym/TumorTherapy-v0`): an oncologist doses a drug every day
+  against an agent-based tumour of sensitive and resistant cells. Baselines:
+  the maximum tolerated dose, the rule of the adaptive abiraterone trial and
+  containment (`adaptive_policy`); the adaptive rules delay progression by 6
+  to 18 % in the median.
+- Gallery: one tumour under the three therapies, and the numbers of its
+  sensitive and resistant cells.
 
 ## [0.2.0] - 2026-10-13
 

@@ -20,6 +20,8 @@ fixed random seed.
 | `ring_road.gif` | `ring_road.py` | Pillow |
 | `ring_road_spacetime.png` | `ring_road_spacetime.py` (not run by `make_all.py`) | matplotlib |
 | `soft_walker.gif` | `soft_walker.py` | Pillow |
+| `tumor_therapy.gif` | `tumor_therapy.py` | Pillow |
+| `tumor_therapy_curves.png` | `tumor_therapy_curves.py` (not run by `make_all.py`) | matplotlib |
 | `evacuation_chamber_3d.gif` | the four steps below | Pillow, OVITO |
 | `encircle_3d.gif` | the [drone-encircle](https://github.com/ZhaojieC/drone-encircle) repository | |
 

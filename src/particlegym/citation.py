@@ -197,6 +197,20 @@ REFERENCES = {
         "  doi = {10.1158/0008-5472.CAN-17-2649}\n"
         "}",
     ),
+    "viossat2021": Reference(
+        "Y. Viossat and R. Noble, A theoretical analysis of tumour containment, Nat. Ecol. "
+        "Evol. 5, 826 (2021), https://doi.org/10.1038/s41559-021-01428-w",
+        "@article{viossat2021,\n"
+        "  author = {Viossat, Yannick and Noble, Robert},\n"
+        "  title = {A theoretical analysis of tumour containment},\n"
+        "  journal = {Nature Ecology \\& Evolution},\n"
+        "  volume = {5},\n"
+        "  number = {6},\n"
+        "  pages = {826--835},\n"
+        "  year = {2021},\n"
+        "  doi = {10.1038/s41559-021-01428-w}\n"
+        "}",
+    ),
     "sugiyama2008": Reference(
         "Y. Sugiyama, M. Fukui, M. Kikuchi, K. Hasebe, A. Nakayama, K. Nishinari, S. Tadaki and "
         "S. Yukawa, Traffic jams without bottlenecks: experimental evidence for the physical "
