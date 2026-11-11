@@ -30,6 +30,7 @@ DOOR = pp.Opening("x+", (4.4, 5.6))
         "OrbitTransfer-v0",
         "RingRoad-v0",
         "SoftWalker-v0",
+        "TumorTherapy-v0",
     ],
 )
 def test_registered_environments_pass_the_gymnasium_checker(name):

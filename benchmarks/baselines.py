@@ -7,7 +7,7 @@ reference output is in ``benchmarks/baselines.txt``. Run with
     python benchmarks/baselines.py > benchmarks/baselines.txt
 
 or with the names of the parts to run (herding, microswimmer, cell_migration,
-billiards, orbit_transfer, ring_road, soft_walker).
+billiards, orbit_transfer, ring_road, soft_walker, tumor_therapy).
 """
 
 import sys
@@ -307,6 +307,52 @@ def soft_walker(n_games=8):
             )
 
 
+def tumor_therapy(n_games=16):
+    print(f"# TumorTherapy: 200 cells, 2 % resistant, {n_games} games from random starts;")
+    print("# days to progression (1.2 times the initial size), share of days treated, and")
+    print("# resistant cells among all cells at progression")
+    print("# policy  days_mean  days_min  days_max  treated  resistant_share")
+    env = envs.TumorTherapy()
+    params = env.default_params
+    policies = {
+        "none": lambda s: env.no_treatment_policy(s, params),
+        "mtd": lambda s: env.mtd_policy(s, params),
+        "adaptive": lambda s: env.adaptive_policy(s, params),
+        "adaptive_restart_0.9": lambda s: env.adaptive_policy(s, params, restart=0.9),
+    }
+    for name, policy in policies.items():
+
+        @jax.jit
+        @jax.vmap
+        def game(key, policy=policy):
+            reset_key, run_key = jax.random.split(key)
+            _, state = env.reset(reset_key, params)
+
+            def running(carry):
+                state, *_ = carry
+                return ~state.progressed & (state.day < params.max_days)
+
+            def day(carry):
+                state, treated, _ = carry
+                key = jax.random.fold_in(run_key, state.day)
+                out = env.step(key, state, policy(state), params)
+                info = out[5]
+                cells = info["sensitive"] + info["resistant"]
+                return out[1], treated + out[1].dose, info["resistant"] / cells
+
+            zero = jnp.zeros((), state.dose.dtype)
+            state, treated, share = jax.lax.while_loop(running, day, (state, zero, zero))
+            return state.day, treated / state.day, share
+
+        days, treated, share = (
+            np.asarray(x) for x in game(jax.random.split(jax.random.key(0), n_games))
+        )
+        print(
+            f"{name}  {days.mean():.1f}  {days.min()}  {days.max()}  {treated.mean():.2f}  "
+            f"{share.mean():.2f}"
+        )
+
+
 PARTS = {
     "herding": herding,
     "microswimmer": microswimmer,
@@ -315,6 +361,7 @@ PARTS = {
     "orbit_transfer": orbit_transfer,
     "ring_road": ring_road,
     "soft_walker": soft_walker,
+    "tumor_therapy": tumor_therapy,
 }
 
 if __name__ == "__main__":

@@ -59,10 +59,10 @@ class TumorTherapyParams(NamedTuple):
     resistant_fraction: float = 0.02
     resistance_cost: float = 0.3
     kill_rate: float = 0.05
-    death_rate: float = 0.0
+    death_rate: float = 0.01
     progression: float = 1.2
     toxicity: float = 0.0
-    max_days: int = 1000
+    max_days: int = 365
 
 
 class TumorTherapyState(NamedTuple):
@@ -123,14 +123,14 @@ class TumorTherapy:
 
     def __init__(
         self,
-        initial_cells: int = 400,
-        capacity: int = 1024,
+        initial_cells: int = 200,
+        capacity: int = 512,
         action: str = "continuous",
         cycle_time: float = 24.0,
         cycle_spread: float = 0.15,
-        inhibition: float = 0.3,
+        inhibition: float = 0.1,
         stiffness: float = 10.0,
-        friction: float = 2.0,
+        friction: float = 30.0,
         substeps: int = 5,
         size: float = 40.0,
     ) -> None:
@@ -256,7 +256,8 @@ class TumorTherapy:
                 return c, info.overflow
 
             cells, flags = jax.lax.scan(move, cells, None, length=self.substeps)
-            return (cells, age, cycle, overflow | jnp.any(flags), jnp.sum(cycling)), None
+            count = jnp.sum(cycling, dtype=jnp.int32)
+            return (cells, age, cycle, overflow | jnp.any(flags), count), None
 
         none = jnp.zeros((), jnp.int32)
         carry = (state.cells, state.age, state.cycle, jnp.zeros((), bool), none)

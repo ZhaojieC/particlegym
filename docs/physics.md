@@ -328,6 +328,31 @@ and gravity, can. A soft robot therefore walks by pushing against the
 ground, and on frictionless ground it stays where it is; both statements are
 tested (see [Validation](validation.md#soft-bodies)).
 
+## Growing and dividing cells
+
+In a centre-based model of a tissue every cell is a soft particle that grows,
+divides and dies (Drasdo & Hoehme 2005). The arrays of a JAX program keep
+their size, so a population lives in a `ParticleState` of fixed capacity: a
+slot whose `alive` flag is false holds no cell, and a daughter is born into
+such a slot. Three functions of the physics core do the bookkeeping:
+
+- `birth_slots(alive, ready)` pairs the cells that are ready to divide with
+  free slots, in the order of their indices, while free slots last.
+- `divide(...)` replaces a dividing cell of radius \(r\) by two daughters
+  with half of its volume each, of radius \(r/2^{1/d}\) in \(d\) dimensions,
+  at a quarter of the mother's diameter on either side of its centre along a
+  given direction; the contact forces then push them apart.
+- `overlap_sum(...)` gives for every cell \(\sum_j \max(r_i + r_j - |\mathbf
+  x_i - \mathbf x_j|, 0)\), the sum of its overlaps with its neighbours. With
+  a harmonic contact it is the sum of the magnitudes of the contact forces
+  divided by the stiffness: a measure of how strongly the cell is compressed,
+  which, unlike the net force, does not vanish when the neighbours press
+  from all sides. A threshold on it gives contact inhibition of growth.
+
+The [tumour-therapy environment](experimental.md#tumour-therapy) builds an
+agent-based model of a tumour from these functions and the overdamped
+(Brownian) integrator.
+
 ## Active particles
 
 In 2D a self-propelled particle has a heading angle \(\theta\), kept by the
@@ -522,3 +547,5 @@ With these stiffnesses, contacts need time steps of a few milliseconds
 - J. S. Bhatia, H. Jackson, Y. Tian, J. Xu and W. Matusik, Evolution Gym: A
   large-scale benchmark for evolving soft robots, *Advances in Neural
   Information Processing Systems* 34 (2021).
+- D. Drasdo and S. Hoehme, A single-cell-based model of tumor growth in
+  vitro: monolayers and spheroids, *Phys. Biol.* 2, 133–147 (2005).

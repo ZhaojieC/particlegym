@@ -19,6 +19,7 @@ ENVIRONMENTS = [
     envs.OrbitTransfer,
     envs.RingRoad,
     envs.SoftWalker,
+    envs.TumorTherapy,
 ]
 
 
