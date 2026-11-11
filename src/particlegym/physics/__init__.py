@@ -44,6 +44,7 @@ from particlegym.physics.potentials import (
     damping_for_restitution,
     restitution_coefficient,
 )
+from particlegym.physics.proliferation import birth_slots, divide, overlap_sum
 from particlegym.physics.softbody import VoxelBody
 from particlegym.physics.space import Box
 from particlegym.physics.state import ParticleState, create_state
@@ -101,10 +102,12 @@ __all__ = [
     "Walls",
     "active",
     "ballistic_step",
+    "birth_slots",
     "box_walls",
     "brownian",
     "create_state",
     "damping_for_restitution",
+    "divide",
     "hohmann_delta_v",
     "init_forces",
     "kinetic_energy",
@@ -112,6 +115,7 @@ __all__ = [
     "lattice_positions",
     "maxwell_boltzmann",
     "orbital_elements",
+    "overlap_sum",
     "pressure",
     "random_positions",
     "restitution_coefficient",

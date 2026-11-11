@@ -133,6 +133,70 @@ REFERENCES = {
         "  archiveprefix = {arXiv}\n"
         "}",
     ),
+    "drasdo2005": Reference(
+        "D. Drasdo and S. Hoehme, A single-cell-based model of tumor growth in vitro: "
+        "monolayers and spheroids, Phys. Biol. 2, 133 (2005), "
+        "https://doi.org/10.1088/1478-3975/2/3/001",
+        "@article{drasdo2005,\n"
+        "  author = {Drasdo, Dirk and Hoehme, Stefan},\n"
+        "  title = {A single-cell-based model of tumor growth in vitro: monolayers and "
+        "spheroids},\n"
+        "  journal = {Physical Biology},\n"
+        "  volume = {2},\n"
+        "  pages = {133--147},\n"
+        "  year = {2005},\n"
+        "  doi = {10.1088/1478-3975/2/3/001}\n"
+        "}",
+    ),
+    "gatenby2009": Reference(
+        "R. A. Gatenby, A. S. Silva, R. J. Gillies and B. R. Frieden, Adaptive therapy, "
+        "Cancer Res. 69, 4894 (2009), https://doi.org/10.1158/0008-5472.CAN-08-3658",
+        "@article{gatenby2009,\n"
+        "  author = {Gatenby, Robert A. and Silva, Ariosto S. and Gillies, Robert J. and "
+        "Frieden, B. Roy},\n"
+        "  title = {Adaptive Therapy},\n"
+        "  journal = {Cancer Research},\n"
+        "  volume = {69},\n"
+        "  number = {11},\n"
+        "  pages = {4894--4903},\n"
+        "  year = {2009},\n"
+        "  doi = {10.1158/0008-5472.CAN-08-3658}\n"
+        "}",
+    ),
+    "zhang2017": Reference(
+        "J. Zhang, J. J. Cunningham, J. S. Brown and R. A. Gatenby, Integrating evolutionary "
+        "dynamics into treatment of metastatic castrate-resistant prostate cancer, Nat. "
+        "Commun. 8, 1816 (2017), https://doi.org/10.1038/s41467-017-01968-5",
+        "@article{zhang2017,\n"
+        "  author = {Zhang, Jingsong and Cunningham, Jessica J. and Brown, Joel S. and "
+        "Gatenby, Robert A.},\n"
+        "  title = {Integrating evolutionary dynamics into treatment of metastatic "
+        "castrate-resistant prostate cancer},\n"
+        "  journal = {Nature Communications},\n"
+        "  volume = {8},\n"
+        "  pages = {1816},\n"
+        "  year = {2017},\n"
+        "  doi = {10.1038/s41467-017-01968-5}\n"
+        "}",
+    ),
+    "gallaher2018": Reference(
+        "J. A. Gallaher, P. M. Enriquez-Navas, K. A. Luddy, R. A. Gatenby and A. R. A. "
+        "Anderson, Spatial heterogeneity and evolutionary dynamics modulate time to "
+        "recurrence in continuous and adaptive cancer therapies, Cancer Res. 78, 2127 "
+        "(2018), https://doi.org/10.1158/0008-5472.CAN-17-2649",
+        "@article{gallaher2018,\n"
+        "  author = {Gallaher, Jill A. and Enriquez-Navas, Pedro M. and Luddy, Kimberly A. "
+        "and Gatenby, Robert A. and Anderson, Alexander R. A.},\n"
+        "  title = {Spatial heterogeneity and evolutionary dynamics modulate time to "
+        "recurrence in continuous and adaptive cancer therapies},\n"
+        "  journal = {Cancer Research},\n"
+        "  volume = {78},\n"
+        "  number = {8},\n"
+        "  pages = {2127--2139},\n"
+        "  year = {2018},\n"
+        "  doi = {10.1158/0008-5472.CAN-17-2649}\n"
+        "}",
+    ),
     "sugiyama2008": Reference(
         "Y. Sugiyama, M. Fukui, M. Kikuchi, K. Hasebe, A. Nakayama, K. Nishinari, S. Tadaki and "
         "S. Yukawa, Traffic jams without bottlenecks: experimental evidence for the physical "

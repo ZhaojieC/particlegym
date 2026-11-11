@@ -22,6 +22,7 @@ from particlegym.envs.orbit import OrbitTransfer, OrbitTransferParams, OrbitTran
 from particlegym.envs.ring_road import RingRoad, RingRoadParams, RingRoadState
 from particlegym.envs.soft_walker import SoftWalker, SoftWalkerParams, SoftWalkerState
 from particlegym.envs.spaces import Continuous, Discrete
+from particlegym.envs.tumor import TumorTherapy, TumorTherapyParams, TumorTherapyState
 
 __all__ = [
     "CROWD_POLICIES",
@@ -57,4 +58,7 @@ __all__ = [
     "SoftWalker",
     "SoftWalkerParams",
     "SoftWalkerState",
+    "TumorTherapy",
+    "TumorTherapyParams",
+    "TumorTherapyState",
 ]
