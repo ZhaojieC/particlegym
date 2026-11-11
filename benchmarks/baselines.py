@@ -7,7 +7,7 @@ reference output is in ``benchmarks/baselines.txt``. Run with
     python benchmarks/baselines.py > benchmarks/baselines.txt
 
 or with the names of the parts to run (herding, microswimmer, cell_migration,
-billiards, orbit_transfer, ring_road).
+billiards, orbit_transfer, ring_road, soft_walker).
 """
 
 import sys
@@ -272,6 +272,41 @@ def ring_road(n_games=32):
             )
 
 
+def soft_walker(n_games=8):
+    print("# SoftWalker: the default robot, episodes of 500 control steps (50 time units);")
+    print(f"# distance of the centre of mass in voxels, {n_games} games from random starts")
+    print("# friction  policy  distance_mean  distance_min  distance_max")
+    env = envs.SoftWalker()
+    policies = {
+        "gait": lambda k, s, p: env.gait_policy(s, p),
+        "idle": lambda k, s, p: jnp.zeros((1, env.n_actuators)),
+        "random": lambda k, s, p: env.action_space.sample(k, (1,)),
+    }
+    for friction in (0.5, 1.0, 1.5):
+        params = env.default_params._replace(friction=friction)
+        for name, policy in policies.items():
+
+            @jax.jit
+            @jax.vmap
+            def game(key, params=params, policy=policy):
+                reset_key, run_key = jax.random.split(key)
+                _, state = env.reset(reset_key, params)
+
+                def body(s, k):
+                    action_key, step_key = jax.random.split(k)
+                    out = env.step(step_key, s, policy(action_key, s, params), params)
+                    return out[1], out[2][0]
+
+                keys = jax.random.split(run_key, params.max_steps)
+                return jnp.sum(jax.lax.scan(body, state, keys)[1])
+
+            distance = np.asarray(game(jax.random.split(jax.random.key(0), n_games)))
+            print(
+                f"{friction:g}  {name}  {distance.mean():.2f}  {distance.min():.2f}  "
+                f"{distance.max():.2f}"
+            )
+
+
 PARTS = {
     "herding": herding,
     "microswimmer": microswimmer,
@@ -279,6 +314,7 @@ PARTS = {
     "billiards": billiards,
     "orbit_transfer": orbit_transfer,
     "ring_road": ring_road,
+    "soft_walker": soft_walker,
 }
 
 if __name__ == "__main__":

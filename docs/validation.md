@@ -138,6 +138,21 @@ to 0.7 % lower, which is within the accuracy of the reading.
 | Growth of disturbances | `test_disturbances_grow_or_decay_at_the_rate_of_linear_theory` (IDM with \(a\) = 1 and 2, optimal velocity model; \(\Delta t\) = 0.01 s, 300 s) | the measured growth or decay rate of the longest wave equals \(\mathrm{Re}\,\lambda\) from automatic differentiation within 1.5 % | +0.023/s within 0.5 %; −0.013/s and −0.016/s within 0.3 % |
 | Phantom jam | `test_a_phantom_jam_forms_and_moves_backward` (22 vehicles, 230 m, noise 0.2, 600 s) | stop-and-go: speed spread above 2 m/s, standing vehicles, mean speed below 80 % of uniform flow; the jam moves backward at 3 to 6 m/s; no collision | spread 2.9 m/s, mean speed 2.38 of 3.45 m/s; the jam moves at −4.3 m/s |
 
+## Soft bodies
+
+| Property | Test | Criterion | Reference result |
+|---|---|---|---|
+| Voxel lattice | `test_softbody.py::test_voxels_share_corners_and_edges` | neighbouring voxels share corners and edges; the masses add up to one per voxel; without commands the rest lengths are the drawn distances | exact |
+| Actuators | `test_actuators_lengthen_and_shorten_their_springs` | outer edges along the direction of an actuator get \((1 + s\,a)\), shared edges the mean, diagonals the matching length; rigid voxels are stiffer | exact |
+| Invalid bodies | `test_invalid_layouts_are_rejected` | empty layouts, rows of unequal length, unknown characters and bodies in several pieces are rejected | passes |
+| Dashpots | `test_dashpots_resist_only_changes_of_distance` | momentum and angular momentum conserved; power \(-c\sum[(\mathbf v_i - \mathbf v_j)\cdot\mathbf e]^2\); no force on a rigid motion | to 1e-12 |
+| Ground contact | `test_ground_pushes_out_with_the_gradient_of_its_energy` | the elastic force is minus the gradient of \(k\delta^2/2\); the damped contact never pulls | exact |
+| Coulomb friction | `test_ground_friction_follows_coulombs_law` (2D and 3D) | \(\mu F_n\) against the sliding velocity; no friction at rest | within 0.1 % |
+| Sliding block | `test_a_block_slides_to_rest_after_the_coulomb_distance` (\(\mu\) = 0.5, \(v\) = 2) | stops after \(v^2/(2\mu g)\) = 4 | 4.0006 |
+| No motion without the ground | `test_a_floating_body_cannot_move_its_centre_of_mass` (13 voxels, 10 time units of random commands, no gravity) | momentum, angular momentum and the centre of mass do not change | to 1e-10 (5e-15 in the reference run) |
+| Energy | `test_without_damping_a_falling_body_conserves_energy` (a deformed body with a rigid voxel in free fall) | fluctuation below 2e-4 of the kinetic energy at \(\Delta t\) = 0.002; halving \(\Delta t\) divides it by about 4 | ratio 3.95 |
+| Coming to rest | `test_a_dropped_body_comes_to_rest_and_the_ground_carries_its_weight` | a body dropped on the ground comes to rest, and the ground carries its weight | to 1e-6 |
+
 ## Experimental environments
 
 The tests of the [experimental environments](experimental.md) check their
@@ -174,6 +189,11 @@ policy solves each task. They do not compare with measurements.
 | Reward of the ring road | `test_uniform_flow_without_fluctuations_pays_the_distance_driven`, `test_reward_is_the_mean_distance_driven_in_the_step` | the reward is the mean distance driven in the step; uniform flow pays its speed times the control interval | to 1e-9 |
 | Safety rule | `test_the_safety_rule_caps_the_acceleration_at_the_one_of_a_human_driver`, `test_without_the_safety_rule_full_throttle_crashes_and_ends_the_episode` | an automated vehicle accelerates at most as a human driver would; full throttle for 300 s does not collide; without the rule it collides, the episode ends and the vehicles stand still | passes |
 | Gently cruising vehicle | `test_a_gently_cruising_vehicle_dissolves_the_stop_and_go_wave` (3 games, continuous and discrete actions) | the jam persists when the automated vehicle drives like a human (spread above 2 m/s) and is gone with the smoothing policy (below 0.5 m/s); the return rises by more than 15 % | +22 % and +19 % |
+| Soft walker at rest | `test_env_soft_walker.py::test_the_robot_starts_at_rest_and_stands_still_without_commands` | starts at rest with its centre of mass at x = 0; without commands it settles on its legs and does not move along the ground | moves 2e-4 voxels in 20 time units |
+| Reward of the soft walker | `test_reward_is_the_forward_motion_of_the_centre_of_mass` | the reward is the displacement of the centre of mass in the step | to 1e-12 |
+| Muscle delay | `test_activations_follow_the_commands_with_a_delay` | commands are clipped to [−1, 1]; after one control step the activation has covered \(1 - e^{-0.5}\) of the way | to 1e-9 |
+| Walking needs friction | `test_walking_needs_friction` (300 control steps) | the gait moves the robot forward; on frictionless ground the centre of mass does not move | 22.1 voxels; 1e-14 |
+| Gait of the soft walker | `test_the_gait_walks_forward_and_random_commands_do_not` | the gait covers more than 20 voxels in an episode; random commands less than 5 in each of 3 episodes | 37.1 voxels; 0.6 to 1.1 |
 | Hohmann controller | `test_hohmann_controller_reaches_the_orbit_with_little_more_than_the_impulsive_optimum`, `test_discrete_hohmann_controller_reaches_the_orbit_on_one_transfer` (r1 from 1.5 to 4) | arrives; \(\Delta v\) between 1 and 1.01 times the Hohmann value with continuous thrust, between 0.97 and 1.01 with discrete thrust; arrival on the first pass through the apoapsis | 1.001 to 1.002; 0.984 to 1.003 |
 
 ## Learning

@@ -417,6 +417,62 @@ automated vehicle leaves the first jam slowly, the white region ahead of it
 is the gap it opens, and after about 40 s all vehicles drive at the same
 speed.
 
+## Soft walker
+
+![A soft robot of voxels walks with a wave of contractions](assets/gallery/soft_walker.gif)
+
+`envs.SoftWalker` is a robot made of 13 soft
+[voxels](physics.md#soft-bodies-of-voxels) that has to learn to walk: a
+trunk of five horizontal actuators (orange), a soft layer (grey) and three
+legs of vertical actuators (blue), 24 point masses joined by damped springs.
+The robot stands on the ground under gravity, and the ground holds its feet
+by Coulomb friction. The units are the voxel size, the mass of a voxel and
+the gravitational acceleration: for voxels of 10 cm the time unit is 0.1 s.
+
+```python
+env = envs.SoftWalker()  # or envs.SoftWalker(layout=("HHHH", "SSSS", "V..V"))
+params = env.default_params._replace(friction=0.5)
+obs, state = env.reset(key, params)
+action = env.gait_policy(state, params)  # the baseline
+```
+
+- **Action**: one command in [−1, 1] for each of the 8 actuators. An
+  actuator lengthens or shortens by up to 25 % (`strength`) along its
+  direction. Its activation follows the command with a delay of 0.2 time
+  units (`activation_time`), as a muscle does, so that a command cannot
+  throw the robot.
+- **Observation** (107 numbers): the velocity and the height of the centre
+  of mass, the positions and velocities of the 24 corners relative to it,
+  and the 8 activations.
+- **Reward**: the distance that the centre of mass moves to the right in
+  the step.
+- **Episode**: 500 control steps of 0.1 time units; nothing ends it early.
+  Each control step has 20 velocity Verlet steps.
+
+The springs (stiffness 200 in these units, three times that in rigid
+voxels) are damped by dashpots with a damping ratio of about 0.5; the ground
+has the stiffness 3000 and the friction coefficient 1 (`friction`, an
+episode parameter). The baseline `gait_policy` is open-loop: actuator \(i\)
+in column \(x_i\) receives \(\sin 2\pi(t/T - x_i/\lambda)\), a wave of
+contraction that runs forward along the body, with the period \(T\) = 1 and
+the wavelength \(\lambda\) = 8 voxels. These values were chosen by a search
+over periods and wavelengths during development. From
+`benchmarks/baselines.py`, eight episodes each, distance in voxels per
+episode:
+
+| Friction | Gait | Random commands | No commands |
+|---|---|---|---|
+| 0.5 | 41.7 (38.8 to 44.7) | 0.6 (−2.1 to 2.6) | 0.0 |
+| 1 | 39.1 (29.8 to 42.1) | 0.6 (−1.4 to 2.2) | 0.0 |
+| 1.5 | 37.1 (36.5 to 38.0) | 1.0 (−0.1 to 3.6) | 0.0 |
+
+The walk is chaotic: moving one corner by \(10^{-12}\) of a voxel at the
+start changes the distance after 50 time units by about 10 %. The corners
+therefore start with random displacements of up to 0.001 voxels, and the
+table gives the mean and the range over the episodes. On frictionless ground
+the same gait does not move the centre of mass at all. No policy has been
+trained on this task yet.
+
 ## Demixing of two fluids
 
 ![Two fluids that do not mix separate](assets/gallery/dpd_demixing.gif)
@@ -463,6 +519,9 @@ pull for longer.
 
 ## References
 
+- J. S. Bhatia, H. Jackson, Y. Tian, J. Xu and W. Matusik, Evolution Gym: A
+  large-scale benchmark for evolving soft robots, Advances in Neural
+  Information Processing Systems 34 (2021).
 - S. Colabrese, K. Gustavsson, A. Celani and L. Biferale, Flow navigation by
   smart microswimmers via reinforcement learning, Phys. Rev. Lett. 118,
   158004 (2017).

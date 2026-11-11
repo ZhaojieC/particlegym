@@ -274,6 +274,60 @@ wave grows at 0.023 per second. Small disturbances grow into a stop-and-go
 wave that travels backward around the ring, a traffic jam without a
 bottleneck (see the [ring road](experimental.md#ring-road)).
 
+## Soft bodies of voxels
+
+`VoxelBody` builds a body in 2D from square voxels, drawn as rows of text
+from top to bottom:
+
+```python
+body = pp.VoxelBody(("HHHHH", "SSSSS", "V.V.V"))
+```
+
+Every voxel puts point masses at its four corners, shared with its
+neighbours, and springs (`Bonds`) along its four edges and its two
+diagonals; an edge shared by two voxels carries one spring. Each voxel has
+unit mass, a quarter at each of its corners. This mass-spring voxel is the
+model of the voxel-based soft robots of Evolution Gym (Bhatia et al. 2021),
+with the same kinds of voxel: `S` soft, `R` rigid (stiffer springs), `H` and
+`V` actuators, and `.` empty. An actuator with the command
+\(a \in [-1, 1]\) gives its edges along its direction, horizontal or
+vertical, the rest length \((1 + s\,a)\) voxel sizes, with the strength
+\(s\), and its diagonals the matching length; an edge shared with another
+voxel takes the mean of the two rest lengths. Without commands the body is
+at rest in its drawn shape.
+
+`Dashpots` are linear dampers between listed pairs of particles,
+
+\[
+\mathbf f_i = -c\,[(\mathbf v_i - \mathbf v_j)\cdot\mathbf e]\,\mathbf e,
+\qquad \mathbf f_j = -\mathbf f_i,
+\]
+
+with \(\mathbf e\) the unit vector from \(j\) to \(i\). A damper resists only
+the rate at which the distance changes: it conserves momentum and angular
+momentum, does not damp rigid motion, and dissipates the power
+\(c\,[(\mathbf v_i - \mathbf v_j)\cdot\mathbf e]^2\). On the pairs of
+`Bonds` it makes damped springs (Kelvin-Voigt elements).
+
+`Ground` is a flat floor with an elastic contact and Coulomb friction. A
+particle that overlaps the floor by \(\delta\) is pushed out with
+\(F_n = \max(k\delta - c\,v_n, 0)\), a damped contact that never pulls, and
+friction opposes its sliding velocity \(\mathbf v_t\):
+
+\[
+\mathbf F_t = -\mu F_n\,\frac{\mathbf v_t}{\sqrt{|\mathbf v_t|^2 + v_s^2}}.
+\]
+
+This is Coulomb's law with a smooth transition below the slip speed
+\(v_s\), which an explicit integrator can follow: below \(v_s\) the friction
+acts like a stiff viscous friction and holds a foot nearly in place.
+
+Springs and dampers are internal forces: they change the shape of a body
+but cannot move its centre of mass. Only external forces, here the ground
+and gravity, can. A soft robot therefore walks by pushing against the
+ground, and on frictionless ground it stays where it is; both statements are
+tested (see [Validation](validation.md#soft-bodies)).
+
 ## Active particles
 
 In 2D a self-propelled particle has a heading angle \(\theta\), kept by the
@@ -465,3 +519,6 @@ With these stiffnesses, contacts need time steps of a few milliseconds
   S. Tadaki and S. Yukawa, Traffic jams without bottlenecks: experimental
   evidence for the physical mechanism of the formation of a jam, *New J.
   Phys.* 10, 033001 (2008).
+- J. S. Bhatia, H. Jackson, Y. Tian, J. Xu and W. Matusik, Evolution Gym: A
+  large-scale benchmark for evolving soft robots, *Advances in Neural
+  Information Processing Systems* 34 (2021).

@@ -53,6 +53,12 @@
     <td colspan="3" align="center">A traffic jam without a bottleneck on a ring road of 230 m (left); one gently cruising automated vehicle (blue) dissolves it, and every vehicle drives 22 % farther (right)</td>
   </tr>
   <tr>
+    <td colspan="3" align="center"><img src="docs/assets/gallery/soft_walker.gif" width="50%" alt="A soft robot of voxels walks with a wave of contractions"></td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center">A soft robot of 13 voxels walks with a wave of contraction along its body; only the friction of the ground moves it forward</td>
+  </tr>
+  <tr>
     <td width="33%"><img src="docs/assets/gallery/learned_microswimmer.gif" width="100%" alt="Swimmers before and after training"></td>
     <td width="33%"><img src="docs/assets/gallery/learned_brick_wall.gif" width="100%" alt="The brick wall before and after training"></td>
     <td width="33%"><img src="docs/assets/gallery/learned_evacuation.gif" width="100%" alt="A room with four doors before and after training"></td>
@@ -73,14 +79,14 @@ cells follow simple scripted rules. [Learning](docs/learning.md) has the
 numbers, also for the tasks that PPO does not solve.
 
 > **Status: pre-alpha (v0.2.0).** The physics core, its validation
-> tests, a room-evacuation environment, eight
+> tests, a room-evacuation environment, nine
 > [experimental environments](docs/experimental.md), Gymnasium and PettingZoo
 > wrappers and two [learning baselines](docs/learning.md) are in place. APIs
 > may change. See the [roadmap](docs/roadmap.md).
 
 ParticleGym simulates many interacting particles (pedestrians, vehicles,
-active colloids, cells, swarm robots, spacecraft and stars) and lets
-reinforcement-learning agents control some of them. It is built around three goals:
+active colloids, cells, swarm robots, soft robots, spacecraft and stars) and
+lets reinforcement-learning agents control some of them. It is built around three goals:
 
 - **Physically consistent.** Agents choose what they *want* (a desired
   direction of motion); the motion itself always follows from forces and a
@@ -153,12 +159,13 @@ other [examples](examples).
 | Component | Available |
 |---|---|
 | Environments (preview) | functional `Evacuation` room environment in 2D and 3D: `reset`/`step` with `jit` and `vmap`, discrete or continuous desired directions, crowd policies ([docs](docs/environments.md)) |
-| Environments (experimental) | `CounterFlow`, `BrickWall` (state or pixel observations), `Billiards`, `Herding`, `Microswimmer`, `CellMigration`, `OrbitTransfer`, `RingRoad`: tested mechanics and scripted policies, not yet compared with measurements ([docs](docs/experimental.md)) |
+| Environments (experimental) | `CounterFlow`, `BrickWall` (state or pixel observations), `Billiards`, `Herding`, `Microswimmer`, `CellMigration`, `OrbitTransfer`, `RingRoad`, `SoftWalker`: tested mechanics and scripted policies, not yet compared with measurements ([docs](docs/experimental.md)) |
 | Wrappers | Gymnasium (single and vector environments, registered ids) and PettingZoo (parallel interface) ([docs](docs/learning.md)) |
 | Baselines | PPO with a shared policy and tabular Q-learning in pure JAX, several seeds in one compiled program ([docs](docs/learning.md)) |
 | Domain | 2D or 3D box, periodic or open along each axis |
 | Neighbour search | brute force; cell list with overflow detection |
 | Pair interactions | harmonic, WCA, social force (Helbing et al. 2000), tangential friction |
+| Soft bodies | bodies of square voxels with damped springs and muscle-like actuators, a ground with Coulomb friction ([docs](docs/physics.md#soft-bodies-of-voxels)) |
 | Traffic | car-following models (intelligent driver, optimal velocity) in one lane of a ring road, the ballistic update with stops, and the linear stability of uniform flow for any model by automatic differentiation ([docs](docs/physics.md#traffic-on-a-ring-road)) |
 | Gravity | Newtonian gravity with Plummer softening, between all particles or from a few heavy ones on test particles (restricted N-body problem); Kepler orbital elements and the Hohmann transfer ([docs](docs/physics.md#newtonian-gravity)) |
 | Geometry | plates (segments/rectangles), spheres, boxes, rooms with real door openings |

@@ -57,6 +57,22 @@ def test_shapes_are_drawn_in_place():
         canvas.shapes(pp.Spheres([[0.0, 0.0, 0.0]], [1.0]))
 
 
+def test_polygons_are_filled_in_place():
+    canvas = viz.Canvas((0.0, 0.0), (10.0, 10.0), width=100, supersample=1)
+    square = [[2.0, 2.0], [6.0, 2.0], [6.0, 5.0], [2.0, 5.0]]  # 4 x 3
+    triangle = [[7.0, 7.0], [9.0, 7.0], [7.0, 9.0]]
+    canvas.polygons([square, triangle], [viz.BLUE, viz.GREEN])
+    frame = canvas.frame()
+    centroid, area = _centroid_and_area(frame, viz.BLUE)
+    np.testing.assert_allclose(centroid, [40.0, 65.0], atol=0.6)  # the y axis points up
+    np.testing.assert_allclose(area, 1200, rtol=0.1)
+    centroid, area = _centroid_and_area(frame, viz.GREEN)
+    np.testing.assert_allclose(centroid, [70.0 + 20 / 3, 30.0 - 20 / 3], atol=0.6)
+    np.testing.assert_allclose(area, 200, rtol=0.2)  # filled boundary pixels add 15 %
+    with pytest.raises(ValueError, match="vertices"):
+        canvas.polygons([[1.0, 2.0]], viz.BLUE)
+
+
 def test_scalar_field_is_drawn_in_place():
     grid = pp.Grid((0.0, 0.0), (4.0, 2.0), (8, 4))
     # One bright cell: number 6 along x and 0 along y, centred at (3.25, 0.25).

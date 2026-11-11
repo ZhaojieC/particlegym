@@ -36,6 +36,15 @@ All notable changes to this project are documented here. The format follows
   drives 21 to 25 % farther.
 - Gallery: a traffic jam without a bottleneck and its dissolution, and a
   space-time diagram of the vehicles.
+- `physics.VoxelBody` (soft bodies of square voxels with point masses at the
+  corners, springs along edges and diagonals, and horizontal and vertical
+  actuators, as in Evolution Gym), `physics.Dashpots` (linear dampers between
+  listed particles) and `physics.Ground` (a flat floor with an elastic
+  contact and Coulomb friction); `viz.Canvas.polygons`.
+- Experimental environment `SoftWalker` (Gymnasium id
+  `particlegym/SoftWalker-v0`): a robot of 13 soft voxels learns to walk;
+  an open-loop gait (`gait_policy`) covers about 40 voxels in an episode.
+- Gallery: the soft walker.
 
 ## [0.2.0] - 2026-10-13
 

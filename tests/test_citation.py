@@ -18,6 +18,7 @@ ENVIRONMENTS = [
     envs.Microswimmer,
     envs.OrbitTransfer,
     envs.RingRoad,
+    envs.SoftWalker,
 ]
 
 
