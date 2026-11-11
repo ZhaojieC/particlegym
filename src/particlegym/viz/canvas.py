@@ -117,6 +117,22 @@ class Canvas:
         for i in np.flatnonzero(mask & np.all(last >= first, axis=1)):
             self._draw.rectangle((*first[i], *last[i]), fill=tuple(colors[i].tolist()))
 
+    def polygons(self, vertices, color) -> None:
+        """Draw filled polygons, for example the deformed voxels of a soft body.
+
+        Args:
+            vertices: The corners of M polygons in order, an (M, K, 2) array or
+                a sequence of (K_m, 2) arrays with at least three corners each.
+            color: One (r, g, b) colour, or (M, 3) colours.
+        """
+        polygons = [np.asarray(v, dtype=float) for v in vertices]
+        if any(p.ndim != 2 or p.shape[1] != 2 or len(p) < 3 for p in polygons):
+            raise ValueError("vertices must be polygons of at least three (x, y) corners")
+        colors = np.broadcast_to(np.asarray(color, dtype=np.uint8), (len(polygons), 3))
+        for polygon, c in zip(polygons, colors, strict=True):
+            corners = self._to_pixels(polygon)
+            self._draw.polygon([tuple(p) for p in corners], fill=tuple(c.tolist()))
+
     def segments(self, start, end, color, width: float) -> None:
         """Draw line segments with round ends from ``start`` to ``end``, both (M, 2)."""
         start = np.asarray(start, dtype=float).reshape(-1, 2)

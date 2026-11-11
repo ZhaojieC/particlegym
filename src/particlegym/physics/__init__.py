@@ -6,8 +6,8 @@ The module :mod:`particlegym.physics.traffic` adds vehicles in one lane of a rin
 """
 
 from particlegym.physics import active
-from particlegym.physics.bonded import Angles, AreaConstraint, BondedTerm, Bonds
-from particlegym.physics.external import ExternalForce, Gravity, KineticFriction
+from particlegym.physics.bonded import Angles, AreaConstraint, BondedTerm, Bonds, Dashpots
+from particlegym.physics.external import ExternalForce, Gravity, Ground, KineticFriction
 from particlegym.physics.fields import Grid
 from particlegym.physics.flow import FlowField, ShearFlow, TaylorGreen, UniformFlow
 from particlegym.physics.forces import ForceField, ForceInfo
@@ -44,6 +44,7 @@ from particlegym.physics.potentials import (
     damping_for_restitution,
     restitution_coefficient,
 )
+from particlegym.physics.softbody import VoxelBody
 from particlegym.physics.space import Box
 from particlegym.physics.state import ParticleState, create_state
 from particlegym.physics.traffic import (
@@ -68,12 +69,14 @@ __all__ = [
     "CarFollowing",
     "CellList",
     "ContactExponential",
+    "Dashpots",
     "ExternalForce",
     "FlowField",
     "ForceField",
     "ForceInfo",
     "Gravity",
     "Grid",
+    "Ground",
     "Harmonic",
     "IntelligentDriver",
     "KineticFriction",
@@ -94,6 +97,7 @@ __all__ = [
     "TangentialFriction",
     "TaylorGreen",
     "UniformFlow",
+    "VoxelBody",
     "Walls",
     "active",
     "ballistic_step",

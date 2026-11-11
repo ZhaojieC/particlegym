@@ -27,6 +27,7 @@ SCRIPTS = [
     "galaxy_encounter",
     "orbit_transfer",
     "ring_road",
+    "soft_walker",
 ]
 LARGE = {"crowd_10000"}  # several minutes on a CPU
 

@@ -118,6 +118,21 @@ REFERENCES = {
         "  doi = {10.1098/rsif.2014.0719}\n"
         "}",
     ),
+    "bhatia2021": Reference(
+        "J. S. Bhatia, H. Jackson, Y. Tian, J. Xu and W. Matusik, Evolution Gym: A large-scale "
+        "benchmark for evolving soft robots, Advances in Neural Information Processing Systems "
+        "34 (2021), https://arxiv.org/abs/2201.09863",
+        "@inproceedings{bhatia2021,\n"
+        "  author = {Bhatia, Jagdeep Singh and Jackson, Holly and Tian, Yunsheng and Xu, Jie "
+        "and Matusik, Wojciech},\n"
+        "  title = {Evolution Gym: A Large-Scale Benchmark for Evolving Soft Robots},\n"
+        "  booktitle = {Advances in Neural Information Processing Systems},\n"
+        "  volume = {34},\n"
+        "  year = {2021},\n"
+        "  eprint = {2201.09863},\n"
+        "  archiveprefix = {arXiv}\n"
+        "}",
+    ),
     "sugiyama2008": Reference(
         "Y. Sugiyama, M. Fukui, M. Kikuchi, K. Hasebe, A. Nakayama, K. Nishinari, S. Tadaki and "
         "S. Yukawa, Traffic jams without bottlenecks: experimental evidence for the physical "

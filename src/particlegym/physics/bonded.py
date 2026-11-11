@@ -17,6 +17,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
+from particlegym.physics.external import ExternalForce
 from particlegym.physics.space import Box
 
 
@@ -150,3 +151,38 @@ class AreaConstraint(BondedTerm):
         on = jnp.all(alive[self.rings], axis=1)
         deviation = self.area(pos, box) - jnp.asarray(self.area0, pos.dtype)
         return jnp.sum(jnp.where(on, 0.5 * self.k * deviation**2, 0.0))
+
+
+@dataclasses.dataclass(frozen=True, eq=False)
+class Dashpots(ExternalForce):
+    """Linear dampers between listed pairs of particles.
+
+    ``f_i = -c [(v_i - v_j) . e] e`` and ``f_j = -f_i``, with e the unit vector
+    from j to i: a damper resists the rate at which the distance changes and
+    nothing else. It conserves momentum and angular momentum and dissipates
+    the power ``c [(v_i - v_j) . e]^2`` per pair. Together with :class:`Bonds`
+    on the same pairs it makes damped springs (Kelvin-Voigt elements).
+
+    The force depends on the velocities, so it is added to a
+    :class:`~particlegym.physics.ForceField` as an external term. Positions are
+    not wrapped into a periodic box.
+
+    Args:
+        pairs: (M, 2) particle indices.
+        c: Damping coefficient, scalar or (M,).
+    """
+
+    pairs: np.ndarray
+    c: float | np.ndarray = 1.0
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "pairs", _indices(self.pairs, 2, "pairs"))
+
+    def force(self, pos, vel, mass):
+        i, j = self.pairs[:, 0], self.pairs[:, 1]
+        separation = pos[i] - pos[j]
+        length = _length(separation)
+        unit = separation / jnp.where(length > 0, length, 1.0)[:, None]
+        rate = jnp.sum((vel[i] - vel[j]) * unit, axis=1)
+        pull = -jnp.asarray(self.c, pos.dtype)[..., None] * rate[:, None] * unit
+        return jnp.zeros_like(pos).at[i].add(pull).at[j].add(-pull)

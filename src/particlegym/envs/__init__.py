@@ -20,6 +20,7 @@ from particlegym.envs.herding import Herding, HerdingParams, HerdingState
 from particlegym.envs.microswimmer import Microswimmer, MicroswimmerParams, MicroswimmerState
 from particlegym.envs.orbit import OrbitTransfer, OrbitTransferParams, OrbitTransferState
 from particlegym.envs.ring_road import RingRoad, RingRoadParams, RingRoadState
+from particlegym.envs.soft_walker import SoftWalker, SoftWalkerParams, SoftWalkerState
 from particlegym.envs.spaces import Continuous, Discrete
 
 __all__ = [
@@ -53,4 +54,7 @@ __all__ = [
     "RingRoad",
     "RingRoadParams",
     "RingRoadState",
+    "SoftWalker",
+    "SoftWalkerParams",
+    "SoftWalkerState",
 ]

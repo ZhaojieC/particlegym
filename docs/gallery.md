@@ -40,6 +40,16 @@ below the speed of uniform flow, and the jam dissolves; every vehicle drives
 22 % farther in 300 s. Vehicles turn red as they slow down; the bar under
 each ring shows the mean speed ([details](experimental.md#ring-road)).
 
+## Robots
+
+![A soft robot of voxels walks with a wave of contractions](assets/gallery/soft_walker.gif)
+
+A robot of 13 soft voxels walks with an open-loop gait: a wave of
+contraction runs forward along its body. Its trunk is made of horizontal
+actuators (orange), its legs of vertical ones (blue); a voxel is lighter
+while it lengthens and darker while it shortens. Only the friction of the
+ground can move the robot forward ([details](experimental.md#soft-walker)).
+
 ## Games
 
 Arcade and table games built from the same physics core
