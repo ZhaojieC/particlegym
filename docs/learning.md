@@ -32,6 +32,7 @@ frame = env.render()
 | `particlegym/OrbitTransfer-v0` | one spacecraft of the [orbit transfer](experimental.md#orbit-transfer), continuous thrust |
 | `particlegym/RingRoad-v0` | one automated vehicle on the [ring road](experimental.md#ring-road), continuous acceleration |
 | `particlegym/SoftWalker-v0` | the [soft walker](experimental.md#soft-walker): eight actuators, one agent |
+| `particlegym/TumorTherapy-v0` | the oncologist of the [tumour therapy](experimental.md#tumour-therapy), a daily dose in [0, 1] |
 
 Other single-agent environments, or other settings, are wrapped directly:
 

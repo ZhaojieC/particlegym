@@ -50,6 +50,21 @@ actuators (orange), its legs of vertical ones (blue); a voxel is lighter
 while it lengthens and darker while it shortens. Only the friction of the
 ground can move the robot forward ([details](experimental.md#soft-walker)).
 
+## Medicine
+
+![A tumour under the maximum tolerated dose, the rule of the adaptive-therapy trial and containment](assets/gallery/tumor_therapy.gif)
+
+The same agent-based tumour of 200 cells under three therapies: the maximum
+tolerated dose every day (left), the rule of the adaptive abiraterone trial,
+which pauses at half the initial size and resumes at the initial size
+(middle), and containment, which treats whenever the tumour has grown back
+to its initial size (right). Sensitive cells are green, resistant ones red;
+the bar on top shows the size of the tumour, with marks at the start and at
+progression, and is purple on days of treatment. The tumours progress after
+42, 44 and 51 days ([details](experimental.md#tumour-therapy)).
+
+![Sensitive and resistant cells under the three therapies](assets/gallery/tumor_therapy_curves.png)
+
 ## Games
 
 Arcade and table games built from the same physics core

@@ -7,7 +7,7 @@ reference output is in ``benchmarks/baselines.txt``. Run with
     python benchmarks/baselines.py > benchmarks/baselines.txt
 
 or with the names of the parts to run (herding, microswimmer, cell_migration,
-billiards, orbit_transfer, ring_road, soft_walker).
+billiards, orbit_transfer, ring_road, soft_walker, tumor_therapy).
 """
 
 import sys
@@ -307,6 +307,66 @@ def soft_walker(n_games=8):
             )
 
 
+def tumor_therapy(n_games=32):
+    print(f"# TumorTherapy: 200 cells, {n_games} games from random starts for each share of")
+    print("# resistant cells. Days to progression (1.2 times the initial size), or 365 if the")
+    print("# tumour did not progress within the episode; games that progressed, games in which")
+    print("# all cells died, share of days treated, and the share of resistant cells at")
+    print("# progression. Adaptive: the rule of the abiraterone trial (pause at half the")
+    print("# initial size, resume at the initial size); containment: treat whenever the")
+    print("# tumour has grown back to its initial size.")
+    print(
+        "# resistant  policy  days_mean  days_median  days_min  days_max  progressed  extinct  "
+        "treated  resistant_share"
+    )
+    env = envs.TumorTherapy()
+    for fraction in (0.02, 0.05):
+        params = env.default_params._replace(resistant_fraction=fraction)
+        policies = {
+            "none": lambda s, p: env.no_treatment_policy(s, p),
+            "mtd": lambda s, p: env.mtd_policy(s, p),
+            "adaptive": lambda s, p: env.adaptive_policy(s, p),
+            "containment": lambda s, p: env.adaptive_policy(s, p, stop=1.0, restart=1.0),
+        }
+        for name, policy in policies.items():
+
+            @jax.jit
+            @jax.vmap
+            def game(key, policy=policy, params=params):
+                reset_key, run_key = jax.random.split(key)
+                _, state = env.reset(reset_key, params)
+
+                def running(carry):
+                    state, *_ = carry
+                    cells = jnp.sum(state.cells.alive)
+                    return ~state.progressed & (cells > 0) & (state.day < params.max_days)
+
+                def day(carry):
+                    state, treated, _ = carry
+                    key = jax.random.fold_in(run_key, state.day)
+                    out = env.step(key, state, policy(state, params), params)
+                    info = out[5]
+                    cells = jnp.maximum(info["sensitive"] + info["resistant"], 1)
+                    return out[1], treated + out[1].dose, info["resistant"] / cells
+
+                zero = jnp.zeros((), state.dose.dtype)
+                state, treated, share = jax.lax.while_loop(running, day, (state, zero, zero))
+                extinct = jnp.sum(state.cells.alive) == 0
+                days = jnp.where(state.progressed, state.day, params.max_days)
+                return days, state.progressed, extinct, treated / state.day, share
+
+            days, progressed, extinct, treated, share = (
+                np.asarray(x) for x in game(jax.random.split(jax.random.key(0), n_games))
+            )
+            resistant = share[progressed].mean() if progressed.any() else float("nan")
+            print(
+                f"{fraction:g}  {name}  {days.mean():.1f}  {np.median(days):.1f}  {days.min()}  "
+                f"{days.max()}  "
+                f"{progressed.sum()}/{n_games}  {extinct.sum()}/{n_games}  "
+                f"{treated.mean():.2f}  {resistant:.2f}"
+            )
+
+
 PARTS = {
     "herding": herding,
     "microswimmer": microswimmer,
@@ -315,6 +375,7 @@ PARTS = {
     "orbit_transfer": orbit_transfer,
     "ring_road": ring_road,
     "soft_walker": soft_walker,
+    "tumor_therapy": tumor_therapy,
 }
 
 if __name__ == "__main__":

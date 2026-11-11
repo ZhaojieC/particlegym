@@ -171,6 +171,7 @@ _REGISTERED = {
     "particlegym/OrbitTransfer-v0": "_orbit_transfer",
     "particlegym/RingRoad-v0": "_ring_road",
     "particlegym/SoftWalker-v0": "_soft_walker",
+    "particlegym/TumorTherapy-v0": "_tumor_therapy",
 }
 
 
@@ -223,6 +224,12 @@ def _soft_walker(render_mode=None, **kwargs):
     from particlegym import envs
 
     return GymnasiumEnv(envs.SoftWalker(**kwargs), render_mode=render_mode)
+
+
+def _tumor_therapy(render_mode=None, **kwargs):
+    from particlegym import envs
+
+    return GymnasiumEnv(envs.TumorTherapy(**kwargs), render_mode=render_mode)
 
 
 def register_envs() -> None:

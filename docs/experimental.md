@@ -473,6 +473,124 @@ table gives the mean and the range over the episodes. On frictionless ground
 the same gait does not move the centre of mass at all. No policy has been
 trained on this task yet.
 
+## Tumour therapy
+
+![A tumour under the maximum tolerated dose, the rule of the adaptive-therapy trial and containment](assets/gallery/tumor_therapy.gif)
+
+`envs.TumorTherapy` is an agent-based model of a tumour under treatment, and
+the agent is the oncologist who chooses the dose of a drug for every day.
+The tumour starts as a round patch of 200 cells in two dimensions. Every
+cell is a soft disc that grows, divides and dies
+([growing and dividing cells](physics.md#growing-and-dividing-cells)), as in
+the centre-based models of Drasdo & Hoehme (2005). Most cells are sensitive
+to the drug (green); each cell of the initial tumour is resistant (red) with
+the probability 0.05 (`resistant_fraction`). The unit of length is the
+diameter of a cell at division, the unit of time the hour.
+
+```python
+env = envs.TumorTherapy()  # or envs.TumorTherapy(action="discrete") for the doses 0, 0.5 and 1
+params = env.default_params._replace(resistant_fraction=0.02)
+obs, state = env.reset(key, params)
+action = env.adaptive_policy(state, params)  # pause at half the initial size, resume at it
+```
+
+- **Action**: the dose of the next day, from 0 to 1 (the maximum tolerated
+  dose), or one of 0, 0.5 and 1 with discrete actions.
+- **Observation**: what an oncologist learns from a tumour marker: the
+  number of cells relative to the start, its change over the last day, and
+  the last dose.
+- **Reward**: 1 for every day before the tumour progresses, minus
+  `toxicity` (0 by default) times the dose. The tumour has progressed when
+  it has grown to 1.2 times its initial number of cells (`progression`).
+- **Episode**: ends at progression, or after 365 days.
+
+A day has 24 steps of one hour. In each step, a cell whose overlaps with its
+neighbours add up to less than 0.1 cell diameters (`inhibition`) is cycling:
+it advances in its cycle, grows from half its full area to the full area,
+and at the end of the cycle divides into two daughters. A cell that is
+pressed harder rests, so a dense tumour grows at its rim (contact
+inhibition). Cycles last 72 hours on average, with a spread of 15 %
+(`cycle_time`, `cycle_spread`); resistance costs 30 % longer cycles
+(`resistance_cost`). Every cell dies at the rate 1/300 per hour, 8 % a day
+(`death_rate`, the turnover of the tissue), and a cycling sensitive cell in
+addition at the rate 1/60 per hour times the dose (`kill_rate`), 0.4 a day
+at the maximum tolerated dose. Between these events the cells move by
+overdamped dynamics under a harmonic contact repulsion, two steps per hour.
+
+Three scripted policies are the baselines: the maximum tolerated dose every
+day (`mtd_policy`); the rule of the adaptive abiraterone trial (Zhang et al.
+2017; NCT02415621), which treats until the tumour has halved and pauses
+until it is back at its initial size (`adaptive_policy`); and containment
+(Viossat & Noble 2021), which treats whenever the tumour has grown back to
+its initial size (`adaptive_policy(state, params, stop=1.0, restart=1.0)`).
+From `benchmarks/baselines.py`, 32 games for each share of resistant cells.
+A tumour that has not progressed after the year of an episode, because it
+was cured or held in check, counts 365 days:
+
+| Resistant cells | Policy | Days to progression: median (range) | Mean | Cured | Held for a year | Days treated |
+|---|---|---|---|---|---|---|
+| 5 % | no treatment | 6 (5 to 7) | 5.9 | 0 | 0 | 0 % |
+| 5 % | maximum dose | 42.5 (32 to 365) | 52.8 | 1 | 0 | 100 % |
+| 5 % | rule of the trial | 45 (32 to 365) | 55.6 | 0 | 1 | 63 % |
+| 5 % | containment | 46.5 (41 to 89) | 51.5 | 0 | 0 | 49 % |
+| 2 % | no treatment | 6 (5 to 7) | 5.8 | 0 | 0 | 0 % |
+| 2 % | maximum dose | 58 (41 to 365) | 85.7 | 3 | 0 | 100 % |
+| 2 % | rule of the trial | 64.5 (42 to 365) | 92.0 | 0 | 3 | 56 % |
+| 2 % | containment | 68.5 (46 to 365) | 99.8 | 0 | 2 | 46 % |
+
+In this model the adaptive rules delay progression only a little. With 5 %
+resistant cells, the median time to progression is 2.5 days (6 %) longer
+with the rule of the trial and 4 days (9 %) longer with containment than
+with the maximum dose, little against the spread between tumours.
+Containment avoids early failures: under it no tumour progressed before day
+41, under the maximum dose the first did on day 32. With 2 % resistant cells
+the medians are 11 % and 18 % longer, but the maximum dose cures 3 of the 32
+tumours, whose few resistant cells all die; the adaptive rules cure none and
+hold 3 and 2 tumours in check for the whole year. At progression the
+tumours treated at the maximum dose consist of resistant cells alone; under
+containment about a tenth of the cells are still sensitive.
+
+Adaptive therapy relies on sensitive cells competing with resistant ones
+(Gatenby et al. 2009). Here they compete only for space, through contact
+inhibition, and a treated tumour becomes sparse, so that resistant cells
+find room to grow. The schedule that delays progression the most is not
+known for this model: one that tries for a cure first and contains the
+tumour later might beat all three rules. An agent has to find it from the
+observed size of the tumour alone, without seeing its resistant cells.
+
+![Sensitive and resistant cells under the three therapies](assets/gallery/tumor_therapy_curves.png)
+
+The animation above and this figure show one tumour (seed 10 of the gallery
+scripts), chosen because its three times to progression, 42, 44 and 51
+days, are close to the medians of the table.
+
+**How the time scale was chosen.** A first calibration had cell cycles of
+24 hours, as for tumour cells in culture, and three times the rates of
+death and killing. The drug leaves a treated tumour sparse, and once
+treatment pauses every surviving cell cycles: the tumour regrew by up to
+60 % in a day. The rule of the trial then often let the tumour pass 1.2
+times its initial size on a single day of a pause, before the next dose
+could act: in 4 of 16 games with 2 % resistant cells, the tumour progressed
+on a day without treatment. The rule then delayed progression by 36 days on
+average; the maximum dose cured 3 of the 16 tumours and delayed progression
+in the others by 29 days on average. A short-range adhesion between the
+cells did not keep the treated tumour compact. Tumour cells in the body
+divide more slowly than in culture, and the defaults make all rates of the
+cells three times slower. A paused tumour then regrows by at most about 30 %
+a day, and in the 32 games with 5 % resistant cells no tumour progressed on
+a day without treatment, under either adaptive rule. The default share of
+resistant cells is 5 % because 2 % of 200 cells are only about four cells,
+which die out by chance in some tumours; a real tumour with 2 % resistant
+cells holds far too many of them for that.
+
+The model is two-dimensional and has no nutrients, vessels or immune cells;
+its cells only repel each other, without the adhesion and the active motion
+that centre-based models usually include; the drug reaches every cell at
+once and acts only on the day it is given; dead cells vanish at once; and
+the tumour marker is the exact number of living cells. No parameter was fitted to data, and the environment
+reproduces no published result in numbers. No policy has been trained on
+this task yet.
+
 ## Demixing of two fluids
 
 ![Two fluids that do not mix separate](assets/gallery/dpd_demixing.gif)
@@ -525,6 +643,14 @@ pull for longer.
 - S. Colabrese, K. Gustavsson, A. Celani and L. Biferale, Flow navigation by
   smart microswimmers via reinforcement learning, Phys. Rev. Lett. 118,
   158004 (2017).
+- D. Drasdo and S. Hoehme, A single-cell-based model of tumor growth in vitro:
+  monolayers and spheroids, Phys. Biol. 2, 133 (2005).
+- J. A. Gallaher, P. M. Enriquez-Navas, K. A. Luddy, R. A. Gatenby and A. R. A.
+  Anderson, Spatial heterogeneity and evolutionary dynamics modulate time to
+  recurrence in continuous and adaptive cancer therapies, Cancer Res. 78,
+  2127 (2018).
+- R. A. Gatenby, A. S. Silva, R. J. Gillies and B. R. Frieden, Adaptive
+  therapy, Cancer Res. 69, 4894 (2009).
 - D. Helbing and P. Molnár, Social force model for pedestrian dynamics, Phys.
   Rev. E 51, 4282 (1995).
 - D. Helbing, I. Farkas and T. Vicsek, Simulating dynamical features of
@@ -549,9 +675,14 @@ pull for longer.
 - M. Treiber, A. Hennecke and D. Helbing, Congested traffic states in
   empirical observations and microscopic simulations, Phys. Rev. E 62, 1805
   (2000).
+- Y. Viossat and R. Noble, A theoretical analysis of tumour containment, Nat.
+  Ecol. Evol. 5, 826 (2021).
 - C. Wu, A. R. Kreidieh, K. Parvate, E. Vinitsky and A. M. Bayen, Flow: A
   modular learning framework for mixed autonomy traffic, IEEE Trans. Robot.
   38, 1270 (2022).
+- J. Zhang, J. J. Cunningham, J. S. Brown and R. A. Gatenby, Integrating
+  evolutionary dynamics into treatment of metastatic castrate-resistant
+  prostate cancer, Nat. Commun. 8, 1816 (2017).
 - Y. Zhang, Z. Chai, Y. Sun and G. Lykotrafitis, A deep reinforcement
   learning model based on deterministic policy gradient for collective
   neural crest cell migration, arXiv:2007.03190 (2020).

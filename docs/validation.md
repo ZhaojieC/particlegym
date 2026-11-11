@@ -153,6 +153,14 @@ to 0.7 % lower, which is within the accuracy of the reading.
 | Energy | `test_without_damping_a_falling_body_conserves_energy` (a deformed body with a rigid voxel in free fall) | fluctuation below 2e-4 of the kinetic energy at \(\Delta t\) = 0.002; halving \(\Delta t\) divides it by about 4 | ratio 3.95 |
 | Coming to rest | `test_a_dropped_body_comes_to_rest_and_the_ground_carries_its_weight` | a body dropped on the ground comes to rest, and the ground carries its weight | to 1e-6 |
 
+## Cell populations
+
+| Property | Test | Criterion | Reference result |
+|---|---|---|---|
+| Free slots | `test_proliferation.py::test_daughters_are_born_into_free_slots_while_they_last` | cells ready to divide get the free slots in the order of their indices; cells that find none wait | exact |
+| Division | `test_division_keeps_the_volume_and_the_centre` (2D and 3D) | the two daughters share the volume of the mother, radius \(r/2^{1/d}\), and sit symmetrically about its centre, a quarter of its diameter away; other cells are not touched | exact |
+| Compression | `test_overlap_sum_measures_compression` | the sum of overlaps of each cell, also when the forces on it cancel; dead cells do not count; the cell list gives the same values as brute force | to 1e-12 |
+
 ## Experimental environments
 
 The tests of the [experimental environments](experimental.md) check their
@@ -194,6 +202,13 @@ policy solves each task. They do not compare with measurements.
 | Muscle delay | `test_activations_follow_the_commands_with_a_delay` | commands are clipped to [−1, 1]; after one control step the activation has covered \(1 - e^{-0.5}\) of the way | to 1e-9 |
 | Walking needs friction | `test_walking_needs_friction` (300 control steps) | the gait moves the robot forward; on frictionless ground the centre of mass does not move | 22.1 voxels; 1e-14 |
 | Gait of the soft walker | `test_the_gait_walks_forward_and_random_commands_do_not` | the gait covers more than 20 voxels in an episode; random commands less than 5 in each of 3 episodes | 37.1 voxels; 0.6 to 1.1 |
+| Start of the tumour | `test_env_tumor.py::test_reset_puts_a_round_tumour_of_mostly_sensitive_cells` | 200 cells in a round patch, a few of them resistant; ages within the cell cycle, areas between half and the full area | 14 resistant cells (10 expected) |
+| Drug | `test_the_drug_kills_cycling_sensitive_cells_at_its_rate` (dose 1 and 0.5; no divisions, no turnover) | the sensitive cells that survive a day are within 4 standard deviations of \(N e^{-24 k d}\), with the kill rate \(k\) per hour and the dose \(d\); no resistant cell dies | +0.4 and +0.3 standard deviations |
+| Turnover | `test_every_cell_dies_at_the_turnover_rate` | the cells that survive a day are within 4 standard deviations of \(N e^{-24 \delta}\), with the turnover rate \(\delta\) per hour | +0.7 standard deviations |
+| Contact inhibition | `test_contact_inhibition_confines_cycling_to_the_rim` (8 days without treatment) | 10 to 70 % of the cells cycle, and on average they lie more than a cell diameter farther from the centre than the resting cells | 55 %; 1.6 diameters |
+| Progression without treatment | `test_untreated_tumours_progress_within_days_and_end_the_episode` | progression before day 10; a reward of 1 for every day before it and 0 after | day 6 |
+| Therapies of the tumour | `test_maximum_dose_selects_resistant_cells_and_adaptive_therapy_treats_less` | both delay progression past day 10 and progress within 120 days; at progression under the maximum dose resistant cells outnumber sensitive ones; the rule of the trial treats on less than 80 % of the days | days 36 and 41; 246 resistant cells, no sensitive one; 61 % of the days |
+| Adaptive rules | `test_the_adaptive_rule_pauses_at_half_and_resumes_at_the_start` | the rule of the trial and containment give the right dose on either side of their thresholds | exact |
 | Hohmann controller | `test_hohmann_controller_reaches_the_orbit_with_little_more_than_the_impulsive_optimum`, `test_discrete_hohmann_controller_reaches_the_orbit_on_one_transfer` (r1 from 1.5 to 4) | arrives; \(\Delta v\) between 1 and 1.01 times the Hohmann value with continuous thrust, between 0.97 and 1.01 with discrete thrust; arrival on the first pass through the apoapsis | 1.001 to 1.002; 0.984 to 1.003 |
 
 ## Learning

@@ -28,6 +28,7 @@ SCRIPTS = [
     "orbit_transfer",
     "ring_road",
     "soft_walker",
+    "tumor_therapy",
 ]
 LARGE = {"crowd_10000"}  # several minutes on a CPU
 
